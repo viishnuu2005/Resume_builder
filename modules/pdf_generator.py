@@ -10,6 +10,9 @@ def generate_pdf_resume(data, template_id='classic'):
     email = data.get('email', '')
     phone = data.get('phone', '')
     education = data.get('education', '')
+    college = data.get('college', '')
+    if college:
+        education = f"{education} — {college}" if education else college
     skills = data.get('skills', '')
     projects = data.get('projects', '')
     experience = data.get('experience', '')
@@ -118,13 +121,13 @@ def generate_pdf_resume(data, template_id='classic'):
     certs_text = ""
     if isinstance(certifications, list) and certifications:
         cert_blocks = []
-        for c in certifications:
-            name = c.get('name', '')
-            org = c.get('org', '')
-            year = c.get('year', '')
-            link = c.get('link', '')
-            if name:
-                block = name
+        for cert in certifications:
+            cname = cert.get('name', '')
+            org = cert.get('org', '')
+            year = cert.get('year', '')
+            link = cert.get('link', '')
+            if cname:
+                block = cname
                 if org: block += f" \u2014 {org}"
                 if year: block += f" ({year})"
                 if link: block += f"\nLink: {link}"

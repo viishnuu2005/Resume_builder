@@ -1,12 +1,25 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, session, redirect, url_for, flash
 import io
 import re
 from PyPDF2 import PdfReader
+from functools import wraps
 
 # Import the new modules
-from modules import resume_processor, jd_matcher, pdf_generator, ats_analyzer
+from modules import resume_processor, jd_matcher, groq_analyzer, pdf_generator, ats_analyzer
+from modules.database import create_user, authenticate_user, get_user_by_id, save_resume, get_user_resumes, delete_resume
 
 app = Flask(__name__)
+app.secret_key = 'resume-builder-ats-secret-key-2026'
+
+
+def login_required(f):
+    """Decorator to protect routes that need authentication."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/')
 def home():
@@ -226,7 +239,7 @@ def dashboard():
                                error='Please upload your resume PDF or paste resume text.')
 
     # ── Analyse ──────────────────────────────────────────────────────────
-    report, score = jd_matcher.analyze_resume_improvement(resume_text, job_description)
+    report, score = groq_analyzer.analyze_resume_improvement(resume_text, job_description)
 
     name, email, phone = resume_processor.extract_contact_info(resume_text)
     sections           = resume_processor.split_into_sections(resume_text)
@@ -260,12 +273,18 @@ def _get_resume_data_from_request():
             l = cert_links[i].strip() if i < len(cert_links) else ''
             certifications.append({'name': n, 'org': o, 'year': y, 'link': l})
 
+    skills_input = request.form.getlist('skills')
+    if not skills_input and request.form.get('skills'):
+        skills_input = [request.form.get('skills')]
+    skills_str = ", ".join(filter(None, skills_input))
+
     return {
         'name': request.form.get('name', ''),
         'email': request.form.get('email', ''),
         'phone': request.form.get('phone', ''),
         'education': request.form.get('education', ''),
-        'skills': request.form.get('skills', ''),
+        'college': request.form.get('college_other', '').strip() if request.form.get('college', '') == 'Other' else request.form.get('college', ''),
+        'skills': skills_str,
         'projects': request.form.get('projects', ''),
         'experience': request.form.get('experience', ''),
         'certifications': certifications,
@@ -282,6 +301,10 @@ def download():
     
     try:
         buffer, filename = pdf_generator.generate_pdf_resume(data, template_id)
+
+        # Save resume to MongoDB if user is logged in
+        if 'user_id' in session:
+            save_resume(session['user_id'], data)
         
         # Flask 2.0+ uses download_name; older versions use attachment_filename.
         try:
@@ -331,7 +354,7 @@ def match():
         return render_template('match.html', error='Please paste a job description to analyze.')
 
     # Using the new smart analyzer instead of the old cosine similarity
-    report, score = jd_matcher.analyze_resume_improvement(resume_text, job_description)
+    report, score = groq_analyzer.analyze_resume_improvement(resume_text, job_description)
     
     jd_keywords = [cat for sublist in jd_matcher.TECH_CATEGORIES.values() for cat in sublist if cat in job_description.lower()]
     suggested_skills = report.get('skills_to_add', [])[:6]
@@ -347,6 +370,95 @@ def match():
                            missing=missing,
                            similarity=score,
                            resume_text=resume_text)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# AUTH ROUTES
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    password = request.form.get('password', '')
+
+    if not name or not email or not password:
+        return render_template('register.html', error='All fields are required.')
+    if len(password) < 6:
+        return render_template('register.html', error='Password must be at least 6 characters.')
+
+    user = create_user(name, email, password)
+    if not user:
+        return render_template('register.html', error='Email already registered. Please login.')
+
+    return render_template('login.html', success='Account created! Please login.')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    email = request.form.get('email', '').strip()
+    password = request.form.get('password', '')
+
+    user = authenticate_user(email, password)
+    if not user:
+        return render_template('login.html', error='Invalid email or password.')
+
+    session['user_id'] = user['_id']
+    session['user_name'] = user['name']
+    return redirect(url_for('home'))
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
+
+
+@app.route('/my-resumes')
+@login_required
+def my_resumes():
+    resumes = get_user_resumes(session['user_id'])
+    return render_template('my_resumes.html',
+                           resumes=resumes,
+                           user_name=session.get('user_name', 'User'))
+
+
+@app.route('/download-saved/<resume_id>', methods=['POST'])
+@login_required
+def download_saved(resume_id):
+    """Re-generate and download a previously saved resume."""
+    resumes = get_user_resumes(session['user_id'])
+    target = None
+    for r in resumes:
+        if r['_id'] == resume_id:
+            target = r
+            break
+    if not target:
+        return redirect(url_for('my_resumes'))
+
+    data = target['data']
+    template_id = data.get('template_id', 'modern')
+    try:
+        buffer, filename = pdf_generator.generate_pdf_resume(data, template_id)
+        try:
+            return send_file(buffer, as_attachment=True, download_name=filename, mimetype='application/pdf')
+        except TypeError:
+            return send_file(buffer, as_attachment=True, attachment_filename=filename, mimetype='application/pdf')
+    except Exception as e:
+        return f"Error generating PDF: {e}", 500
+
+
+@app.route('/delete-resume/<resume_id>', methods=['POST'])
+@login_required
+def delete_resume_route(resume_id):
+    delete_resume(resume_id, session['user_id'])
+    return redirect(url_for('my_resumes'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1039,10 +1039,34 @@
                         <div class="mb-2">
                             <label class="editor-label">
                                 <i class="fa-solid fa-code" style="color:#fcd34d;font-size:0.75rem;"></i> Skills
-                                <span style="color:var(--muted);font-size:0.75rem;font-weight:400;"> — add the missing
-                                    tags from analysis</span>
+                                <span style="color:var(--muted);font-size:0.75rem;font-weight:400;"> — (Hold Ctrl/Cmd to select multiple)</span>
                             </label>
-                            <textarea class="editor-ctrl" name="skills" rows="3">{{ skills }}</textarea>
+                            <select class="form-control-dark" name="skills" multiple style="height: 140px;">
+                                <option value="Python" {% if 'Python' in skills %}selected{% endif %}>Python</option>
+                                <option value="JavaScript" {% if 'JavaScript' in skills %}selected{% endif %}>JavaScript</option>
+                                <option value="TypeScript" {% if 'TypeScript' in skills %}selected{% endif %}>TypeScript</option>
+                                <option value="Java" {% if 'Java' in skills %}selected{% endif %}>Java</option>
+                                <option value="C++" {% if 'C++' in skills %}selected{% endif %}>C++</option>
+                                <option value="C#" {% if 'C#' in skills %}selected{% endif %}>C#</option>
+                                <option value="React" {% if 'React' in skills %}selected{% endif %}>React</option>
+                                <option value="Angular" {% if 'Angular' in skills %}selected{% endif %}>Angular</option>
+                                <option value="Vue" {% if 'Vue' in skills %}selected{% endif %}>Vue</option>
+                                <option value="Node.js" {% if 'Node.js' in skills %}selected{% endif %}>Node.js</option>
+                                <option value="Django" {% if 'Django' in skills %}selected{% endif %}>Django</option>
+                                <option value="Flask" {% if 'Flask' in skills %}selected{% endif %}>Flask</option>
+                                <option value="Spring Boot" {% if 'Spring Boot' in skills %}selected{% endif %}>Spring Boot</option>
+                                <option value="SQL" {% if 'SQL' in skills %}selected{% endif %}>SQL</option>
+                                <option value="MongoDB" {% if 'MongoDB' in skills %}selected{% endif %}>MongoDB</option>
+                                <option value="PostgreSQL" {% if 'PostgreSQL' in skills %}selected{% endif %}>PostgreSQL</option>
+                                <option value="Docker" {% if 'Docker' in skills %}selected{% endif %}>Docker</option>
+                                <option value="Kubernetes" {% if 'Kubernetes' in skills %}selected{% endif %}>Kubernetes</option>
+                                <option value="AWS" {% if 'AWS' in skills %}selected{% endif %}>AWS</option>
+                                <option value="GCP" {% if 'GCP' in skills %}selected{% endif %}>GCP</option>
+                                <option value="Git" {% if 'Git' in skills %}selected{% endif %}>Git</option>
+                                <option value="CI/CD" {% if 'CI/CD' in skills %}selected{% endif %}>CI/CD</option>
+                                <option value="Machine Learning" {% if 'Machine Learning' in skills %}selected{% endif %}>Machine Learning</option>
+                                <option value="Other" {% if 'Other' in skills %}selected{% endif %}>Other</option>
+                            </select>
                         </div>
 
                         <div class="mb-2">
@@ -1056,9 +1080,44 @@
                         <div class="mb-3">
                             <label class="editor-label">
                                 <i class="fa-solid fa-graduation-cap" style="color:#93c5fd;font-size:0.75rem;"></i>
-                                Education
+                                Education Degree
                             </label>
-                            <textarea class="editor-ctrl" name="education" rows="2">{{ education }}</textarea>
+                            <select class="select-dark" name="education">
+                                <option value="" disabled selected>Select Degree</option>
+                                <option value="B.Tech" {% if 'B.Tech' in education %}selected{% endif %}>B.Tech</option>
+                                <option value="B.E." {% if 'B.E.' in education %}selected{% endif %}>B.E.</option>
+                                <option value="BCA" {% if 'BCA' in education %}selected{% endif %}>BCA</option>
+                                <option value="BSc" {% if 'BSc' in education %}selected{% endif %}>BSc</option>
+                                <option value="M.Tech" {% if 'M.Tech' in education %}selected{% endif %}>M.Tech</option>
+                                <option value="MCA" {% if 'MCA' in education %}selected{% endif %}>MCA</option>
+                                <option value="MSc" {% if 'MSc' in education %}selected{% endif %}>MSc</option>
+                                <option value="MBA" {% if 'MBA' in education %}selected{% endif %}>MBA</option>
+                                <option value="BBA" {% if 'BBA' in education %}selected{% endif %}>BBA</option>
+                                <option value="Diploma" {% if 'Diploma' in education %}selected{% endif %}>Diploma</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-school" style="color:#93c5fd;font-size:0.75rem;"></i>
+                                College / University (Kerala)
+                            </label>
+                            <select class="select-dark" name="college">
+                                <option value="" disabled selected>Select College</option>
+                                <option value="College of Engineering Trivandrum (CET)">College of Engineering Trivandrum (CET)</option>
+                                <option value="National Institute of Technology Calicut (NITC)">National Institute of Technology Calicut (NITC)</option>
+                                <option value="Model Engineering College (MEC), Kochi">Model Engineering College (MEC), Kochi</option>
+                                <option value="Cochin University of Science and Technology (CUSAT)">Cochin University of Science and Technology (CUSAT)</option>
+                                <option value="TKM College of Engineering, Kollam">TKM College of Engineering, Kollam</option>
+                                <option value="Rajagiri School of Engineering & Technology (RSET), Kochi">Rajagiri School of Engineering & Technology (RSET), Kochi</option>
+                                <option value="Mar Athanasius College of Engineering (MACE), Kothamangalam">Mar Athanasius College of Engineering (MACE), Kothamangalam</option>
+                                <option value="NSS College of Engineering, Palakkad">NSS College of Engineering, Palakkad</option>
+                                <option value="Government Engineering College, Thrissur (GECT)">Government Engineering College, Thrissur (GECT)</option>
+                                <option value="Government Engineering College, Barton Hill">Government Engineering College, Barton Hill</option>
+                                <option value="Muthoot Institute of Technology and Science (MITS)">Muthoot Institute of Technology and Science (MITS)</option>
+                                <option value="Saintgits College of Engineering, Kottayam">Saintgits College of Engineering, Kottayam</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
 
                         <div class="mb-3">
@@ -1206,17 +1265,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             const arc = document.getElementById('scoreArc');
             if (arc) {
-                const score = {{ score if report else 0 }
-            };
-            const circumference = 339.3;
-            const offset = circumference - (score / 100) * circumference;
-            setTimeout(() => { arc.style.strokeDashoffset = offset; }, 150);
-        }
-        document.querySelectorAll('.bar-fill').forEach(bar => {
-            const pct = bar.getAttribute('data-pct');
-            if (pct) setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+                const score = {{ score if report else 0 }};
+                const circumference = 339.3;
+                const offset = circumference - (score / 100) * circumference;
+                setTimeout(() => { arc.style.strokeDashoffset = offset; }, 150);
+            }
+            document.querySelectorAll('.bar-fill').forEach(bar => {
+                const pct = bar.getAttribute('data-pct');
+                if (pct) setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+            });
         });
-    });
 
         // ── Resume preview ──────────────────────────────────
         function previewResume() {
