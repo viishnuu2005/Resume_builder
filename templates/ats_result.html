@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Analysis Results – {{ filename }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --score-color: {% if analysis.score >= 80 %}#10b981{% elif analysis.score >= 60 %}#3b82f6{% elif analysis.score >= 40 %}#f59e0b{% else %}#ef4444{% endif %};
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f1117;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        .page-header {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%);
+            padding: 2.5rem 0 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 40px;
+            background: #0f1117;
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99,102,241,0.25);
+            border: 1px solid rgba(99,102,241,0.4);
+            color: #a5b4fc;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.85rem;
+            border-radius: 50rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
+        }
+
+        .file-title {
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .file-title span {
+            color: #a5b4fc;
+        }
+
+        /* ── Score Circle ── */
+        .score-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .score-ring-svg circle { transition: stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1); }
+
+        .score-big {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--score-color);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border-radius: 50rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            {% if analysis.grade == 'Excellent' %}
+            background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);
+            {% elif analysis.grade == 'Good' %}
+            background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.4);
+            {% elif analysis.grade == 'Fair' %}
+            background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.4);
+            {% else %}
+            background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);
+            {% endif %}
+        }
+
+        /* ── Cards ── */
+        .dark-card {
+            background: #1a1d2e;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dark-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        }
+
+        .card-title-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 1.1rem;
+            color: #fff;
+        }
+
+        .card-title-bar .icon-wrap {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        /* ── Breakdown bars ── */
+        .breakdown-row {
+            margin-bottom: 0.9rem;
+        }
+
+        .breakdown-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.83rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .bar-track {
+            height: 8px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 50rem;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 50rem;
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        /* ── Section pills ── */
+        .section-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.4rem 0.85rem;
+            border-radius: 50rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+
+        .pill-found {
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.35);
+            color: #6ee7b7;
+        }
+
+        .pill-missing {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+        }
+
+        /* ── Suggestion cards ── */
+        .suggestion-card {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: #1e2235;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 1rem 1.15rem;
+            margin-bottom: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .suggestion-card:hover {
+            border-color: rgba(99,102,241,0.35);
+            background: #1f2440;
+        }
+
+        .sug-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sug-danger  { background: rgba(239,68,68,0.15);   color: #fca5a5; }
+        .sug-warning { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+        .sug-info    { background: rgba(59,130,246,0.15);  color: #93c5fd; }
+        .sug-secondary{ background: rgba(99,102,241,0.15); color: #a5b4fc; }
+
+        .sug-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .sug-detail {
+            font-size: 0.83rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+        }
+
+        .sug-detail strong { color: rgba(255,255,255,0.8); }
+
+        /* ── Meta chips ── */
+        .meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 0.55rem 1rem;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .meta-chip i { color: #6366f1; }
+        .meta-chip .val { color: #fff; font-weight: 700; }
+
+        /* ── Download button ── */
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+            text-decoration: none;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.5);
+            color: white;
+        }
+
+        .btn-outline-light-custom {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: rgba(255,255,255,0.55);
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 0.65rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-light-custom:hover {
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* ── Score ring gradient colors ── */
+        {% if analysis.score >= 80 %}
+        .ring-color { stroke: #10b981; }
+        {% elif analysis.score >= 60 %}
+        .ring-color { stroke: #3b82f6; }
+        {% elif analysis.score >= 40 %}
+        .ring-color { stroke: #f59e0b; }
+        {% else %}
+        .ring-color { stroke: #ef4444; }
+        {% endif %}
+
+        /* ── Bar colors ── */
+        .bar-sections   { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .bar-contact    { background: linear-gradient(90deg, #10b981, #34d399); }
+        .bar-length     { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .bar-keywords   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .bar-skills     { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+        .empty-suggestions {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.9rem;
+        }
+
+        /* Download form hidden */
+        #downloadForm { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════ HEADER ══════════════════════════════════╗ -->
+<div class="page-header">
+    <div class="container">
+        <div class="text-center">
+            <div class="header-badge">
+                <i class="fa-solid fa-robot"></i> ATS Analysis Complete
+            </div>
+            <div class="file-title">
+                <i class="fa-regular fa-file-pdf me-2" style="color:#a5b4fc;"></i>
+                <span>{{ filename }}</span>.pdf
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ╔══════════════════════════════════ MAIN ══════════════════════════════════╗ -->
+<div class="container py-4 pb-5">
+
+    <!-- ── Action bar ── -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <a href="/upload" class="btn-outline-light-custom me-2">
+                <i class="fa-solid fa-arrow-left"></i> Analyze Another
+            </a>
+            <a href="/" class="btn-outline-light-custom">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+        </div>
+        <button class="btn-download" onclick="submitDownload()">
+            <i class="fa-solid fa-file-arrow-down"></i> Download ATS Report (PDF)
+        </button>
+    </div>
+
+    <!-- ── Meta info row ── -->
+    <div class="mb-4">
+        <span class="meta-chip"><i class="fa-solid fa-align-left"></i> Words: <span class="val">{{ analysis.word_count }}</span></span>
+        <span class="meta-chip"><i class="fa-solid fa-key"></i> Keywords hit: <span class="val">{{ analysis.keyword_hits }}</span></span>
+        <span class="meta-chip"><i class="fa-solid fa-code"></i> Skills found: <span class="val">{{ analysis.skills_hits }}</span></span>
+        <span class="meta-chip">
+            {% if analysis.has_email %}<i class="fa-solid fa-envelope" style="color:#10b981;"></i>{% else %}<i class="fa-solid fa-envelope" style="color:#ef4444;"></i>{% endif %}
+            Email: <span class="val">{{ 'Yes' if analysis.has_email else 'No' }}</span>
+        </span>
+        <span class="meta-chip">
+            {% if analysis.has_phone %}<i class="fa-solid fa-phone" style="color:#10b981;"></i>{% else %}<i class="fa-solid fa-phone" style="color:#ef4444;"></i>{% endif %}
+            Phone: <span class="val">{{ 'Yes' if analysis.has_phone else 'No' }}</span>
+        </span>
+    </div>
+
+    <div class="row g-4">
+        <!-- ── LEFT: Score + Breakdown ── -->
+        <div class="col-lg-4">
+
+            <!-- Score Circle Card -->
+            <div class="dark-card text-center">
+                <div class="score-wrapper">
+                    <!-- SVG Ring -->
+                    <svg width="160" height="160" viewBox="0 0 160 160" class="score-ring-svg">
+                        <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="12"/>
+                        <circle cx="80" cy="80" r="68" fill="none"
+                                stroke-width="12" stroke-linecap="round"
+                                stroke-dasharray="427.25"
+                                stroke-dashoffset="427.25"
+                                style="transform: rotate(-90deg); transform-origin: 50% 50%;"
+                                class="ring-color"
+                                id="scoreArc"/>
+                        <text x="80" y="75" text-anchor="middle" font-size="36" font-weight="800"
+                              fill="var(--score-color)" font-family="Inter,sans-serif">{{ analysis.score }}</text>
+                        <text x="80" y="97" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.35)"
+                              font-family="Inter,sans-serif">/100</text>
+                    </svg>
+
+                    <div class="grade-badge">{{ analysis.grade }}</div>
+                    <div class="score-label">ATS Compatibility Score</div>
+                </div>
+            </div>
+
+            <!-- Score Breakdown Card -->
+            <div class="dark-card">
+                <div class="card-title-bar">
+                    <div class="icon-wrap" style="background:rgba(99,102,241,0.2);color:#a5b4fc;">
+                        <i class="fa-solid fa-chart-bar"></i>
+                    </div>
+                    Score Breakdown
+                </div>
+
+                {% for cat, data in analysis.breakdown.items() %}
+                <div class="breakdown-row">
+                    <div class="breakdown-label">
+                        <span>{{ cat }}</span>
+                        <span>{{ data.score }}<span style="color:rgba(255,255,255,0.3)">/{{ data.max }}</span></span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill
+                            {% if loop.index == 1 %}bar-sections
+                            {% elif loop.index == 2 %}bar-contact
+                            {% elif loop.index == 3 %}bar-length
+                            {% elif loop.index == 4 %}bar-keywords
+                            {% else %}bar-skills{% endif %}"
+                            data-pct="{{ data.pct }}">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- JD Matching CTA -->
+            <div class="dark-card" style="border-color: rgba(99,102,241,0.3); background: linear-gradient(135deg, #1a1d2e, #1e1a40);">
+                <div class="card-title-bar">
+                    <div class="icon-wrap" style="background:rgba(99,102,241,0.2);color:#a5b4fc;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    Job Description Matching
+                </div>
+                <p style="font-size:0.83rem; color:rgba(255,255,255,0.5); line-height:1.6; margin-bottom:1rem;">
+                    Want to see how your resume matches a specific job? Upload a job description to get targeted skill gap analysis.
+                </p>
+                <a href="/dashboard" style="display:inline-flex; align-items:center; gap:7px; color:#a5b4fc; font-weight:600; font-size:0.85rem; text-decoration:none;">
+                    Try JD Matching <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- ── RIGHT: Sections + Suggestions ── -->
+        <div class="col-lg-8">
+
+            <!-- Sections Detected -->
+            <div class="dark-card">
+                <div class="card-title-bar">
+                    <div class="icon-wrap" style="background:rgba(16,185,129,0.15);color:#6ee7b7;">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    Sections Detected
+                    <span style="font-weight:400; font-size:0.8rem; color:rgba(255,255,255,0.3); margin-left:auto;">
+                        {{ analysis.sections_found|length }} found · {{ analysis.sections_missing|length }} missing
+                    </span>
+                </div>
+                <div>
+                    {% for sec in analysis.sections_found %}
+                    <span class="section-pill pill-found">
+                        <i class="fa-solid fa-circle-check" style="font-size:0.7rem;"></i> {{ sec }}
+                    </span>
+                    {% endfor %}
+                    {% for sec in analysis.sections_missing %}
+                    <span class="section-pill pill-missing">
+                        <i class="fa-solid fa-circle-xmark" style="font-size:0.7rem;"></i> {{ sec }}
+                    </span>
+                    {% endfor %}
+                    {% if not analysis.sections_found and not analysis.sections_missing %}
+                    <span style="color:rgba(255,255,255,0.35); font-size:0.85rem;">No sections detected.</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Improvement Suggestions -->
+            <div class="dark-card">
+                <div class="card-title-bar">
+                    <div class="icon-wrap" style="background:rgba(245,158,11,0.15);color:#fcd34d;">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    Improvement Suggestions
+                    <span class="ms-auto" style="font-size:0.8rem; font-weight:400; color:rgba(255,255,255,0.3);">
+                        {{ analysis.suggestions|length }} tip{{ 's' if analysis.suggestions|length != 1 else '' }}
+                    </span>
+                </div>
+
+                {% if analysis.suggestions %}
+                    {% for sug in analysis.suggestions %}
+                    <div class="suggestion-card">
+                        <div class="sug-icon sug-{{ sug.color }}">
+                            <i class="{{ sug.icon }}"></i>
+                        </div>
+                        <div>
+                            <div class="sug-title">{{ sug.title }}</div>
+                            <div class="sug-detail">{{ sug.detail | safe }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-suggestions">
+                        <i class="fa-solid fa-circle-check fa-2x mb-3" style="color:#10b981;display:block;"></i>
+                        <strong style="color:#6ee7b7;">Excellent!</strong><br>
+                        Your resume follows all major ATS best practices. Great job!
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ── Hidden download form ── -->
+<form id="downloadForm" action="/download-ats-report" method="POST">
+    <input type="hidden" name="filename"   value="{{ filename }}">
+    <input type="hidden" name="score"      value="{{ analysis.score }}">
+    <input type="hidden" name="grade"      value="{{ analysis.grade }}">
+    <input type="hidden" name="word_count" value="{{ analysis.word_count }}">
+    {% for s in analysis.sections_found %}
+    <input type="hidden" name="sections_found" value="{{ s }}">
+    {% endfor %}
+    {% for s in analysis.sections_missing %}
+    <input type="hidden" name="sections_missing" value="{{ s }}">
+    {% endfor %}
+    {% for sug in analysis.suggestions %}
+    <input type="hidden" name="suggestion_title"  value="{{ sug.title }}">
+    <input type="hidden" name="suggestion_detail" value="{{ sug.detail }}">
+    {% endfor %}
+</form>
+
+<script>
+    // Animate the score ring on load
+    document.addEventListener('DOMContentLoaded', () => {
+        const score = {{ analysis.score }};
+        const circumference = 427.25;
+        const arc = document.getElementById('scoreArc');
+        const offset = circumference - (score / 100) * circumference;
+        setTimeout(() => { arc.style.strokeDashoffset = offset; }, 100);
+
+        // Animate progress bars
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const pct = bar.getAttribute('data-pct');
+            setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+        });
+    });
+
+    function submitDownload() {
+        document.getElementById('downloadForm').submit();
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

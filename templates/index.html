@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Resume Builder Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="form-panel">
+                <h1>Resume Builder & ATS Analyzer</h1>
+                <p class="subtitle">Create a professional resume instantly</p>
+                <p class="subtitle muted">Or <a href="/upload"
+                        style="color:var(--accent-2); text-decoration:underline;">upload your existing PDF resume</a>
+                    for ATS analysis — or <a href="/match"
+                        style="color:var(--accent-2); text-decoration:underline;">match with a job description</a></p>
+
+                <form action="/preview" method="post" target="_blank">
+                    <div class="input-group">
+                        <input id="name" type="text" name="name" placeholder="Full Name" required>
+                        <input id="email" type="email" name="email" placeholder="Email Address" required>
+                        <input id="phone" type="text" name="phone" placeholder="Phone Number" required>
+                    </div>
+
+                    <div class="input-group">
+                        <input id="linkedin" type="url" name="linkedin" placeholder="LinkedIn URL (optional)">
+                        <input id="github" type="url" name="github" placeholder="GitHub URL (optional)">
+                    </div>
+
+                    <div class="input-group">
+                        <input id="languages" type="text" name="languages"
+                            placeholder="Languages (comma separated, e.g. English, Hindi)">
+                    </div>
+
+                    <textarea id="experience" name="experience" placeholder="Work Experience Details"></textarea>
+                    
+                    <div style="margin-bottom: 12px; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: #64748b; font-size: 0.9rem;">Certifications</strong>
+                            <button type="button" onclick="addIndexCertRow()" style="padding: 2px 8px; width: auto; margin: 0; font-size: 0.8rem; background: #f1f5f9; color: #3b82f6; border: 1px solid #cbd5e1;">+ Add</button>
+                        </div>
+                        <div id="indexCertsContainer">
+                            <div class="index-cert-row" style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1;">
+                                <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+                                    <input type="text" name="cert_name[]" placeholder="Cert Name" style="margin: 0; flex: 2;" required>
+                                    <input type="text" name="cert_year[]" placeholder="Year" style="margin: 0; flex: 1;">
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" name="cert_org[]" placeholder="Organization" style="margin: 0; flex: 1;">
+                                    <input type="text" name="cert_link[]" placeholder="Link (URL)" style="margin: 0; flex: 1;">
+                                    <button type="button" onclick="this.parentElement.parentElement.remove(); updatePreview();" style="width: auto; padding: 4px 8px; margin: 0; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px;">X</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <textarea id="education" name="education" placeholder="Education Details" required></textarea>
+                    <textarea id="skills" name="skills" placeholder="Skills (Example: Python, SQL, HTML)"
+                        required></textarea>
+                    <textarea id="projects" name="projects" placeholder="Projects Description" required></textarea>
+                    
+                    <select name="template_id" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit;">
+                        <option value="modern">Modern Professional (Blue)</option>
+                        <option value="classic">Simple ATS (Black & White)</option>
+                        <option value="tech">Developer (Terminal Green)</option>
+                        <option value="creative">Creative (Purple)</option>
+                    </select>
+
+                    <button type="submit">Generate PDF Resume</button>
+                </form>
+            </div>
+            <div class="preview-panel">
+                <h3>Preview</h3>
+                <p class="muted">Live preview — updates as you type.</p>
+                <div class="preview-field">
+                    <h2 id="pv-name">Your Name</h2>
+                    <div id="pv-contact" class="muted">email | phone</div>
+                    <div id="pv-links" style="margin-top:8px"></div>
+                    <div style="margin-top:12px">
+                        <strong>Experience</strong>
+                        <div id="pv-experience" style="margin-top:6px;color:#0f172a">—</div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <strong>Education</strong>
+                        <div id="pv-education" style="margin-top:6px;color:#0f172a">—</div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <strong>Certifications</strong>
+                        <div id="pv-certifications" style="margin-top:6px;color:#0f172a">—</div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <strong>Skills</strong>
+                        <div id="pv-skills" style="margin-top:6px;color:#0f172a">—</div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <strong>Projects</strong>
+                        <div id="pv-projects" style="margin-top:6px;color:#0f172a">—</div>
+                    </div>
+                    <div style="margin-top:12px" id="pv-languages-container">
+                        <strong>Languages</strong>
+                        <div id="pv-languages" class="languages"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Live preview script
+        function setText(id, value, placeholder) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = value && value.trim() ? value : (placeholder || '');
+        }
+
+        function updatePreview() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const linkedin = document.getElementById('linkedin').value;
+            const github = document.getElementById('github').value;
+            const languages = document.getElementById('languages').value;
+            const experience = document.getElementById('experience').value;
+            const education = document.getElementById('education').value;
+            const skills = document.getElementById('skills').value;
+            const projects = document.getElementById('projects').value;
+
+            setText('pv-name', name, 'Your Name');
+            const contactParts = [];
+            if (email) contactParts.push(email);
+            if (phone) contactParts.push(phone);
+            setText('pv-contact', contactParts.join(' | '), '');
+
+            const linksEl = document.getElementById('pv-links');
+            linksEl.innerHTML = '';
+            if (linkedin) {
+                const a = document.createElement('a');
+                a.href = linkedin;
+                a.target = '_blank';
+                a.textContent = 'LinkedIn';
+                a.style.marginRight = '10px';
+                linksEl.appendChild(a);
+            }
+            if (github) {
+                const a = document.createElement('a');
+                a.href = github;
+                a.target = '_blank';
+                a.textContent = 'GitHub';
+                linksEl.appendChild(a);
+            }
+
+            setText('pv-experience', experience, '—');
+            setText('pv-education', education, '—');
+            setText('pv-skills', skills, '—');
+            setText('pv-projects', projects, '—');
+            
+            // Certifications Preview
+            const certNames = document.getElementsByName('cert_name[]');
+            const certOrgas = document.getElementsByName('cert_org[]');
+            const certYears = document.getElementsByName('cert_year[]');
+            let certsText = [];
+            for (let i = 0; i < certNames.length; i++) {
+                if (certNames[i].value.trim()) {
+                    let text = certNames[i].value.trim();
+                    if (certOrgas[i].value.trim()) text += ` - ${certOrgas[i].value.trim()}`;
+                    if (certYears[i].value.trim()) text += ` (${certYears[i].value.trim()})`;
+                    certsText.push(text);
+                }
+            }
+            setText('pv-certifications', certsText.join(', '), '—');
+
+            const langsEl = document.getElementById('pv-languages');
+            langsEl.innerHTML = '';
+            if (languages && languages.trim()) {
+                const parts = languages.split(',').map(s => s.trim()).filter(Boolean);
+                parts.forEach(p => {
+                    const span = document.createElement('span');
+                    span.className = 'lang-pill';
+                    span.textContent = p;
+                    langsEl.appendChild(span);
+                });
+            }
+        }
+
+        ['name', 'email', 'phone', 'linkedin', 'github', 'languages', 'experience', 'education', 'skills', 'projects'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', updatePreview);
+        });
+
+        // Add event listeners to initial cert inputs
+        document.querySelectorAll('#indexCertsContainer input').forEach(el => {
+            el.addEventListener('input', updatePreview);
+        });
+
+        function addIndexCertRow() {
+            const container = document.getElementById('indexCertsContainer');
+            const row = document.createElement('div');
+            row.className = 'index-cert-row';
+            row.style.marginBottom = '8px';
+            row.style.paddingBottom = '8px';
+            row.style.borderBottom = '1px dashed #cbd5e1';
+            row.innerHTML = `
+                <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+                    <input type="text" name="cert_name[]" placeholder="Cert Name" style="margin: 0; flex: 2;" required>
+                    <input type="text" name="cert_year[]" placeholder="Year" style="margin: 0; flex: 1;">
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="cert_org[]" placeholder="Organization" style="margin: 0; flex: 1;">
+                    <input type="text" name="cert_link[]" placeholder="Link (URL)" style="margin: 0; flex: 1;">
+                    <button type="button" onclick="this.parentElement.parentElement.remove(); updatePreview();" style="width: auto; padding: 4px 8px; margin: 0; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px;">X</button>
+                </div>
+            `;
+            container.appendChild(row);
+            row.querySelectorAll('input').forEach(el => el.addEventListener('input', updatePreview));
+            updatePreview();
+        }
+
+        // initialize preview with empty or default values
+        updatePreview();
+    </script>
+
+</body>
+
+</html>

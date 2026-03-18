@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Analyzer – Upload Your Resume</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 640px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.3rem 0.9rem;
+            border-radius: 50rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.1rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.97rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(99,102,241,0.55);
+            border-radius: 16px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(99,102,241,0.05);
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: #6366f1;
+            background: rgba(99,102,241,0.12);
+            transform: translateY(-2px);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.6rem;
+            color: white;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+        }
+
+        .drop-text-primary {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .drop-text-muted {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+        }
+
+        .file-selected-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.35);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin-top: 1rem;
+            color: #6ee7b7;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .features-row {
+            display: flex;
+            gap: 0.75rem;
+            margin: 1.8rem 0;
+            flex-wrap: wrap;
+        }
+
+        .feature-chip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.65);
+            font-weight: 500;
+        }
+
+        .feature-chip i { color: #818cf8; font-size: 0.75rem; }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-analyze:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99,102,241,0.5);
+        }
+
+        .btn-analyze:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .spinner-ring {
+            display: none;
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.4);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+            margin: 0 0.75rem;
+        }
+
+        .nav-links a:hover { color: #a5b4fc; }
+
+        .alert-error {
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(220, 38, 38, 0.35);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            color: #fca5a5;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <div class="badge-pill">
+        <i class="fa-solid fa-robot"></i> ATS Resume Analyzer
+    </div>
+
+    <h1>Analyze Your Resume <br>For ATS Score</h1>
+    <p class="subtitle">Upload your existing resume PDF and instantly get a detailed ATS compatibility score — no job description needed.</p>
+
+    {% if error %}
+    <div class="alert-error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+        <div class="drop-zone" id="dropZone">
+            <input type="file" name="file" accept="application/pdf" id="fileInput" required>
+            <div class="drop-icon">
+                <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <p class="drop-text-primary">Drag & drop your PDF here</p>
+            <p class="drop-text-muted">or click anywhere in this box to browse</p>
+        </div>
+
+        <div class="file-selected-indicator" id="fileIndicator">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="fileNameDisplay">file.pdf</span>
+        </div>
+
+        <div class="features-row">
+            <div class="feature-chip"><i class="fa-solid fa-check-circle"></i> Section Detection</div>
+            <div class="feature-chip"><i class="fa-solid fa-check-circle"></i> Keyword Analysis</div>
+            <div class="feature-chip"><i class="fa-solid fa-check-circle"></i> ATS Score 0–100</div>
+            <div class="feature-chip"><i class="fa-solid fa-check-circle"></i> Improvement Tips</div>
+        </div>
+
+        <button type="submit" class="btn-analyze" id="analyzeBtn" disabled>
+            <div class="spinner-ring" id="spinner"></div>
+            <i class="fa-solid fa-magnifying-glass-chart" id="btnIcon"></i>
+            <span id="btnText">Select a PDF to Analyze</span>
+        </button>
+    </form>
+
+    <div class="nav-links">
+        <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="/dashboard"><i class="fa-solid fa-wand-magic-sparkles"></i> JD Matching</a>
+    </div>
+</div>
+
+<script>
+    const fileInput  = document.getElementById('fileInput');
+    const dropZone   = document.getElementById('dropZone');
+    const indicator  = document.getElementById('fileIndicator');
+    const nameSpan   = document.getElementById('fileNameDisplay');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const btnText    = document.getElementById('btnText');
+    const btnIcon    = document.getElementById('btnIcon');
+    const spinner    = document.getElementById('spinner');
+    const form       = document.getElementById('uploadForm');
+
+    function onFileSelected(file) {
+        if (!file) return;
+        nameSpan.textContent = file.name;
+        indicator.style.display = 'flex';
+        analyzeBtn.disabled = false;
+        btnText.textContent = 'Analyze Resume';
+    }
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) onFileSelected(fileInput.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) {
+            fileInput.files = e.dataTransfer.files;
+            onFileSelected(e.dataTransfer.files[0]);
+        }
+    });
+
+    form.addEventListener('submit', () => {
+        btnIcon.style.display = 'none';
+        spinner.style.display = 'block';
+        analyzeBtn.disabled = true;
+        btnText.textContent = 'Analyzing…';
+    });
+</script>
+</body>
+</html>

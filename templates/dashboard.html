@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Match Dashboard – Resume Builder ATS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d2e;
+            --surface2: #1e2235;
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #e2e8f0;
+            --muted: rgba(255, 255, 255, 0.45);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* ══════════════════════════════════
+           UPLOAD FORM STATE
+        ══════════════════════════════════ */
+        .upload-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 55%, #24243e 100%);
+            padding: 2rem 1rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.9rem;
+            border-radius: 50rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.1rem;
+        }
+
+        .upload-title {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1.25;
+        }
+
+        .upload-sub {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .form-label-custom {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.45rem;
+            display: block;
+        }
+
+        .form-control-dark {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control-dark::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-control-dark:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(99, 102, 241, 0.04);
+            transition: all 0.25s;
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-text {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+        }
+
+        .file-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            color: #6ee7b7;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-analyze:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner-ring {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert-err {
+            background: rgba(220, 38, 38, 0.12);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            color: #fca5a5;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.25rem;
+        }
+
+        .nav-foot {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .nav-foot a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.83rem;
+            margin: 0 0.6rem;
+            transition: color .2s;
+        }
+
+        .nav-foot a:hover {
+            color: #a5b4fc;
+        }
+
+        /* ══════════════════════════════════
+           RESULTS DASHBOARD STATE
+        ══════════════════════════════════ */
+        .dash-header {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%);
+            padding: 2.5rem 0 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .dash-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-hdr {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 1.1rem;
+        }
+
+        .card-hdr .ic {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* Score ring */
+        .score-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .grade-pill {
+            display: inline-block;
+            padding: 0.3rem 0.9rem;
+            border-radius: 50rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        /* Bar */
+        .seg-row {
+            margin-bottom: 0.85rem;
+        }
+
+        .seg-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .bar-track {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 50rem;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 50rem;
+            width: 0%;
+            transition: width 1.1s ease;
+        }
+
+        /* Tags / pills */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.32rem 0.75rem;
+            border-radius: 50rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        .tag-lang {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+        }
+
+        .tag-fw {
+            background: rgba(236, 72, 153, 0.12);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            color: #f9a8d4;
+        }
+
+        .tag-tool {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fcd34d;
+        }
+
+        .tag-know {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .tag-cert {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .tag-match {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Detail cards (structure / achievement / gap / project) */
+        .detail-item {
+            display: flex;
+            gap: 0.9rem;
+            align-items: flex-start;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 0.7rem;
+            transition: border-color 0.2s;
+        }
+
+        .detail-item:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .det-ic {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .det-title {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .det-body {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .det-body strong {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .det-body em {
+            color: #a5b4fc;
+            font-style: normal;
+        }
+
+        /* Editor card */
+        .editor-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .editor-ctrl {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.87rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .editor-ctrl-sm {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .editor-ctrl:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-dl {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px var(--primary-glow);
+            text-decoration: none;
+        }
+
+        .btn-dl:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(99, 102, 241, 0.5);
+            color: white;
+        }
+
+        .btn-prev {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 0.63rem 1.15rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .select-dark {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: #fff;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.87rem;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .select-dark option {
+            background: #1a1d2e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 1.5rem 0;
+        }
+
+        .match-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .match-chip i {
+            color: var(--primary);
+        }
+
+        .match-chip .val {
+            color: #fff;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    {% if not report %}
+    <!-- ╔══════════════════════════════ UPLOAD FORM ══════════════════════════════╗ -->
+    <div class="upload-wrapper">
+        <div class="glass-card">
+            <div class="feature-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> JD Match Analyzer
+            </div>
+            <h1 class="upload-title">Resume × Job Description<br>Deep Match Analysis</h1>
+            <p class="upload-sub">
+                Upload your resume and paste a job description to get targeted skill gap analysis,
+                improvement suggestions across 6 categories, and a download-ready tailored resume.
+            </p>
+
+            {% if error %}
+            <div class="alert-err">
+                <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/dashboard" method="post" enctype="multipart/form-data" id="dashForm">
+
+                <div class="mb-3">
+                    <label class="form-label-custom">
+                        <i class="fa-solid fa-briefcase" style="color:#a5b4fc;"></i> Job Description <span
+                            style="color:#ef4444;">*</span>
+                    </label>
+                    <div class="row g-2">
+                        <div class="col-md-7">
+                            <textarea class="form-control-dark" name="job_description" rows="5"
+                                placeholder="Paste the full job description here..."></textarea>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="drop-zone" id="jdDropZone"
+                                style="height:100%; display:flex; flex-direction:column; justify-content:center; padding:1rem;">
+                                <input type="file" name="jd_file" accept=".txt,.pdf" id="jdFileInput">
+                                <i class="fa-solid fa-file-lines"
+                                    style="font-size:1.2rem;color:#a5b4fc;margin-bottom:0.5rem;"></i>
+                                <p class="drop-text mb-0" style="font-size:0.75rem;">Or upload JD (.pdf, .txt)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="file-indicator" id="jdFileIndicator" style="margin-top:0.5rem; display:none;">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="jdFileName">jd.pdf</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom">
+                        <i class="fa-regular fa-file-pdf" style="color:#f9a8d4;"></i> Upload Resume PDF
+                    </label>
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" name="resume_file" accept=".pdf" id="fileInput">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.4rem;color:#a5b4fc;"></i>
+                        <p class="drop-text mb-0">Drag & drop PDF, or click to browse</p>
+                    </div>
+                    <div class="file-indicator" id="fileIndicator">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="fileName">file.pdf</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom">
+                        <i class="fa-solid fa-align-left" style="color:#fcd34d;"></i> Or Paste Resume Text
+                    </label>
+                    <textarea class="form-control-dark" name="resume_text" rows="4"
+                        placeholder="If not uploading a PDF, paste your resume text here..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-analyze" id="analyzeBtn">
+                    <div class="spinner-ring" id="spinner"></div>
+                    <i class="fa-solid fa-magnifying-glass-chart" id="btnIcon"></i>
+                    <span id="btnText">Analyze Match & Generate Suggestions</span>
+                </button>
+            </form>
+
+            <div class="nav-foot">
+                <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/upload"><i class="fa-solid fa-robot"></i> ATS Score Only</a>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- ╔══════════════════════════════ RESULTS DASHBOARD ══════════════════════════════╗ -->
+
+    <!-- Header -->
+    <div class="dash-header">
+        <div class="container text-center">
+            <div class="feature-badge mx-auto mb-2">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Analysis Complete
+            </div>
+            <h2 class="fw-bold mb-1" style="color:#fff; font-size:1.65rem;">Resume × Job Description Results</h2>
+            <p style="color:rgba(255,255,255,0.45); font-size:0.92rem; margin:0;">
+                Review gaps below, edit your resume on the right, then download a tailored PDF.
+            </p>
+        </div>
+    </div>
+
+    <div class="container-fluid px-3 px-lg-5 pb-5">
+
+        <!-- Action bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-2 gap-2">
+            <div>
+                <a href="/dashboard" class="btn-prev me-2"><i class="fa-solid fa-arrow-left"></i> New Analysis</a>
+                <a href="/upload" class="btn-prev"><i class="fa-solid fa-robot"></i> ATS Score</a>
+            </div>
+            <div class="match-chip"><i class="fa-solid fa-bullseye"></i> JD Match: <span class="val">{{ score }}%</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- ════ LEFT: Analysis Report (7 cols) ════ -->
+            <div class="col-lg-7">
+
+                <!-- ── Score + Stats ── -->
+                <div class="dash-card">
+                    <div class="row align-items-center g-3">
+                        <!-- Ring -->
+                        <div class="col-md-4 text-center">
+                            <div class="score-wrapper">
+                                {% set sc = score %}
+                                {% if sc >= 70 %}{% set ring_col = '#10b981' %}{% set grade = 'Strong Match' %}{% set
+                                pill_cls = 'background:rgba(16,185,129,0.2);border:1px solid
+                                rgba(16,185,129,0.4);color:#6ee7b7;' %}
+                                {% elif sc >= 45 %}{% set ring_col = '#f59e0b' %}{% set grade = 'Partial Match' %}{% set
+                                pill_cls = 'background:rgba(245,158,11,0.2);border:1px solid
+                                rgba(245,158,11,0.4);color:#fcd34d;' %}
+                                {% else %}{% set ring_col = '#ef4444' %}{% set grade = 'Low Match' %}{% set pill_cls =
+                                'background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;' %}
+                                {% endif %}
+
+                                <svg width="130" height="130" viewBox="0 0 130 130">
+                                    <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.07)"
+                                        stroke-width="11" />
+                                    <circle cx="65" cy="65" r="54" fill="none" stroke="{{ ring_col }}" stroke-width="11"
+                                        stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3"
+                                        style="transform:rotate(-90deg);transform-origin:50% 50%;" id="scoreArc" />
+                                    <text x="65" y="61" text-anchor="middle" font-size="30" font-weight="800"
+                                        fill="{{ ring_col }}" font-family="Inter,sans-serif">{{ score }}</text>
+                                    <text x="65" y="77" text-anchor="middle" font-size="11"
+                                        fill="rgba(255,255,255,0.35)" font-family="Inter,sans-serif">/100</text>
+                                </svg>
+                                <span class="grade-pill" style="{{ pill_cls }}">{{ grade }}</span>
+                            </div>
+                        </div>
+                        <!-- Stats chips -->
+                        <div class="col-md-8">
+                            <div class="row g-2 text-center">
+                                <div class="col-6">
+                                    <div
+                                        style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
+                                        <div style="font-size:1.4rem;font-weight:800;color:#a5b4fc;">{{
+                                            report.programming_languages|length + report.frameworks_and_libs|length }}
+                                        </div>
+                                        <div style="font-size:0.75rem;color:var(--muted);">Skills to Add</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div
+                                        style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
+                                        <div style="font-size:1.4rem;font-weight:800;color:#fcd34d;">{{
+                                            report.tools_and_infra|length }}</div>
+                                        <div style="font-size:0.75rem;color:var(--muted);">Tools/Infra Gaps</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div
+                                        style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
+                                        <div style="font-size:1.4rem;font-weight:800;color:#93c5fd;">{{
+                                            report.knowledge_areas|length }}</div>
+                                        <div style="font-size:0.75rem;color:var(--muted);">Knowledge Gaps</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div
+                                        style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
+                                        <div style="font-size:1.4rem;font-weight:800;color:#6ee7b7;">{{
+                                            report.matched_skills|length }}</div>
+                                        <div style="font-size:0.75rem;color:var(--muted);">Matched Skills</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── 1. Programming Languages ── -->
+                {% if report.programming_languages %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><i
+                                class="fa-solid fa-code"></i></div>
+                        Programming Languages to Learn
+                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
+                            report.programming_languages|length }} missing from resume</span>
+                    </div>
+                    <div>
+                        {% for lang in report.programming_languages %}
+                        <span class="tag tag-lang"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
+                            lang }}</span>
+                        {% endfor %}
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
+                        These languages appear in the job description but are not detected in your resume. Add them to
+                        your Skills section if you know them, or prioritize learning those most relevant to the role.
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- ── 2. Frameworks & Libraries ── -->
+                {% if report.frameworks_and_libs %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(236,72,153,0.12);color:#f9a8d4;"><i
+                                class="fa-solid fa-layer-group"></i></div>
+                        Frameworks & Libraries
+                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
+                            report.frameworks_and_libs|length }} gaps found</span>
+                    </div>
+                    <div>
+                        {% for fw in report.frameworks_and_libs %}
+                        <span class="tag tag-fw"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
+                            fw }}</span>
+                        {% endfor %}
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
+                        The job description specifically mentions these frameworks. Highlight existing experience, or
+                        build small demo projects to demonstrate familiarity.
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- ── 3. Tools & Infrastructure ── -->
+                {% if report.tools_and_infra %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(245,158,11,0.12);color:#fcd34d;"><i
+                                class="fa-solid fa-wrench"></i></div>
+                        Tools, Platforms & Infrastructure
+                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
+                            report.tools_and_infra|length }} gaps</span>
+                    </div>
+                    <div>
+                        {% for t in report.tools_and_infra %}
+                        <span class="tag tag-tool"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
+                            t }}</span>
+                        {% endfor %}
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
+                        These tools and platforms are expected by the employer. Add any you have used to your Skills or
+                        Experience sections.
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- ── 4. Knowledge Areas ── -->
+                {% if report.knowledge_areas %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(59,130,246,0.12);color:#93c5fd;"><i
+                                class="fa-solid fa-brain"></i></div>
+                        Knowledge Areas & Concepts
+                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
+                            report.knowledge_areas|length }} concepts</span>
+                    </div>
+                    <div>
+                        {% for k in report.knowledge_areas %}
+                        <span class="tag tag-know"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
+                            k }}</span>
+                        {% endfor %}
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
+                        These methodologies and concept areas are required for the role. Reference them in your
+                        experience bullets or add a dedicated section.
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- ── 5. Resume Structure Improvements ── -->
+                {% if report.resume_structure %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(239,68,68,0.12);color:#fca5a5;"><i
+                                class="fa-solid fa-file-circle-exclamation"></i></div>
+                        Resume Structure Improvements
+                    </div>
+                    {% for tip in report.resume_structure %}
+                    <div class="detail-item">
+                        <div class="det-ic" style="background:rgba(239,68,68,0.12);color:#fca5a5;"><i
+                                class="fa-solid fa-circle-exclamation"></i></div>
+                        <div class="det-body">{{ tip | safe }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- ── 6. Measurable Achievements ── -->
+                {% if report.measurable_achievements %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
+                                class="fa-solid fa-chart-line"></i></div>
+                        Measurable Achievements
+                    </div>
+                    {% for tip in report.measurable_achievements %}
+                    <div class="detail-item">
+                        <div class="det-ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
+                                class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="det-body">{{ tip | safe }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- ── 7. Experience Gaps ── -->
+                {% if report.experience_gaps %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(139,92,246,0.15);color:#c4b5fd;"><i
+                                class="fa-solid fa-user-tie"></i></div>
+                        Missing Experience Areas
+                    </div>
+                    {% for gap in report.experience_gaps %}
+                    <div class="detail-item">
+                        <div class="det-ic" style="background:rgba(139,92,246,0.15);color:#c4b5fd;"><i
+                                class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="det-body">{{ gap | safe }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- ── 8. Suggested Projects ── -->
+                {% if report.suggested_projects %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><i
+                                class="fa-solid fa-lightbulb"></i></div>
+                        Recommended Projects to Build
+                    </div>
+                    {% for proj in report.suggested_projects %}
+                    <div class="detail-item">
+                        <div class="det-ic" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><i
+                                class="fa-solid fa-code-branch"></i></div>
+                        <div class="det-body">{{ proj }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- ── 9. Certifications ── -->
+                {% if report.certifications %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
+                                class="fa-solid fa-certificate"></i></div>
+                        Certifications That Could Help
+                    </div>
+                    <div>
+                        {% for cert in report.certifications %}
+                        <span class="tag tag-cert"><i class="fa-solid fa-award" style="font-size:0.68rem;"></i>{{ cert
+                            }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ── 10. Already Matched Skills ── -->
+                {% if report.matched_skills %}
+                <div class="dash-card">
+                    <div class="card-hdr">
+                        <div class="ic" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);"><i
+                                class="fa-solid fa-circle-check"></i></div>
+                        Skills Already in Your Resume
+                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">Keep these
+                            visible!</span>
+                    </div>
+                    <div>
+                        {% for sk in report.matched_skills %}
+                        <span class="tag tag-match">✓ {{ sk }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Perfect match message -->
+                {% if not (report.programming_languages or report.frameworks_and_libs or report.tools_and_infra or
+                report.knowledge_areas or report.resume_structure or report.experience_gaps) %}
+                <div class="dash-card text-center py-4" style="border-color:rgba(16,185,129,0.35);">
+                    <i class="fa-solid fa-trophy fa-2x mb-3" style="color:#fcd34d;display:block;"></i>
+                    <h5 style="color:#6ee7b7;font-weight:700;">Excellent Match!</h5>
+                    <p style="color:var(--muted);font-size:0.88rem;margin:0;">
+                        Your resume is well-aligned with this job description. Focus on tailoring your summary and
+                        quantifying achievements.
+                    </p>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- ════ RIGHT: Resume Editor + Download (5 cols) ════ -->
+            <div class="col-lg-5">
+                <div class="dash-card" style="position:sticky;top:1.5rem;">
+                    <div class="card-hdr mb-2">
+                        <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
+                                class="fa-solid fa-pen-to-square"></i></div>
+                        Edit & Download Updated Resume
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1.2rem;">
+                        Apply the suggestions on the left, then choose a template and download your updated PDF.
+                    </p>
+
+                    <form action="/download" method="post" id="resumeForm">
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-12">
+                                <label class="editor-label">Full Name</label>
+                                <input type="text" class="editor-ctrl" name="name" value="{{ name }}"
+                                    placeholder="Your Name">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">Email</label>
+                                <input type="email" class="editor-ctrl" name="email" value="{{ email }}"
+                                    placeholder="email@example.com">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">Phone</label>
+                                <input type="text" class="editor-ctrl" name="phone" value="{{ phone }}"
+                                    placeholder="+1 234 567 8900">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">LinkedIn (optional)</label>
+                                <input type="text" class="editor-ctrl" name="linkedin"
+                                    placeholder="linkedin.com/in/you">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">GitHub (optional)</label>
+                                <input type="text" class="editor-ctrl" name="github" placeholder="github.com/you">
+                            </div>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <div class="mb-2">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-briefcase" style="color:#a5b4fc;font-size:0.75rem;"></i>
+                                Experience
+                                <span style="color:var(--muted);font-size:0.75rem;font-weight:400;"> — add metrics &
+                                    missing tools here</span>
+                            </label>
+                            <textarea class="editor-ctrl" name="experience" rows="5">{{ experience }}</textarea>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-code" style="color:#fcd34d;font-size:0.75rem;"></i> Skills
+                                <span style="color:var(--muted);font-size:0.75rem;font-weight:400;"> — add the missing
+                                    tags from analysis</span>
+                            </label>
+                            <textarea class="editor-ctrl" name="skills" rows="3">{{ skills }}</textarea>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-diagram-project" style="color:#f9a8d4;font-size:0.75rem;"></i>
+                                Projects
+                            </label>
+                            <textarea class="editor-ctrl" name="projects" rows="4">{{ projects }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-graduation-cap" style="color:#93c5fd;font-size:0.75rem;"></i>
+                                Education
+                            </label>
+                            <textarea class="editor-ctrl" name="education" rows="2">{{ education }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="editor-label mb-0">
+                                    <i class="fa-solid fa-award" style="color:#6ee7b7;font-size:0.75rem;"></i>
+                                    Certifications
+                                </label>
+                                <button type="button" class="btn btn-sm py-0"
+                                    style="color:#a5b4fc; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); font-size:0.75rem;"
+                                    onclick="addCertRow()">+ Add</button>
+                            </div>
+                            <div id="certsContainer">
+                                <!-- Initial cert row -->
+                                <div class="cert-row mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-7"><input type="text" class="editor-ctrl editor-ctrl-sm"
+                                                name="cert_name[]"
+                                                placeholder="Cert Name (e.g. AWS Solutions Architect)"></div>
+                                        <div class="col-5"><input type="text" class="editor-ctrl editor-ctrl-sm"
+                                                name="cert_year[]" placeholder="Year"></div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm"
+                                                name="cert_org[]" placeholder="Organization (e.g. Amazon)"></div>
+                                        <div class="col-6 position-relative">
+                                            <input type="text" class="editor-ctrl editor-ctrl-sm pe-4"
+                                                name="cert_link[]" placeholder="Link URL (optional)">
+                                            <button type="button"
+                                                class="btn-close btn-close-white position-absolute end-0 top-50 translate-middle-y me-2"
+                                                style="width:0.5rem;height:0.5rem;"
+                                                onclick="this.closest('.cert-row').remove()"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="editor-label">Languages Spoken (optional)</label>
+                            <input type="text" class="editor-ctrl" name="languages" placeholder="English, Spanish...">
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <div class="mb-3">
+                            <label class="editor-label">PDF Template</label>
+                            <select class="select-dark" name="template_id">
+                                <option value="modern">Modern Professional (Blue)</option>
+                                <option value="classic">Simple ATS (Black & White)</option>
+                                <option value="tech">Developer (Terminal Green)</option>
+                                <option value="creative">Creative (Purple)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn-prev flex-fill" onclick="previewResume()">
+                                <i class="fa-solid fa-eye"></i> Preview
+                            </button>
+                            <button type="submit" class="btn-dl flex-fill">
+                                <i class="fa-solid fa-file-pdf"></i> Download PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div><!-- /row -->
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ── Upload form helpers ──────────────────────────────
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const indicator = document.getElementById('fileIndicator');
+        const fileNameEl = document.getElementById('fileName');
+
+        const jdFileInput = document.getElementById('jdFileInput');
+        const jdDropZone = document.getElementById('jdDropZone');
+        const jdIndicator = document.getElementById('jdFileIndicator');
+        const jdFileName = document.getElementById('jdFileName');
+
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const spinner = document.getElementById('spinner');
+        const dashForm = document.getElementById('dashForm');
+
+        // Resume Upload handlers
+        if (fileInput) {
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files[0]) {
+                    fileNameEl.textContent = fileInput.files[0].name;
+                    indicator.style.display = 'flex';
+                }
+            });
+        }
+        if (dropZone) {
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault(); dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileNameEl.textContent = e.dataTransfer.files[0].name;
+                    indicator.style.display = 'flex';
+                }
+            });
+        }
+
+        // JD Upload handlers
+        if (jdFileInput) {
+            jdFileInput.addEventListener('change', () => {
+                if (jdFileInput.files[0]) {
+                    jdFileName.textContent = jdFileInput.files[0].name;
+                    jdIndicator.style.display = 'flex';
+                }
+            });
+        }
+        if (jdDropZone) {
+            jdDropZone.addEventListener('dragover', e => { e.preventDefault(); jdDropZone.classList.add('dragover'); });
+            jdDropZone.addEventListener('dragleave', () => jdDropZone.classList.remove('dragover'));
+            jdDropZone.addEventListener('drop', e => {
+                e.preventDefault(); jdDropZone.classList.remove('dragover');
+                if (e.dataTransfer.files[0]) {
+                    jdFileInput.files = e.dataTransfer.files;
+                    jdFileName.textContent = e.dataTransfer.files[0].name;
+                    jdIndicator.style.display = 'flex';
+                }
+            });
+        }
+
+        if (dashForm) {
+            dashForm.addEventListener('submit', () => {
+                if (btnIcon) btnIcon.style.display = 'none';
+                if (spinner) spinner.style.display = 'block';
+                if (analyzeBtn) analyzeBtn.disabled = true;
+                if (btnText) btnText.textContent = 'Analyzing…';
+            });
+        }
+
+        // ── Results page animations ─────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const arc = document.getElementById('scoreArc');
+            if (arc) {
+                const score = {{ score if report else 0 }
+            };
+            const circumference = 339.3;
+            const offset = circumference - (score / 100) * circumference;
+            setTimeout(() => { arc.style.strokeDashoffset = offset; }, 150);
+        }
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const pct = bar.getAttribute('data-pct');
+            if (pct) setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+        });
+    });
+
+        // ── Resume preview ──────────────────────────────────
+        function previewResume() {
+            const form = document.getElementById('resumeForm');
+            const orig = form.action;
+            form.action = '/preview';
+            form.target = '_blank';
+            form.submit();
+            form.action = orig;
+            form.target = '';
+        }
+
+        // ── Dynamic Certifications ──────────────────────────
+        function addCertRow() {
+            const container = document.getElementById('certsContainer');
+            const row = document.createElement('div');
+            row.className = 'cert-row mb-2 pb-2';
+            row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            row.innerHTML = `
+            <div class="row g-2 mb-2">
+                <div class="col-7"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_name[]" placeholder="Cert Name"></div>
+                <div class="col-5"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_year[]" placeholder="Year"></div>
+            </div>
+            <div class="row g-2">
+                <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_org[]" placeholder="Organization"></div>
+                <div class="col-6 position-relative">
+                    <input type="text" class="editor-ctrl editor-ctrl-sm pe-4" name="cert_link[]" placeholder="Link URL">
+                    <button type="button" class="btn-close btn-close-white position-absolute end-0 top-50 translate-middle-y me-2" style="width:0.5rem;height:0.5rem;" onclick="this.closest('.cert-row').remove()"></button>
+                </div>
+            </div>
+        `;
+            container.appendChild(row);
+        }
+    </script>
+</body>
+
+</html>

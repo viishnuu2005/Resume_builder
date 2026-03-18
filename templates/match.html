@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Job Description Matching</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .match-card {
+            max-width: 980px;
+            margin: 40px auto;
+            padding: 24px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06)
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600
+        }
+
+        textarea {
+            min-height: 140px
+        }
+
+        .keyword-pill {
+            display: inline-block;
+            background: #eef3ff;
+            color: #1e3c72;
+            padding: 6px 10px;
+            border-radius: 999px;
+            margin: 6px 6px 6px 0;
+            font-weight: 600
+        }
+
+        .missing {
+            background: #fff2e8;
+            color: #92400e
+        }
+
+        .present {
+            background: #ecfdf5;
+            color: #166534
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="match-card">
+            <h1>Job Description Matching</h1>
+            <p class="muted">Paste a job description and optionally include your resume text or upload a PDF to see
+                keyword recommendations and match score.</p>
+
+            {% if error %}
+            <div style="background:#fff4f2;padding:10px;border-radius:8px;color:#9b2c2c;margin-bottom:12px">{{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/match" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="job_description">Job Description</label>
+                    <textarea id="job_description" name="job_description"
+                        placeholder="Paste the full job description here...">{{ job_description or '' }}</textarea>
+                </div>
+
+                <div style="margin-top:12px">
+                    <label for="resume_text">Your Resume Text (optional)</label>
+                    <textarea id="resume_text" name="resume_text"
+                        placeholder="Paste your resume text here...">{{ resume_text or '' }}</textarea>
+                </div>
+
+                <div style="margin-top:12px">
+                    <label for="resume_file">Or upload a PDF resume (optional)</label>
+                    <input type="file" id="resume_file" name="resume_file" accept="application/pdf">
+                </div>
+
+                <div style="margin-top:12px">
+                    <button type="submit">Analyze Match</button>
+                    <a href="/" style="margin-left:12px;color:var(--muted)">Back</a>
+                </div>
+            </form>
+
+            {% if similarity is not none %}
+            <div style="margin-top:18px">
+                <h3>Match Summary</h3>
+                <p>Similarity score: <strong>{{ similarity }}%</strong></p>
+            </div>
+
+            {% if report %}
+            <div style="margin-top:20px;padding:20px;background:#f8f9fa;border-radius:8px;border:1px solid #e9ecef">
+                <h3 style="color:#2c3e50;margin-bottom:15px">Resume Improvement Suggestions</h3>
+                <p style="color:#6c757d;margin-bottom:20px">Based on the job description, here are targeted suggestions to improve your resume's match:</p>
+                
+                {% if report.skills_to_add %}
+                <div class="suggestion-group">
+                    <h4 style="color:#495057;margin-bottom:8px">Skills to Add or Highlight</h4>
+                    <ul style="margin:0;padding-left:20px">
+                        {% for skill in report.skills_to_add %}
+                        <li style="margin-bottom:4px">{{ skill }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% if report.technologies_to_learn %}
+                <div class="suggestion-group">
+                    <h4 style="color:#495057;margin-bottom:8px">Tools & Technologies to Learn</h4>
+                    <ul style="margin:0;padding-left:20px">
+                        {% for tech in report.technologies_to_learn %}
+                        <li style="margin-bottom:4px">{{ tech }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% if report.knowledge_areas_required %}
+                <div class="suggestion-group">
+                    <h4 style="color:#495057;margin-bottom:8px">Knowledge Areas to Develop</h4>
+                    <ul style="margin:0;padding-left:20px">
+                        {% for area in report.knowledge_areas_required %}
+                        <li style="margin-bottom:4px">{{ area }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% if report.resume_content_improvements %}
+                <div class="suggestion-group">
+                    <h4 style="color:#495057;margin-bottom:8px">Resume Structure & Content Improvements</h4>
+                    <ul style="margin:0;padding-left:20px">
+                        {% for improvement in report.resume_content_improvements %}
+                        <li style="margin-bottom:4px">{{ improvement }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% if report.suggested_projects_to_add %}
+                <div class="suggestion-group">
+                    <h4 style="color:#495057;margin-bottom:8px">Suggested Projects to Add</h4>
+                    <ul style="margin:0;padding-left:20px">
+                        {% for project in report.suggested_projects_to_add %}
+                        <li style="margin-bottom:4px">{{ project }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% if report.certifications_that_could_help %}
+                <div class="suggestion-group">
+                    <h4 style="color:#495057;margin-bottom:8px">Certifications That Could Help</h4>
+                    <ul style="margin:0;padding-left:20px">
+                        {% for cert in report.certifications_that_could_help %}
+                        <li style="margin-bottom:4px">{{ cert }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</body>
+
+</html>
