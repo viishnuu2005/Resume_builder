@@ -114,6 +114,25 @@ Provide ONLY the JSON response, no markdown blocks.
         logger.error(f"Error calling Groq API: {e}")
         return _fallback_report(f"Groq API Error: {str(e)}"), 0
 
+def get_groq_response(prompt: str, temperature: float = 0.3, max_tokens: int = 500) -> str:
+    """
+    Generic function to get a response from Groq API for any custom prompt.
+    """
+    try:
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "You are a helpful AI assistant for resume writing."},
+                {"role": "user", "content": prompt}
+            ],
+            model="llama-3.3-70b-versatile",
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        logger.error(f"Error in get_groq_response: {e}")
+        return f"I encountered an error: {str(e)}"
+
 def rewrite_bullet_point(text: str) -> str:
     """
     Uses Groq AI to rewrite a simple sentence into a high-impact, professional resume bullet point.

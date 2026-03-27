@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume JD Matcher | Find Your Perfect Job Match</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d2e;
+            --surface2: #1e2235;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent-teal: #0ea5e9;
+            --green: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg) 40%);
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        h1, h2, h3, h4, h5, h6, .brand-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .container-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 0.8rem;
+            color: var(--text);
+        }
+
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .form-control, .form-select {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            color: #fff;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-select option {
+            background: var(--surface);
+            color: #fff;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0.85rem 1.75rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px var(--primary-glow);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .btn-primary-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.5);
+            color: #fff;
+        }
+
+        .results-section {
+            margin-top: 3rem;
+        }
+
+        .score-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .report-section {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-section h4 {
+            color: #6ee7b7;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .report-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-section li {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .report-section li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .back-link a:hover {
+            color: var(--accent-teal);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .glass-panel {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-wrapper">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Resume & Job <span class="text-gradient-primary">Match Score</span></h1>
+            <p class="hero-subtitle">Paste your resume and job description to get an instant compatibility analysis.</p>
+        </div>
+
+        <!-- Error Messages -->
+        {% if error %}
+        <div class="glass-panel">
+            <div class="error-message">
+                <i class="fa-solid fa-exclamation-circle"></i> {{ error }}
+            </div>
+            <div class="back-link">
+                <a href="/"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+        {% else %}
+
+        <!-- Input Form -->
+        {% if not similarity %}
+        <div class="glass-panel">
+            <form action="/match" method="post" enctype="multipart/form-data">
+                
+                <div class="mb-4">
+                    <label class="form-label"><i class="fa-solid fa-file-lines" style="color:var(--primary); margin-right:0.4rem;"></i>Job Description</label>
+                    <textarea name="job_description" class="form-control" placeholder="Paste the job description here..." required>{{ job_description or '' }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label"><i class="fa-solid fa-user" style="color:var(--green); margin-right:0.4rem;"></i>Your Resume</label>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        <i class="fa-solid fa-circle-info"></i> Either paste resume text or upload a PDF
+                    </p>
+                    
+                    <div class="mb-3">
+                        <textarea name="resume_text" class="form-control" placeholder="Paste your resume text here..." style="min-height: 200px;">{{ resume_text or '' }}</textarea>
+                    </div>
+
+                    <p style="text-align: center; color: var(--text-muted); margin-bottom: 1rem;">— or —</p>
+
+                    <div>
+                        <label class="form-label">Upload PDF Resume</label>
+                        <input type="file" name="resume_file" class="form-control" accept="application/pdf">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary-gradient">
+                    <i class="fa-solid fa-check-double"></i> Get Match Score
+                </button>
+            </form>
+
+            <div class="back-link">
+                <a href="/"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Results Section -->
+        {% if similarity is not none %}
+        <div class="results-section">
+            <div class="glass-panel">
+                <div style="text-align: center;">
+                    <div class="score-badge">
+                        <i class="fa-solid fa-chart-pie"></i> Match Score: {{ similarity }}%
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Your resume has a {{ similarity }}% compatibility with this job description</p>
+                </div>
+
+                {% if report %}
+                    {% if report.matched_skills %}
+                    <div class="report-section">
+                        <h4><i class="fa-solid fa-star"></i> Your Matching Skills ({{ report.matched_skills|length }})</h4>
+                        <ul>
+                            {% for skill in report.matched_skills[:10] %}
+                            <li>{{ skill }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if report.programming_languages %}
+                    <div class="report-section" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                        <h4 style="color: #fca5a5;"><i class="fa-solid fa-code"></i> Missing Programming Languages</h4>
+                        <ul>
+                            {% for language in report.programming_languages %}
+                            <li style="color: rgba(252, 165, 165, 0.8);">{{ language }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if report.frameworks_and_libs %}
+                    <div class="report-section" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                        <h4 style="color: #fca5a5;"><i class="fa-solid fa-cube"></i> Missing Frameworks & Libraries</h4>
+                        <ul>
+                            {% for framework in report.frameworks_and_libs %}
+                            <li style="color: rgba(252, 165, 165, 0.8);">{{ framework }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if report.tools_and_infra %}
+                    <div class="report-section" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                        <h4 style="color: #fca5a5;"><i class="fa-solid fa-wrench"></i> Missing Tools & Infrastructure</h4>
+                        <ul>
+                            {% for tool in report.tools_and_infra %}
+                            <li style="color: rgba(252, 165, 165, 0.8);">{{ tool }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if report.certifications %}
+                    <div class="report-section" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                        <h4 style="color: #fca5a5;"><i class="fa-solid fa-award"></i> Recommended Certifications</h4>
+                        <ul>
+                            {% for cert in report.certifications %}
+                            <li style="color: rgba(252, 165, 165, 0.8);">{{ cert }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                    <a href="/match" class="btn btn-outline-secondary" style="width: 100%; color: var(--text-muted); border-color: var(--border);">
+                        <i class="fa-solid fa-rotate-right"></i> Try Another Match
+                    </a>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="/"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% endif %}
+    </div>
+
+</body>
+</html>

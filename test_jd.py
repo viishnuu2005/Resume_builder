@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, 'c:/Users/viish/Downloads/Resume-Builder-ATS')
-from modules import jd_matcher
+from modules import groq_analyzer as jd_matcher
 
 resume = """
 John Doe | johndoe@email.com | +1 234 567 8900 | github.com/johndoe
