@@ -862,6 +862,22 @@
             collegeOtherEl.addEventListener('input', updatePreview);
         }
 
+        // Add event listeners to initial experience and projects rows
+        document.querySelectorAll('.experience-row input, .experience-row textarea').forEach(el => {
+            el.addEventListener('input', updatePreview);
+        });
+        document.querySelectorAll('.project-row input, .project-row textarea').forEach(el => {
+            el.addEventListener('input', updatePreview);
+        });
+
+        // Add event listeners to initial certification rows
+        document.querySelectorAll('.cert-row input').forEach(el => {
+            el.addEventListener('input', updatePreview);
+        });
+
+        // Initialize preview on page load
+        updatePreview();
+
         // --- Toggle functions for "Other" fields ---
         function toggleSchoolSyllabusOther(select) {
             const wrap = select.closest('.row').querySelector('.school-syllabus-other-wrap');
