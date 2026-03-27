@@ -487,11 +487,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label small text-muted">Company Name</label>
-                                        <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="E.g. Google" required>
+                                        <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="E.g. Google">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small text-muted">Job Role</label>
-                                        <input type="text" class="form-control form-control-sm" name="exp_role[]" placeholder="E.g. Senior Developer" required>
+                                        <input type="text" class="form-control form-control-sm" name="exp_role[]" placeholder="E.g. Senior Developer">
                                     </div>
                                     <div class="col-md-12">
                                         <label class="form-label small text-muted">Duration</label>
@@ -1027,11 +1027,11 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small text-muted">Company Name</label>
-                        <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="E.g. Google" required>
+                        <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="E.g. Google">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted">Job Role</label>
-                        <input type="text" class="form-control form-control-sm" name="exp_role[]" placeholder="E.g. Senior Developer" required>
+                        <input type="text" class="form-control form-control-sm" name="exp_role[]" placeholder="E.g. Senior Developer">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label small text-muted">Duration</label>
@@ -1049,13 +1049,8 @@
         }
 
         function removeExperience(btn) {
-            const container = document.getElementById('experience-container');
-            if (container.querySelectorAll('.experience-row').length > 1) {
-                btn.parentElement.remove();
-                updatePreview();
-            } else {
-                alert("At least one experience entry is required.");
-            }
+            btn.parentElement.remove();
+            updatePreview();
         }
 
         function addProject() {
