@@ -225,6 +225,73 @@
                 flex-direction: row-reverse;
             }
         }
+
+        /* Experience Section Toggle Animations */
+        .experience-section-wrapper {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .experience-section-wrapper.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .fresher-section-wrapper {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .fresher-section-wrapper.visible {
+            opacity: 1;
+            max-height: 200px;
+            display: block;
+        }
+
+        .form-check-input {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            margin-top: 0.3rem;
+            transition: all 0.25s ease;
+        }
+
+        .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .form-check-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+
+        .experience-toggle {
+            transition: all 0.25s ease;
+        }
+
+        .experience-toggle:hover {
+            background: rgba(99, 102, 241, 0.12);
+        }
+
+        .alert-info {
+            margin-bottom: 1.5rem;
+            animation: slideInDown 0.4s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -257,7 +324,7 @@
             <!-- Left Column: Form -->
             <div class="col-lg-6">
                 <div class="glass-panel">
-                    <form action="/preview" method="post" target="_blank">
+                    <form id="resumeForm" action="/preview" method="post" target="_blank" onsubmit="return validateFormSubmission()">
                         
                         <h4 class="brand-font mb-4 text-white"><i class="fa-regular fa-address-card" style="color:var(--primary);"></i> Personal Details</h4>
                         
@@ -479,6 +546,22 @@
 
                         <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-briefcase" style="color:#f59e0b;"></i> Experience & Projects</h4>
                         
+                        <!-- Toggle for Experience Section -->
+                        <div class="experience-toggle mb-4 p-3" style="background:rgba(99,102,241,0.08); border-left:3px solid #6366f1; border-radius:8px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hasExperience" checked style="width:20px; height:20px; cursor:pointer;">
+                                <label class="form-check-label" for="hasExperience" style="cursor:pointer; margin-bottom:0; font-weight:600; font-size:1rem;">
+                                    <i class="fa-solid fa-briefcase" style="color:#6366f1; margin-right:8px;"></i> I have work experience
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-2" style="margin-left:28px;">
+                                <i class="fa-solid fa-info-circle" style="color:#6366f1;"></i> 
+                                Uncheck if you're a student/fresher - we'll prioritize projects and skills instead
+                            </small>
+                        </div>
+                        
+                        <!-- Experience Section (Toggleable) -->
+                        <div id="experience-section" class="experience-section-wrapper" style="transition: all 0.4s ease; max-height: 2000px; overflow: hidden; opacity: 1;">
                         <div id="experience-container">
                             <label class="form-label d-flex justify-content-between align-items-center mb-3">
                                 <span>Work Experience</span>
@@ -507,6 +590,17 @@
                         <button type="button" class="btn-add-exp mb-4" onclick="addExperience()">
                             <i class="fa-solid fa-plus me-2"></i> Add Another Company
                         </button>
+                        </div>
+                        <!-- End Experience Section -->
+
+                        <!-- Fresher Alt Section (Shows when experience is hidden) -->
+                        <div id="fresher-section" class="fresher-section-wrapper" style="display:none; transition: all 0.4s ease; opacity: 0;">
+                            <div class="alert alert-info" style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); border-left:3px solid #06b6d4; border-radius:8px; padding:1rem;">
+                                <i class="fa-solid fa-lightbulb" style="color:#06b6d4;"></i>
+                                <strong style="color:#06b6d4;">Pro Tip for Freshers:</strong> Focus on your academic projects, internships, and technical skills. Employers love to see what you've built!
+                            </div>
+                        </div>
+                        <!-- End Fresher Section -->
 
                         <div id="projects-container">
                             <label class="form-label d-flex justify-content-between align-items-center mb-3">
@@ -787,23 +881,38 @@
                 linksEl.appendChild(a);
             }
 
-            // Experience
+            // Experience - Only show if checkbox is checked
+            const hasExperienceCheckbox = document.getElementById('hasExperience');
+            const showExperience = hasExperienceCheckbox ? hasExperienceCheckbox.checked : true; // Default to true if checkbox doesn't exist
+            
             const expCompanies = document.getElementsByName('exp_company[]');
             const expRoles = document.getElementsByName('exp_role[]');
             const expDurations = document.getElementsByName('exp_duration[]');
             const expDescs = document.getElementsByName('exp_desc[]');
             let expHtml = '';
-            for (let i = 0; i < expCompanies.length; i++) {
-                if (expCompanies[i].value || expRoles[i].value) {
-                    expHtml += `<div class="mb-3">
-                        <div class="fw-bold" style="color:var(--primary)">${expCompanies[i].value}</div>
-                        <div class="small fw-semibold text-white">${expRoles[i].value}</div>
-                        <div class="x-small text-muted">${expDurations[i].value}</div>
-                        <div class="mt-1">${expDescs[i].value.replace(/\n/g, '<br>')}</div>
-                    </div>`;
+            
+            // Only build experience HTML if checkbox is checked and there's valid experience data
+            if (showExperience) {
+                for (let i = 0; i < expCompanies.length; i++) {
+                    if (expCompanies[i].value || expRoles[i].value) {
+                        expHtml += `<div class="mb-3">
+                            <div class="fw-bold" style="color:var(--primary)">${expCompanies[i].value}</div>
+                            <div class="small fw-semibold text-white">${expRoles[i].value}</div>
+                            <div class="x-small text-muted">${expDurations[i].value}</div>
+                            <div class="mt-1">${expDescs[i].value.replace(/\n/g, '<br>')}</div>
+                        </div>`;
+                    }
                 }
             }
-            document.getElementById('pv-experience').innerHTML = expHtml || '—';
+            
+            // Set experience HTML, or hide the section entirely
+            const expElement = document.getElementById('pv-experience');
+            if (showExperience) {
+                expElement.innerHTML = expHtml || '—';
+                expElement.closest('.mb-3').style.display = 'block'; // Show the section
+            } else {
+                expElement.closest('.mb-3').style.display = 'none'; // Hide the entire section
+            }
 
             // Projects
             setText('pv-skills', skillsText, '—');
@@ -883,6 +992,75 @@
 
         // Initialize preview on page load
         updatePreview();
+
+        // --- Experience Toggle Functionality ---
+        const experienceCheckbox = document.getElementById('hasExperience');
+        const experienceSection = document.getElementById('experience-section');
+        const fresherSection = document.getElementById('fresher-section');
+
+        function toggleExperienceSection() {
+            const isChecked = experienceCheckbox.checked;
+            
+            if (isChecked) {
+                // Show experience section
+                experienceSection.classList.remove('hidden');
+                experienceSection.style.maxHeight = '2000px';
+                experienceSection.style.opacity = '1';
+                fresherSection.classList.remove('visible');
+                fresherSection.style.display = 'none';
+            } else {
+                // Hide experience section
+                experienceSection.classList.add('hidden');
+                experienceSection.style.maxHeight = '0';
+                experienceSection.style.opacity = '0';
+                fresherSection.classList.add('visible');
+                fresherSection.style.display = 'block';
+            }
+            
+            updatePreview(); // Update preview when toggling
+        }
+
+        // Add event listener to checkbox
+        if (experienceCheckbox) {
+            experienceCheckbox.addEventListener('change', toggleExperienceSection);
+        }
+
+        // --- Form Validation Helper Functions ---
+        /**
+         * Validate form submission based on experience checkbox status
+         * Removes required validation from experience fields if checkbox is unchecked
+         */
+        function validateFormSubmission() {
+            const hasExperience = document.getElementById('hasExperience').checked;
+            const expCompanyFields = document.getElementsByName('exp_company[]');
+            const expRoleFields = document.getElementsByName('exp_role[]');
+            const form = document.getElementById('resumeForm');
+
+            if (!hasExperience) {
+                // Remove required attribute from experience fields
+                expCompanyFields.forEach(field => field.removeAttribute('required'));
+                expRoleFields.forEach(field => field.removeAttribute('required'));
+            } else {
+                // Optionally, you could add required back, but since we made them optional,
+                // this step is not necessary for validation purposes
+            }
+
+            // Let form submit normally
+            return true;
+        }
+
+        /**
+         * Enable/Disable required attributes on experience fields
+         * Call this whenever experience checkbox changes
+         */
+        function updateExperienceValidation() {
+            const hasExperience = document.getElementById('hasExperience').checked;
+            const expCompanyFields = document.getElementsByName('exp_company[]');
+            const expRoleFields = document.getElementsByName('exp_role[]');
+
+            // Experience fields are now optional - no 'required' needed
+            // But this function is available for future enhancement
+        }
 
         // --- Toggle functions for "Other" fields ---
         function toggleSchoolSyllabusOther(select) {
