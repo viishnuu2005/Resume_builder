@@ -850,6 +850,12 @@
             el.addEventListener('input', updatePreview);
         });
 
+        // Skills dropdown change listener (multi-select)
+        const skillsEl = document.getElementById('skills');
+        if (skillsEl) {
+            skillsEl.addEventListener('change', updatePreview);
+        }
+
         ['school-edu-container', 'higher-edu-container'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
