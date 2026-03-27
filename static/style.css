@@ -61,6 +61,18 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     transition: all 0.25s ease;
 }
 
+.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+
 .form-control:focus, .form-select:focus {
     background: rgba(0, 0, 0, 0.4);
     border-color: var(--primary);
@@ -76,6 +88,16 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 .form-select option {
     background: #1a1d2e;
     color: #fff;
+}
+
+.form-select-sm {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+}
+
+select.form-select-sm {
+    padding-right: 2rem;
 }
 
 /* Base button */

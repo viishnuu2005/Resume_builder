@@ -125,6 +125,31 @@
             box-shadow: 0 0 0 3px var(--primary-glow);
         }
 
+        /* Select dropdown styling */
+        .form-control-dark[type="select"],
+        .form-control-dark select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .form-control-dark select option {
+            background: #1a1d2e;
+            color: #fff;
+            padding: 8px;
+        }
+
+        .form-control-dark select option:checked {
+            background: rgba(99, 102, 241, 0.5);
+            color: #fff;
+        }
+
         .drop-zone {
             border: 2px dashed rgba(99, 102, 241, 0.4);
             border-radius: 12px;
@@ -474,6 +499,20 @@
             border-radius: 8px;
         }
 
+        /* Select dropdown styling for editor-ctrl */
+        select.editor-ctrl,
+        select.editor-ctrl-sm {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.65rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
         .editor-ctrl:focus {
             outline: none;
             border-color: var(--primary);
@@ -534,6 +573,15 @@
             font-size: 0.87rem;
             font-family: inherit;
             width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.65rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
         }
 
         .select-dark option {
@@ -1073,9 +1121,8 @@
                         <div class="mb-2">
                             <label class="editor-label">
                                 <i class="fa-solid fa-code" style="color:#fcd34d;font-size:0.75rem;"></i> Skills
-                                <span style="color:var(--muted);font-size:0.75rem;font-weight:400;"> — (Hold Ctrl/Cmd to select multiple)</span>
                             </label>
-                            <select class="form-control-dark" name="skills" multiple style="height: 140px;">
+                            <select class="form-control-dark" name="skills" style="height: auto; min-height: 40px;">
                                 <option value="Python" {% if 'Python' in skills %}selected{% endif %}>Python</option>
                                 <option value="JavaScript" {% if 'JavaScript' in skills %}selected{% endif %}>JavaScript</option>
                                 <option value="TypeScript" {% if 'TypeScript' in skills %}selected{% endif %}>TypeScript</option>
@@ -1217,6 +1264,15 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Fix select dropdown appearance on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectElements = document.querySelectorAll('select.form-control-dark');
+            selectElements.forEach(select => {
+                select.style.height = 'auto';
+                select.style.minHeight = '40px';
+            });
+        });
+
         // ── Upload form helpers ──────────────────────────────
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');

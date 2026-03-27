@@ -109,6 +109,15 @@
             padding: 0.8rem 1rem;
             font-size: 0.95rem;
             transition: all 0.25s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
         }
 
         .form-select option {
@@ -262,6 +271,12 @@
 
         <!-- Form Panel -->
         <div class="glass-panel">
+            {% if error %}
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; color: #fca5a5;">
+                <i class="fa-solid fa-exclamation-circle" style="margin-right: 0.5rem;"></i>{{ error }}
+            </div>
+            {% endif %}
+            
             <form action="/analyze-role" method="post" enctype="multipart/form-data">
                 
                 <div class="mb-4">

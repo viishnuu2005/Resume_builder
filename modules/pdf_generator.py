@@ -80,6 +80,9 @@ def generate_pdf_resume(data, template_id='classic'):
 
     def draw_section(title, text):
         nonlocal y
+        # Handle: text might be a list instead of string (shouldn't happen but being safe)
+        if isinstance(text, list):
+            text = '\n'.join(str(t) for t in text if t)
         if not text:
             return
         c.setFillColorRGB(*section_color)
@@ -414,7 +417,6 @@ def generate_pdf_resume(data, template_id='classic'):
     if certs_text:
         draw_section('Certifications', certs_text)
 
-    c.showPage()
     c.save()
 
     buffer.seek(0)

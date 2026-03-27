@@ -641,8 +641,8 @@
 
                         <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-code" style="color:#ec4899;"></i> Skills & Certs</h4>
                         <div class="mb-4">
-                            <label class="form-label">Technical Skills <span class="text-lowercase text-muted" style="font-weight:400;">(Hold Ctrl/Cmd to multi-select)</span></label>
-                            <select id="skills" name="skills" class="form-select" multiple required style="height:140px;">
+                            <label class="form-label">Technical Skills</label>
+                            <select id="skills" name="skills" class="form-select" required style="height:auto; min-height: 40px;">
                                 <option value="Python">Python</option>
                                 <option value="JavaScript">JavaScript</option>
                                 <option value="TypeScript">TypeScript</option>
@@ -681,7 +681,7 @@
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label class="form-label mb-0">Certifications</label>
-                                <button type="button" class="btn btn-sm btn-outline-light" onclick="addIndexCertRow()"><i class="fa-solid fa-plus"></i> Add</button>
+                                <button type="button" class="btn btn-sm btn-outline-light" onclick="addCertification()"><i class="fa-solid fa-plus"></i> Add</button>
                             </div>
                             <div id="indexCertsContainer">
                                 <div class="cert-row">
@@ -786,7 +786,6 @@
             const linkedin = document.getElementById('linkedin').value;
             const github = document.getElementById('github').value;
             const languages = document.getElementById('languages').value;
-            const experience = document.getElementById('experience').value;
 
             // Education
             let eduHTML = '';
@@ -965,6 +964,15 @@
             skillsEl.addEventListener('change', updatePreview);
         }
 
+        // Pre-populate district dropdowns if state already selected (e.g., autofill or saved values)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('select[name="higher_state[]"]').forEach(sel => {
+                if (sel.value) {
+                    loadDistricts(sel);
+                }
+            });
+        });
+
         ['school-edu-container', 'higher-edu-container'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
@@ -1090,18 +1098,56 @@
         }
 
         const indiaStateDistricts = {
-            "Kerala": ["Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha", "Kottayam", "Idukki", "Ernakulam", "Thrissur", "Palakkad", "Malappuram", "Kozhikode", "Wayanad", "Kannur", "Kasaragod"],
-            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli"],
-            "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi-Dharwad", "Belagavi", "Kalaburagi"],
-            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Solapur"],
+            "Andhra Pradesh": ["Visakhapatnam", "Krishna", "Guntur", "Chittoor", "Nellore", "SE Godavari", "Kadapa"],
+            "Assam": ["Kamrup", "Nagaon", "Sonitpur", "Barpeta", "Morigaon", "Kokrajhar", "Dhubri"],
+            "Bihar": ["Patna", "East Champaran", "West Champaran", "Madhubani", "Darbhanga", "Munger", "Bhagalpur"],
+            "Chhattisgarh": ["Raipur", "Bilaspur", "Durg", "Rajnandgaon", "Bastar", "Jagdalpur"],
+            "Delhi": ["Delhi"],
+            "Goa": ["North Goa", "South Goa"],
+            "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Jamnagar", "Junagadh", "Bhavnagar"],
+            "Haryana": ["Faridabad", "Gurgaon", "Hisar", "Ambala", "Panipat", "Yamuna Nagar"],
+            "Himachal Pradesh": ["Shimla", "Kangra", "Mandi", "Kinnaur", "Kullu", "Solan"],
+            "Jharkhand": ["Ranchi", "Dhanbad", "Giridih", "East Singhbhum", "Purbi Singhbhum", "Bokaro"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi", "Belagavi", "Kalaburagi", "Belgaum"],
+            "Kerala": [
+                "Thiruvananthapuram",
+                "Kollam",
+                "Pathanamthitta",
+                "Alappuzha",
+                "Kottayam",
+                "Idukki",
+                "Ernakulam",
+                "Thrissur",
+                "Palakkad",
+                "Malappuram",
+                "Kozhikode",
+                "Calicut",
+                "Wayanad",
+                "Kannur",
+                "Kasaragod"
+            ],
+            "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur", "Gwalior", "Ujjain", "Sagai"],
+            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Solapur", "Kolhapur"],
+            "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Balasore", "Sambalpur", "Koraput"],
+            "Punjab": ["Amritsar", "Ludhiana", "Chandigarh", "Jalandhar", "Patiala", "Bathinda"],
+            "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Udaipur", "Bikaner", "Ajmer", "Alwar"],
+            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Kanyakumari"],
+            "Telangana": ["Hyderabad", "Secunderabad", "Warangal", "Nizamabad", "Khammam"],
+            "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra", "Varanasi", "Meerut", "Allahabad", "Ghaziabad"],
+            "Uttarakhand": ["Dehradun", "Nainital", "Haridwar", "Almora", "Pithoragarh"],
+            "West Bengal": ["Kolkata", "Darjeeling", "Jalpaiguri", "Cooch Behar", "Alipurduar", "Hooghly"],
             "Other": ["Other"]
         };
 
         function loadDistricts(stateSelect) {
-            const districtSelect = stateSelect.closest('.row').querySelector('select[name="higher_district[]"]');
+            const row = stateSelect.closest('.higher-edu-row') || stateSelect.closest('.row');
+            if (!row) return;
+            const districtSelect = row.querySelector('select[name="higher_district[]"]');
+            if (!districtSelect) return;
+
             districtSelect.innerHTML = '<option value="" disabled selected>-Select District-</option>';
             const state = stateSelect.value;
-            let dists = indiaStateDistricts[state] || ["Other"];
+            const dists = indiaStateDistricts[state] || ["Other"];
             dists.forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d;
