@@ -219,6 +219,12 @@
         }
         .btn-remove-edu:hover { background:rgba(239,68,68,0.4); }
         .edu-section-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); margin:1rem 0 1.25rem; }
+        /* Swap columns: preview on left, form on right */
+        @media (min-width: 992px) {
+            .row.g-5.pb-5 {
+                flex-direction: row-reverse;
+            }
+        }
     </style>
 </head>
 <body>
@@ -469,70 +475,6 @@
                         </div>
                         <button type="button" class="btn-add-exp mb-4" style="border-color:#a78bfa;color:#a78bfa;background:rgba(139,92,246,0.08);" onclick="addHigherEntry()">
                             <i class="fa-solid fa-plus me-2"></i> Add Higher Education
-                        </button>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label small text-muted">Qualification</label>
-                                        <select name="edu_qualification[]" class="form-select form-select-sm" onchange="updateEducationMarks(this)" required>
-                                            <option value="" disabled selected>Select Qualification</option>
-                                            <option value="SSLC (10th)">SSLC (10th)</option>
-                                            <option value="Plus Two (12th)">Plus Two (12th)</option>
-                                            <option value="Diploma">Diploma</option>
-                                            <option value="Bachelor's">Bachelor's</option>
-                                            <option value="Master's">Master's</option>
-                                            <option value="PhD">PhD</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small text-muted">College / School</label>
-                                        <select name="edu_college[]" class="form-select form-select-sm" required>
-                                            <option value="" disabled selected>Select College</option>
-                                            <option value="College of Engineering Trivandrum (CET)">College of Engineering Trivandrum (CET)</option>
-                                            <option value="National Institute of Technology Calicut (NITC)">NIT Calicut (NITC)</option>
-                                            <option value="IIT Madras">IIT Madras</option>
-                                            <option value="IIT Bombay">IIT Bombay</option>
-                                            <option value="Government Engineering College Thrissur">GEC Thrissur</option>
-                                            <option value="Model Engineering College, Kochi">Model Engineering College</option>
-                                            <option value="TKM College of Engineering, Kollam">TKM College of Engineering</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small text-muted">University / Board</label>
-                                        <select name="edu_university[]" class="form-select form-select-sm" required>
-                                            <option value="" disabled selected>Select University</option>
-                                            <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
-                                            <option value="University of Kerala">University of Kerala</option>
-                                            <option value="Mahatma Gandhi University">MG University</option>
-                                            <option value="Calicut University">Calicut University</option>
-                                            <option value="CBSE">CBSE</option>
-                                            <option value="ICSE">ICSE</option>
-                                            <option value="Kerala State Board">Kerala State Board</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small text-muted">Graduation Year</label>
-                                        <select name="edu_year[]" class="form-select form-select-sm" required>
-                                            <option value="" disabled selected>Select Year</option>
-                                            {% for y in range(2000, 2032) %}
-                                                <option value="{{ y }}">{{ y }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12 marks-field percentage-div" style="display:none;">
-                                        <label class="form-label small text-muted">Percentage (%)</label>
-                                        <input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm" name="edu_percentage[]" placeholder="E.g. 85.5">
-                                    </div>
-                                    <div class="col-md-12 marks-field cgpa-div" style="display:none;">
-                                        <label class="form-label small text-muted">CGPA (out of 10)</label>
-                                        <input type="number" step="0.01" min="0" max="10" class="form-control form-control-sm" name="edu_cgpa[]" placeholder="E.g. 8.5">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-add-exp mb-4" style="border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.1);" onclick="addEducation()">
-                            <i class="fa-solid fa-plus me-2"></i> Add Education
                         </button>
 
                         <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-briefcase" style="color:#f59e0b;"></i> Experience & Projects</h4>
