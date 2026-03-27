@@ -2,6 +2,7 @@
 MongoDB Atlas connection and helper functions for users and resumes.
 """
 import bcrypt
+import certifi
 from datetime import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -9,7 +10,7 @@ from bson.objectid import ObjectId
 # ── Connection ───────────────────────────────────────────────────────────────
 MONGO_URI = "mongodb+srv://vishnuprasadp201_db_user:vishnu123@cluster0.tkdqh2c.mongodb.net/?appName=Cluster0"
 
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client["resume_builder"]
 
 users_col = db["users"]

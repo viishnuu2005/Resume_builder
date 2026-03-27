@@ -1,0 +1,228 @@
+<!-- Chatbot Widget UI -->
+<style>
+  .chatbot-wrapper {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 9999;
+      font-family: inherit;
+  }
+  .chat-toggle-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent-teal));
+      color: white;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .chat-toggle-btn:hover {
+      transform: scale(1.1);
+  }
+  .chat-window {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      width: 340px;
+      height: 480px;
+      background: rgba(26, 29, 46, 0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: scale(0);
+      transform-origin: bottom right;
+      transition: transform 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+  }
+  .chat-window.open {
+      transform: scale(1);
+      opacity: 1;
+      pointer-events: all;
+  }
+  .chat-header {
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      padding-top: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  .chat-header h5 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 600;
+  }
+  .chat-close {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 1.2rem;
+      cursor: pointer;
+  }
+  .chat-close:hover {
+      color: #fff;
+  }
+  .chat-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+  }
+  .chat-bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+  }
+  .chat-bubble.bot {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+  }
+  .chat-bubble.user {
+      background: var(--primary);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+  }
+  .chat-footer {
+      padding: 15px;
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      gap: 8px;
+  }
+  .chat-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      outline: none;
+  }
+  .chat-input::placeholder {
+      color: rgba(255,255,255,0.4);
+  }
+  .chat-send-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+  }
+  .chat-send-btn:hover {
+      background: #4f46e5;
+  }
+</style>
+
+<div class="chatbot-wrapper">
+  <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+          <h5><i class="fa-solid fa-robot" style="color:#6ee7b7; margin-right:8px;"></i> ATS Assistant</h5>
+          <button class="chat-close" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="chat-body" id="chatBody">
+          <div class="chat-bubble bot">
+              Hi! I'm your AI Resume Assistant. I can help you with improvement tips or <strong>professionally rewrite your experience bullet points</strong>.
+              <br><br>
+              Try saying: <br><em>"rewrite: I managed a team of developers"</em>
+          </div>
+      </div>
+      <div class="chat-footer">
+          <input type="text" id="chatInput" class="chat-input" placeholder="Type 'rewrite: ...' or ask a question" onkeypress="handleChatEnter(event)">
+          <button class="chat-send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+  </div>
+  <button class="chat-toggle-btn" onclick="toggleChat()" id="chatBtn">
+      <i class="fa-solid fa-message"></i>
+  </button>
+</div>
+
+<script>
+  let chatOpen = false;
+
+  function toggleChat() {
+      const window = document.getElementById('chatWindow');
+      const btnIcon = document.querySelector('#chatBtn i');
+      chatOpen = !chatOpen;
+      
+      if (chatOpen) {
+          window.classList.add('open');
+          btnIcon.classList.remove('fa-message');
+          btnIcon.classList.add('fa-xmark');
+          setTimeout(() => document.getElementById('chatInput').focus(), 300);
+      } else {
+          window.classList.remove('open');
+          btnIcon.classList.remove('fa-xmark');
+          btnIcon.classList.add('fa-message');
+      }
+  }
+
+  function appendMessage(text, sender) {
+      const body = document.getElementById('chatBody');
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${sender}`;
+      bubble.textContent = text;
+      body.appendChild(bubble);
+      body.scrollTop = body.scrollHeight;
+  }
+
+  function handleChatEnter(e) {
+      if (e.key === 'Enter') {
+          sendMessage();
+      }
+  }
+
+  function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage(text, 'user');
+      input.value = '';
+
+      fetch('/chat', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              message: text
+          })
+      })
+      .then(res => res.json())
+      .then(data => {
+          appendMessage(data.response, 'bot');
+      })
+      .catch(err => {
+          appendMessage("Sorry, I'm having trouble connecting to the server.", 'bot');
+          console.error(err);
+      });
+  }
+</script>

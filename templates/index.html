@@ -1,201 +1,740 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Resume Builder Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder Pro | Create Professional Resumes</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .hero-section {
+            padding: 4rem 0 2.5rem;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+        .auth-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50rem;
+            padding: 0.5rem 1rem;
+            display: inline-flex;
+            gap: 1.5rem;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .auth-bar a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .auth-bar a:hover {
+            color: var(--primary);
+        }
+        .preview-sticky {
+            position: sticky;
+            top: 2rem;
+        }
+        /* Dashboard-like Action Links */
+        .dash-links {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .dash-link-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .dash-link-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .cert-row {
+            background: rgba(0,0,0,0.15);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        .btn-remove-cert {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-remove-cert:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .project-row {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .btn-remove-project {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-remove-project:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .btn-add-project {
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+            border: 1px dashed rgba(99, 102, 241, 0.4);
+            border-radius: 12px;
+            padding: 0.8rem;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-bottom: 2rem;
+        }
+        .btn-add-project:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+        }
+        .experience-row {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .btn-remove-exp {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .btn-remove-exp:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .btn-add-exp {
+            background: rgba(16, 185, 129, 0.1);
+            color: #6ee7b7;
+            border: 1px dashed rgba(16, 185, 129, 0.4);
+            border-radius: 12px;
+            padding: 0.8rem;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-bottom: 2rem;
+        }
+        .btn-add-exp:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+        /* Education sub-section styles */
+        .school-edu-row, .higher-edu-row {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .edu-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.4px;
+        }
+        .edu-badge-school { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+        .edu-badge-higher { background:rgba(139,92,246,0.12); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+        .btn-remove-edu {
+            position:absolute; top:10px; right:10px;
+            background:rgba(239,68,68,0.2); color:#fca5a5;
+            border:none; width:28px; height:28px; border-radius:6px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; transition:background 0.2s; z-index:10;
+        }
+        .btn-remove-edu:hover { background:rgba(239,68,68,0.4); }
+        .edu-section-divider { border:none; border-top:1px solid rgba(255,255,255,0.07); margin:1rem 0 1.25rem; }
+    </style>
 </head>
-
 <body>
 
-    <div class="container">
-        <div class="card">
-            <div class="form-panel">
-                <h1>Resume Builder & ATS Analyzer</h1>
-                <p class="subtitle">Create a professional resume instantly</p>
-                <p class="subtitle muted">Or <a href="/upload"
-                        style="color:var(--accent-2); text-decoration:underline;">upload your existing PDF resume</a>
-                    for ATS analysis — or <a href="/match"
-                        style="color:var(--accent-2); text-decoration:underline;">match with a job description</a></p>
+    <div class="container animate-fade-in-up">
+        
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Craft Your <span class="text-gradient-primary">Perfect Resume</span></h1>
+            <p class="hero-subtitle">Instantly generate beautiful, ATS-friendly PDFs. Live preview as you type.</p>
+            
+            <div class="auth-bar mb-3">
+                {% if session.get('user_id') %}
+                    <span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-sparkles"></i> Hello, {{ session.get('user_name', 'User') }}</span>
+                    <a href="/my-resumes"><i class="fa-solid fa-folder-open"></i> My Resumes</a>
+                    <a href="/logout" style="color:#fca5a5;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                {% else %}
+                    <a href="/login"><i class="fa-solid fa-lock"></i> Login</a>
+                    <a href="/register" style="color:#6ee7b7;"><i class="fa-solid fa-user-plus"></i> Register</a>
+                {% endif %}
+            </div>
+            
+            <div class="dash-links mb-4">
+                <a href="/upload" class="dash-link-btn"><i class="fa-solid fa-robot" style="color:#fcd34d;"></i> ATS Analyzer</a>
+                <a href="/analyze-role" class="dash-link-btn"><i class="fa-solid fa-wand-magic-sparkles" style="color:#a5b4fc;"></i> Role Matching</a>
+            </div>
+        </div>
 
-                <div style="margin-bottom: 1rem; padding: 0.6rem 0; border-bottom: 1px solid #e2e8f0;">
-                    {% if session.get('user_id') %}
-                        <span style="color:#10b981; font-size:0.85rem; font-weight:600;">
-                            ✦ Welcome, {{ session.get('user_name', 'User') }}!
-                        </span>
-                        <a href="/my-resumes" style="margin-left:12px; color:#6366f1; text-decoration:none; font-size:0.85rem; font-weight:600;">📁 My Resumes</a>
-                        <a href="/logout" style="margin-left:12px; color:#ef4444; text-decoration:none; font-size:0.85rem; font-weight:600;">Logout</a>
-                    {% else %}
-                        <a href="/login" style="color:#6366f1; text-decoration:none; font-size:0.85rem; font-weight:600;">🔐 Login</a>
-                        <a href="/register" style="margin-left:12px; color:#10b981; text-decoration:none; font-size:0.85rem; font-weight:600;">✨ Register</a>
-                        <span style="color:#94a3b8; font-size:0.8rem; margin-left:8px;">— Login to save your resumes</span>
-                    {% endif %}
-                </div>
-
-                <form action="/preview" method="post" target="_blank">
-                    <div class="input-group">
-                        <input id="name" type="text" name="name" placeholder="Full Name" required>
-                        <input id="email" type="email" name="email" placeholder="Email Address" required>
-                        <input id="phone" type="text" name="phone" placeholder="Phone Number" required>
-                    </div>
-
-                    <div class="input-group">
-                        <input id="linkedin" type="url" name="linkedin" placeholder="LinkedIn URL (optional)">
-                        <input id="github" type="url" name="github" placeholder="GitHub URL (optional)">
-                    </div>
-
-                    <div class="input-group">
-                        <input id="languages" type="text" name="languages"
-                            placeholder="Languages (comma separated, e.g. English, Hindi)">
-                    </div>
-
-                    <textarea id="experience" name="experience" placeholder="Work Experience Details"></textarea>
-                    
-                    <div style="margin-bottom: 12px; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <strong style="color: #64748b; font-size: 0.9rem;">Certifications</strong>
-                            <button type="button" onclick="addIndexCertRow()" style="padding: 2px 8px; width: auto; margin: 0; font-size: 0.8rem; background: #f1f5f9; color: #3b82f6; border: 1px solid #cbd5e1;">+ Add</button>
+        <div class="row g-5 pb-5">
+            <!-- Left Column: Form -->
+            <div class="col-lg-6">
+                <div class="glass-panel">
+                    <form action="/preview" method="post" target="_blank">
+                        
+                        <h4 class="brand-font mb-4 text-white"><i class="fa-regular fa-address-card" style="color:var(--primary);"></i> Personal Details</h4>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label">Full Name</label>
+                                <input id="name" type="text" class="form-control" name="name" placeholder="E.g. John Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                <input id="email" type="email" class="form-control" name="email" placeholder="john@example.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                <input id="phone" type="text" class="form-control" name="phone" placeholder="+1 234 567 890" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">LinkedIn (Optional)</label>
+                                <input id="linkedin" type="url" class="form-control" name="linkedin" placeholder="https://linkedin.com/in/... ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">GitHub (Optional)</label>
+                                <input id="github" type="url" class="form-control" name="github" placeholder="https://github.com/... ">
+                            </div>
                         </div>
-                        <div id="indexCertsContainer">
-                            <div class="index-cert-row" style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1;">
-                                <div style="display: flex; gap: 8px; margin-bottom: 6px;">
-                                    <input type="text" name="cert_name[]" placeholder="Cert Name" style="margin: 0; flex: 2;" required>
-                                    <input type="text" name="cert_year[]" placeholder="Year" style="margin: 0; flex: 1;">
-                                </div>
-                                <div style="display: flex; gap: 8px;">
-                                    <input type="text" name="cert_org[]" placeholder="Organization" style="margin: 0; flex: 1;">
-                                    <input type="text" name="cert_link[]" placeholder="Link (URL)" style="margin: 0; flex: 1;">
-                                    <button type="button" onclick="this.parentElement.parentElement.remove(); updatePreview();" style="width: auto; padding: 4px 8px; margin: 0; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px;">X</button>
+
+                        <h4 class="brand-font mb-3 text-white"><i class="fa-solid fa-graduation-cap" style="color:#10b981;"></i> Education</h4>
+
+                        <!-- ═══ SCHOOL EDUCATION ═══ -->
+                        <div class="edu-badge edu-badge-school">🏫 School Education</div>
+                        <div id="school-edu-container">
+                            <div class="school-edu-row">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Qualification</label>
+                                        <select name="school_qualification[]" class="form-select form-select-sm" required onchange="updatePreview()">
+                                            <option value="" disabled selected>-Select-</option>
+                                            <option value="SSLC (10th)">SSLC (10th)</option>
+                                            <option value="Plus Two (12th)">Plus Two (12th)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Syllabus / Board</label>
+                                        <select name="school_syllabus[]" class="form-select form-select-sm" required onchange="toggleSchoolSyllabusOther(this);updatePreview();">
+                                            <option value="" disabled selected>-Select-</option>
+                                            <option>Kerala State Syllabus</option>
+                                            <option>CBSE</option>
+                                            <option>ICSE</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 school-syllabus-other-wrap" style="display:none;">
+                                        <input type="text" class="form-control form-control-sm" name="school_syllabus_other[]" placeholder="Specify syllabus / board" oninput="updatePreview()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Year of Completion</label>
+                                        <select name="school_year[]" class="form-select form-select-sm" required onchange="updatePreview()">
+                                            <option value="" disabled selected>-Select Year-</option>
+                                            {% for y in range(2000, 2029) %}<option value="{{ y }}">{{ y }}</option>{% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Percentage (%)</label>
+                                        <input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm" name="school_percentage[]" placeholder="E.g. 85.5" oninput="updatePreview()">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <button type="button" class="btn-add-exp mb-3" style="border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,0.08);" onclick="addSchoolEntry()">
+                            <i class="fa-solid fa-plus me-2"></i> Add School Education
+                        </button>
 
-                    <div style="margin-bottom: 12px;">
-                        <label style="display:block; color:#64748b; font-size:0.85rem; font-weight:600; margin-bottom:4px;">Education Degree</label>
-                        <select id="education" name="education" required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit; font-size:0.95rem; background:#fff;">
-                            <option value="" disabled selected>Select Degree</option>
-                            <option value="B.Tech">B.Tech</option>
-                            <option value="B.E.">B.E.</option>
-                            <option value="BCA">BCA</option>
-                            <option value="BSc">BSc</option>
-                            <option value="M.Tech">M.Tech</option>
-                            <option value="MCA">MCA</option>
-                            <option value="MSc">MSc</option>
-                            <option value="MBA">MBA</option>
-                            <option value="BBA">BBA</option>
-                            <option value="Diploma">Diploma</option>
-                            <option value="PhD">PhD</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
+                        <hr class="edu-section-divider">
 
-                    <div style="margin-bottom: 12px;">
-                        <label style="display:block; color:#64748b; font-size:0.85rem; font-weight:600; margin-bottom:4px;">College / University (Kerala)</label>
-                        <select id="college" name="college" onchange="toggleOtherCollege()" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit; font-size:0.95rem; background:#fff;">
-                            <option value="" disabled selected>Select College</option>
-                            <option value="College of Engineering Trivandrum (CET)">College of Engineering Trivandrum (CET)</option>
-                            <option value="National Institute of Technology Calicut (NITC)">NIT Calicut (NITC)</option>
-                            <option value="Model Engineering College (MEC), Kochi">Model Engineering College (MEC), Kochi</option>
-                            <option value="Cochin University of Science and Technology (CUSAT)">CUSAT, Kochi</option>
-                            <option value="TKM College of Engineering, Kollam">TKM College of Engineering, Kollam</option>
-                            <option value="Rajagiri School of Engineering & Technology (RSET), Kochi">RSET, Kochi</option>
-                            <option value="Mar Athanasius College of Engineering (MACE), Kothamangalam">MACE, Kothamangalam</option>
-                            <option value="NSS College of Engineering, Palakkad">NSS College of Engineering, Palakkad</option>
-                            <option value="Government Engineering College, Thrissur (GECT)">GEC Thrissur (GECT)</option>
-                            <option value="Government Engineering College, Barton Hill">GEC Barton Hill</option>
-                            <option value="Muthoot Institute of Technology and Science (MITS)">MITS, Kottayam</option>
-                            <option value="Saintgits College of Engineering, Kottayam">Saintgits, Kottayam</option>
-                            <option value="Amal Jyothi College of Engineering, Kottayam">Amal Jyothi, Kottayam</option>
-                            <option value="LBS Institute of Technology for Women, Poojappura">LBS Poojappura</option>
-                            <option value="LBS College of Engineering, Kasaragod">LBS College of Engineering, Kasaragod</option>
-                            <option value="Vidya Academy of Science and Technology, Thrissur">Vidya Academy, Thrissur</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        <input type="text" id="collegeOther" name="college_other" placeholder="Type your college name..." style="display:none; width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit; font-size:0.95rem; margin-top:8px;">
-                    </div>
+                        <!-- ═══ HIGHER EDUCATION ═══ -->
+                        <div class="edu-badge edu-badge-higher">🎓 Higher Education</div>
+                        <div id="higher-edu-container">
+                            <div class="higher-edu-row">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Degree</label>
+                                        <input type="text" class="form-control form-control-sm degree-display" readonly value="-Select-" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(255,255,255,0.05);">
+                                        <input type="hidden" name="higher_degree[]" value="">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Course / Degree Name</label>
+                                        <input type="text" class="form-control form-control-sm" name="higher_course[]" placeholder="E.g. B.Tech Computer Science" oninput="updatePreview()">
+                                    </div>
+                                    <div class="col-12 higher-degree-other-wrap" style="display:none;">
+                                        <input type="text" class="form-control form-control-sm" name="higher_degree_other[]" placeholder="Specify your degree" oninput="updatePreview()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Specialization / Dept</label>
+                                        <select name="higher_specialization[]" class="form-select form-select-sm" onchange="toggleHigherSpecOther(this);updatePreview();">
+                                            <option value="" disabled selected>-Select-</option>
+                                            <option>Computer Science and Engineering</option>
+                                            <option>Electronics and Communication</option>
+                                            <option>Mechanical Engineering</option>
+                                            <option>Civil Engineering</option>
+                                            <option>Electrical Engineering</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 higher-spec-other-wrap" style="display:none;">
+                                        <label class="form-label small text-muted">Specialization (Other)</label>
+                                        <input type="text" class="form-control form-control-sm" name="higher_specialization_other[]" placeholder="Specify specialization" oninput="updatePreview()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Institution Type</label>
+                                        <select name="higher_inst_type[]" class="form-select form-select-sm" onchange="updatePreview()">
+                                            <option value="" disabled selected>-Select-</option>
+                                            <option>Government</option>
+                                            <option>Aided</option>
+                                            <option>Private</option>
+                                            <option>Deemed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Course Duration</label>
+                                        <select name="higher_duration[]" class="form-select form-select-sm" onchange="updatePreview()">
+                                            <option value="" disabled selected>-Select-</option>
+                                            <option value="2">2 Years</option>
+                                            <option value="3">3 Years</option>
+                                            <option value="4">4 Years</option>
+                                            <option value="5">5 Years</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">College</label>
+                                        <select name="higher_college[]" class="form-select form-select-sm" onchange="toggleHigherCollegeOther(this);updatePreview();">
+                                            <option value="" disabled selected>-Select College-</option>
+                                            <option>College of Engineering Trivandrum (CET)</option>
+                                            <option>National Institute of Technology Calicut (NITC)</option>
+                                            <option>Cochin University of Science and Technology (CUSAT)</option>
+                                            <option>IIT Madras</option>
+                                            <option>IIT Bombay</option>
+                                            <option>IIT Delhi</option>
+                                            <option>Government Engineering College Thrissur</option>
+                                            <option>Model Engineering College, Kochi</option>
+                                            <option>TKM College of Engineering, Kollam</option>
+                                            <option>Mar Athanasius College of Engineering</option>
+                                            <option>Rajagiri School of Engineering and Technology</option>
+                                            <option>LBS College of Engineering, Kasaragod</option>
+                                            <option>Toc H Institute of Science and Technology</option>
+                                            <option>Vimal Jyothi Engineering College</option>
+                                            <option>Government Engineering College Bartonhill</option>
+                                            <option>SCT College of Engineering</option>
+                                            <option>MES College of Engineering</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 higher-college-other-wrap" style="display:none;">
+                                        <label class="form-label small text-muted">College Name (Other)</label>
+                                        <input type="text" class="form-control form-control-sm" name="higher_college_other[]" placeholder="Enter college name" oninput="updatePreview()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">University / Affiliated To</label>
+                                        <select name="higher_univ[]" class="form-select form-select-sm" onchange="toggleHigherUnivOther(this);updatePreview();">
+                                            <option value="" disabled selected>-Select University-</option>
+                                            <option>APJ Abdul Kalam Technological University (KTU)</option>
+                                            <option>University of Kerala</option>
+                                            <option>Mahatma Gandhi University</option>
+                                            <option>Calicut University</option>
+                                            <option>Kannur University</option>
+                                            <option>University of Mumbai</option>
+                                            <option>Delhi University</option>
+                                            <option>Anna University</option>
+                                            <option>Osmania University</option>
+                                            <option>Bangalore University</option>
+                                            <option>Visvesvaraya Technological University (VTU)</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 higher-univ-other-wrap" style="display:none;">
+                                        <label class="form-label small text-muted">University (Other)</label>
+                                        <input type="text" class="form-control form-control-sm" name="higher_univ_other[]" placeholder="Enter university name" oninput="updatePreview()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">State</label>
+                                        <select name="higher_state[]" class="form-select form-select-sm" onchange="loadDistricts(this);updatePreview();">
+                                            <option value="" disabled selected>-Select State-</option>
+                                            <option>Andhra Pradesh</option><option>Assam</option>
+                                            <option>Bihar</option><option>Chhattisgarh</option>
+                                            <option>Delhi</option><option>Goa</option>
+                                            <option>Gujarat</option><option>Haryana</option>
+                                            <option>Himachal Pradesh</option><option>Jharkhand</option>
+                                            <option>Karnataka</option><option>Kerala</option>
+                                            <option>Madhya Pradesh</option><option>Maharashtra</option>
+                                            <option>Odisha</option><option>Punjab</option>
+                                            <option>Rajasthan</option><option>Tamil Nadu</option>
+                                            <option>Telangana</option><option>Uttar Pradesh</option>
+                                            <option>Uttarakhand</option><option>West Bengal</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">District</label>
+                                        <select name="higher_district[]" class="form-select form-select-sm" onchange="updatePreview()">
+                                            <option value="" disabled selected>-Select District-</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Graduation Year</label>
+                                        <select name="higher_grad_year[]" class="form-select form-select-sm" required onchange="updatePreview()">
+                                            <option value="" disabled selected>-Select Year-</option>
+                                            {% for y in range(2000, 2032) %}<option value="{{ y }}">{{ y }}</option>{% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">CGPA (out of 10)</label>
+                                        <input type="number" step="0.01" min="0" max="10" class="form-control form-control-sm" name="higher_cgpa[]" placeholder="E.g. 8.5" oninput="updatePreview()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-exp mb-4" style="border-color:#a78bfa;color:#a78bfa;background:rgba(139,92,246,0.08);" onclick="addHigherEntry()">
+                            <i class="fa-solid fa-plus me-2"></i> Add Higher Education
+                        </button>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Qualification</label>
+                                        <select name="edu_qualification[]" class="form-select form-select-sm" onchange="updateEducationMarks(this)" required>
+                                            <option value="" disabled selected>Select Qualification</option>
+                                            <option value="SSLC (10th)">SSLC (10th)</option>
+                                            <option value="Plus Two (12th)">Plus Two (12th)</option>
+                                            <option value="Diploma">Diploma</option>
+                                            <option value="Bachelor's">Bachelor's</option>
+                                            <option value="Master's">Master's</option>
+                                            <option value="PhD">PhD</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">College / School</label>
+                                        <select name="edu_college[]" class="form-select form-select-sm" required>
+                                            <option value="" disabled selected>Select College</option>
+                                            <option value="College of Engineering Trivandrum (CET)">College of Engineering Trivandrum (CET)</option>
+                                            <option value="National Institute of Technology Calicut (NITC)">NIT Calicut (NITC)</option>
+                                            <option value="IIT Madras">IIT Madras</option>
+                                            <option value="IIT Bombay">IIT Bombay</option>
+                                            <option value="Government Engineering College Thrissur">GEC Thrissur</option>
+                                            <option value="Model Engineering College, Kochi">Model Engineering College</option>
+                                            <option value="TKM College of Engineering, Kollam">TKM College of Engineering</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">University / Board</label>
+                                        <select name="edu_university[]" class="form-select form-select-sm" required>
+                                            <option value="" disabled selected>Select University</option>
+                                            <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
+                                            <option value="University of Kerala">University of Kerala</option>
+                                            <option value="Mahatma Gandhi University">MG University</option>
+                                            <option value="Calicut University">Calicut University</option>
+                                            <option value="CBSE">CBSE</option>
+                                            <option value="ICSE">ICSE</option>
+                                            <option value="Kerala State Board">Kerala State Board</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Graduation Year</label>
+                                        <select name="edu_year[]" class="form-select form-select-sm" required>
+                                            <option value="" disabled selected>Select Year</option>
+                                            {% for y in range(2000, 2032) %}
+                                                <option value="{{ y }}">{{ y }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 marks-field percentage-div" style="display:none;">
+                                        <label class="form-label small text-muted">Percentage (%)</label>
+                                        <input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm" name="edu_percentage[]" placeholder="E.g. 85.5">
+                                    </div>
+                                    <div class="col-md-12 marks-field cgpa-div" style="display:none;">
+                                        <label class="form-label small text-muted">CGPA (out of 10)</label>
+                                        <input type="number" step="0.01" min="0" max="10" class="form-control form-control-sm" name="edu_cgpa[]" placeholder="E.g. 8.5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-exp mb-4" style="border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.1);" onclick="addEducation()">
+                            <i class="fa-solid fa-plus me-2"></i> Add Education
+                        </button>
 
-                    <div style="margin-bottom: 12px;">
-                        <label style="display:block; color:#64748b; font-size:0.85rem; font-weight:600; margin-bottom:4px;">Skills <span style="color:#94a3b8;font-weight:400;">(Hold Ctrl/Cmd to select multiple)</span></label>
-                        <select id="skills" name="skills" multiple required style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit; font-size:0.95rem; height:150px; background:#fff;">
-                            <option value="Python">Python</option>
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="TypeScript">TypeScript</option>
-                            <option value="Java">Java</option>
-                            <option value="C++">C++</option>
-                            <option value="C#">C#</option>
-                            <option value="HTML">HTML</option>
-                            <option value="CSS">CSS</option>
-                            <option value="React">React</option>
-                            <option value="Angular">Angular</option>
-                            <option value="Vue">Vue</option>
-                            <option value="Node.js">Node.js</option>
-                            <option value="Django">Django</option>
-                            <option value="Flask">Flask</option>
-                            <option value="Spring Boot">Spring Boot</option>
-                            <option value="SQL">SQL</option>
-                            <option value="MongoDB">MongoDB</option>
-                            <option value="PostgreSQL">PostgreSQL</option>
-                            <option value="Docker">Docker</option>
-                            <option value="Kubernetes">Kubernetes</option>
-                            <option value="AWS">AWS</option>
-                            <option value="GCP">GCP</option>
-                            <option value="Azure">Azure</option>
-                            <option value="Git">Git</option>
-                            <option value="CI/CD">CI/CD</option>
-                            <option value="Machine Learning">Machine Learning</option>
-                            <option value="Data Analysis">Data Analysis</option>
-                        </select>
-                    </div>
+                        <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-briefcase" style="color:#f59e0b;"></i> Experience & Projects</h4>
+                        
+                        <div id="experience-container">
+                            <label class="form-label d-flex justify-content-between align-items-center mb-3">
+                                <span>Work Experience</span>
+                            </label>
+                            <div class="experience-row">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Company Name</label>
+                                        <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="E.g. Google" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Job Role</label>
+                                        <input type="text" class="form-control form-control-sm" name="exp_role[]" placeholder="E.g. Senior Developer" required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label small text-muted">Duration</label>
+                                        <input type="text" class="form-control form-control-sm" name="exp_duration[]" placeholder="E.g. Jan 2020 - Present">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Description (Optional)</label>
+                                        <textarea class="form-control form-control-sm" name="exp_desc[]" rows="3" placeholder="Key responsibilities and achievements..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-exp mb-4" onclick="addExperience()">
+                            <i class="fa-solid fa-plus me-2"></i> Add Another Company
+                        </button>
 
-                    <textarea id="projects" name="projects" placeholder="Projects Description" required></textarea>
-                    
-                    <select name="template_id" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit;">
-                        <option value="modern">Modern Professional (Blue)</option>
-                        <option value="classic">Simple ATS (Black & White)</option>
-                        <option value="tech">Developer (Terminal Green)</option>
-                        <option value="creative">Creative (Purple)</option>
-                    </select>
+                        <div id="projects-container">
+                            <label class="form-label d-flex justify-content-between align-items-center mb-3">
+                                <span>Projects</span>
+                            </label>
+                            <div class="project-row">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Project Title</label>
+                                        <input type="text" class="form-control form-control-sm" name="project_title[]" placeholder="E.g. E-commerce Platform" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Role Name</label>
+                                        <input type="text" class="form-control form-control-sm" name="project_role[]" placeholder="E.g. Full Stack Developer" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Organization / Company</label>
+                                        <input type="text" class="form-control form-control-sm" name="project_org[]" placeholder="E.g. Tech Corp">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small text-muted">Duration</label>
+                                        <input type="text" class="form-control form-control-sm" name="project_duration[]" placeholder="E.g. Jan 2023 - Present">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Description (Key achievements)</label>
+                                        <textarea class="form-control form-control-sm" name="project_desc[]" rows="3" placeholder="Bullet points of what you did..." required></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small text-muted">Technologies Used (Optional)</label>
+                                        <input type="text" class="form-control form-control-sm" name="project_tech[]" placeholder="E.g. React, Node.js, AWS">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-project mb-4" onclick="addProject()">
+                            <i class="fa-solid fa-plus me-2"></i> Add Another Project
+                        </button>
 
-                    <button type="submit">Generate PDF Resume</button>
-                </form>
+                        <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-code" style="color:#ec4899;"></i> Skills & Certs</h4>
+                        <div class="mb-4">
+                            <label class="form-label">Technical Skills <span class="text-lowercase text-muted" style="font-weight:400;">(Hold Ctrl/Cmd to multi-select)</span></label>
+                            <select id="skills" name="skills" class="form-select" multiple required style="height:140px;">
+                                <option value="Python">Python</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="TypeScript">TypeScript</option>
+                                <option value="Java">Java</option>
+                                <option value="C++">C++</option>
+                                <option value="C#">C#</option>
+                                <option value="HTML">HTML</option>
+                                <option value="CSS">CSS</option>
+                                <option value="React">React</option>
+                                <option value="Angular">Angular</option>
+                                <option value="Vue">Vue</option>
+                                <option value="Node.js">Node.js</option>
+                                <option value="Django">Django</option>
+                                <option value="Flask">Flask</option>
+                                <option value="Spring Boot">Spring Boot</option>
+                                <option value="SQL">SQL</option>
+                                <option value="MongoDB">MongoDB</option>
+                                <option value="PostgreSQL">PostgreSQL</option>
+                                <option value="Docker">Docker</option>
+                                <option value="Kubernetes">Kubernetes</option>
+                                <option value="AWS">AWS</option>
+                                <option value="GCP">GCP</option>
+                                <option value="Azure">Azure</option>
+                                <option value="Git">Git</option>
+                                <option value="CI/CD">CI/CD</option>
+                                <option value="Machine Learning">Machine Learning</option>
+                                <option value="Data Analysis">Data Analysis</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Languages Known</label>
+                            <input id="languages" type="text" class="form-control" name="languages" placeholder="Comma separated (e.g. English, Spanish, Hindi)">
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label mb-0">Certifications</label>
+                                <button type="button" class="btn btn-sm btn-outline-light" onclick="addIndexCertRow()"><i class="fa-solid fa-plus"></i> Add</button>
+                            </div>
+                            <div id="indexCertsContainer">
+                                <div class="cert-row">
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-8">
+                                            <input type="text" class="form-control form-control-sm" name="cert_name[]" placeholder="Certificate Name" required>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" class="form-control form-control-sm" name="cert_year[]" placeholder="Year">
+                                        </div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control form-control-sm" name="cert_org[]" placeholder="Organization">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control form-control-sm" name="cert_link[]" placeholder="Link URL">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
+
+                        <div class="mb-4">
+                            <label class="form-label">Select PDF Theme</label>
+                            <select name="template_id" class="form-select">
+                                <option value="modern">Modern Professional (Blue)</option>
+                                <option value="classic">Simple ATS (Black & White)</option>
+                                <option value="tech">Developer (Terminal Green)</option>
+                                <option value="creative">Creative (Purple)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary-gradient"><i class="fa-solid fa-file-pdf"></i> Generate PDF Resume</button>
+                    </form>
+                </div>
             </div>
-            <div class="preview-panel">
-                <h3>Preview</h3>
-                <p class="muted">Live preview — updates as you type.</p>
-                <div class="preview-field">
-                    <h2 id="pv-name">Your Name</h2>
-                    <div id="pv-contact" class="muted">email | phone</div>
-                    <div id="pv-links" style="margin-top:8px"></div>
-                    <div style="margin-top:12px">
-                        <strong>Experience</strong>
-                        <div id="pv-experience" style="margin-top:6px;color:#0f172a">—</div>
-                    </div>
-                    <div style="margin-top:12px">
-                        <strong>Education</strong>
-                        <div id="pv-education" style="margin-top:6px;color:#0f172a">—</div>
-                    </div>
-                    <div style="margin-top:12px">
-                        <strong>Certifications</strong>
-                        <div id="pv-certifications" style="margin-top:6px;color:#0f172a">—</div>
-                    </div>
-                    <div style="margin-top:12px">
-                        <strong>Skills</strong>
-                        <div id="pv-skills" style="margin-top:6px;color:#0f172a">—</div>
-                    </div>
-                    <div style="margin-top:12px">
-                        <strong>Projects</strong>
-                        <div id="pv-projects" style="margin-top:6px;color:#0f172a">—</div>
-                    </div>
-                    <div style="margin-top:12px" id="pv-languages-container">
-                        <strong>Languages</strong>
-                        <div id="pv-languages" class="languages"></div>
+
+            <!-- Right Column: Live Preview -->
+            <div class="col-lg-6">
+                <div class="preview-sticky">
+                    <h5 class="text-white mb-3"><i class="fa-solid fa-eye" style="color:var(--accent-teal);"></i> Live Preview Document</h5>
+                    <div class="resume-preview-sheet" id="print-area">
+                        
+                        <h2 id="pv-name" class="fw-bold mb-1" style="font-size:2.5rem; letter-spacing:-0.5px;">Your Name</h2>
+                        <div id="pv-contact" class="text-muted mb-2" style="font-size:0.95rem;">email@example.com | +1 234 567</div>
+                        <div id="pv-links" class="mb-4" style="font-size:0.9rem;"></div>
+                        
+                        <div class="mb-3">
+                            <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Professional Experience</h5>
+                            <div id="pv-experience" style="white-space:pre-wrap; font-size:0.95rem; color:#475569;">—</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Education</h5>
+                            <div id="pv-education" style="font-size:0.95rem; color:#475569;">—</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Projects</h5>
+                            <div id="pv-projects" style="white-space:pre-wrap; font-size:0.95rem; color:#475569;">—</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Skills</h5>
+                                <div id="pv-skills" style="font-size:0.95rem; color:#475569;">—</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Certifications</h5>
+                                <div id="pv-certifications" style="font-size:0.95rem; color:#475569;">—</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Languages</h5>
+                            <div id="pv-languages" class="pt-1">—</div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Live preview script
         function setText(id, value, placeholder) {
@@ -213,19 +752,63 @@
             const languages = document.getElementById('languages').value;
             const experience = document.getElementById('experience').value;
 
-            // Education: combine degree + college
-            const educationDeg = document.getElementById('education').value;
-            const collegeSelect = document.getElementById('college');
-            const collegeOtherInput = document.getElementById('collegeOther');
-            let college = collegeSelect.value;
-            if (college === 'Other' && collegeOtherInput && collegeOtherInput.value.trim()) {
-                college = collegeOtherInput.value.trim();
-            }
-            let educationText = '';
-            if (educationDeg) educationText = educationDeg;
-            if (college && college !== 'Other') educationText += (educationText ? ' — ' : '') + college;
+            // Education
+            let eduHTML = '';
+            
+            // 1) School Education
+            const schoolRows = document.querySelectorAll('.school-edu-row');
+            schoolRows.forEach(row => {
+                const qual = row.querySelector('[name="school_qualification[]"]').value;
+                let syll = row.querySelector('[name="school_syllabus[]"]').value;
+                const syllOther = row.querySelector('[name="school_syllabus_other[]"]').value;
+                if (syll === 'Other' && syllOther) syll = syllOther;
+                const year = row.querySelector('[name="school_year[]"]').value;
+                const perc = row.querySelector('[name="school_percentage[]"]').value;
+                
+                if (qual || syll) {
+                    eduHTML += `<div class="mb-2"><strong>${qual}</strong> - ${syll}<br>`;
+                    eduHTML += `<span class="text-muted" style="font-size:0.85rem;">Year: ${year}</span><br>`;
+                    if (perc) eduHTML += `<span style="font-size:0.85rem;">Percentage: ${perc}%</span>`;
+                    eduHTML += `</div>`;
+                }
+            });
 
-            // Skills: read selected options from multi-select
+            // 2) Higher Education
+            const higherRows = document.querySelectorAll('.higher-edu-row');
+            higherRows.forEach(row => {
+                let deg = row.querySelector('[name="higher_degree[]"]').value;
+                const degOther = row.querySelector('[name="higher_degree_other[]"]').value;
+                if ((deg === 'Others' || deg === 'Other') && degOther) deg = degOther;
+                
+                const course = row.querySelector('[name="higher_course[]"]').value;
+                
+                let coll = row.querySelector('[name="higher_college[]"]').value;
+                const collOther = row.querySelector('[name="higher_college_other[]"]').value;
+                if (coll === 'Other' && collOther) coll = collOther;
+                
+                let univ = row.querySelector('[name="higher_univ[]"]').value;
+                const univOther = row.querySelector('[name="higher_univ_other[]"]').value;
+                if (univ === 'Other' && univOther) univ = univOther;
+                
+                const gyear = row.querySelector('[name="higher_grad_year[]"]').value;
+                const cgpa = row.querySelector('[name="higher_cgpa[]"]').value;
+                
+                if (deg || coll || course) {
+                    const title = (deg && course) ? `${deg} - ${course}` : (deg || course);
+                    eduHTML += `<div class="mb-2"><strong>${title}</strong><br>`;
+                    if (coll) eduHTML += `${coll}<br>`;
+                    let subInfo = [];
+                    if (univ) subInfo.push(univ);
+                    if (gyear) subInfo.push(gyear);
+                    if (subInfo.length > 0) eduHTML += `<span class="text-muted" style="font-size:0.85rem;">${subInfo.join(' | ')}</span><br>`;
+                    if (cgpa) eduHTML += `<span style="font-size:0.85rem;">CGPA: ${cgpa}</span>`;
+                    eduHTML += `</div>`;
+                }
+            });
+
+            document.getElementById('pv-education').innerHTML = eduHTML || '—';
+
+            // Skills
             const skillsSelect = document.getElementById('skills');
             const selectedSkills = Array.from(skillsSelect.selectedOptions).map(o => o.value);
             const skillsText = selectedSkills.join(', ');
@@ -236,7 +819,7 @@
             const contactParts = [];
             if (email) contactParts.push(email);
             if (phone) contactParts.push(phone);
-            setText('pv-contact', contactParts.join(' | '), '');
+            setText('pv-contact', contactParts.join(' | '), 'email | phone');
 
             const linksEl = document.getElementById('pv-links');
             linksEl.innerHTML = '';
@@ -245,7 +828,10 @@
                 a.href = linkedin;
                 a.target = '_blank';
                 a.textContent = 'LinkedIn';
-                a.style.marginRight = '10px';
+                a.style.marginRight = '15px';
+                a.style.color = '#3b82f6';
+                a.style.textDecoration = 'none';
+                a.style.fontWeight = '500';
                 linksEl.appendChild(a);
             }
             if (github) {
@@ -253,11 +839,31 @@
                 a.href = github;
                 a.target = '_blank';
                 a.textContent = 'GitHub';
+                a.style.color = '#3b82f6';
+                a.style.textDecoration = 'none';
+                a.style.fontWeight = '500';
                 linksEl.appendChild(a);
             }
 
-            setText('pv-experience', experience, '—');
-            setText('pv-education', educationText, '—');
+            // Experience
+            const expCompanies = document.getElementsByName('exp_company[]');
+            const expRoles = document.getElementsByName('exp_role[]');
+            const expDurations = document.getElementsByName('exp_duration[]');
+            const expDescs = document.getElementsByName('exp_desc[]');
+            let expHtml = '';
+            for (let i = 0; i < expCompanies.length; i++) {
+                if (expCompanies[i].value || expRoles[i].value) {
+                    expHtml += `<div class="mb-3">
+                        <div class="fw-bold" style="color:var(--primary)">${expCompanies[i].value}</div>
+                        <div class="small fw-semibold text-white">${expRoles[i].value}</div>
+                        <div class="x-small text-muted">${expDurations[i].value}</div>
+                        <div class="mt-1">${expDescs[i].value.replace(/\n/g, '<br>')}</div>
+                    </div>`;
+                }
+            }
+            document.getElementById('pv-experience').innerHTML = expHtml || '—';
+
+            // Projects
             setText('pv-skills', skillsText, '—');
             setText('pv-projects', projects, '—');
             
@@ -268,13 +874,18 @@
             let certsText = [];
             for (let i = 0; i < certNames.length; i++) {
                 if (certNames[i].value.trim()) {
-                    let text = certNames[i].value.trim();
+                    let text = `<strong>${certNames[i].value.trim()}</strong>`;
                     if (certOrgas[i].value.trim()) text += ` - ${certOrgas[i].value.trim()}`;
                     if (certYears[i].value.trim()) text += ` (${certYears[i].value.trim()})`;
                     certsText.push(text);
                 }
             }
-            setText('pv-certifications', certsText.join(', '), '—');
+            const certEl = document.getElementById('pv-certifications');
+            if (certsText.length > 0) {
+                certEl.innerHTML = certsText.join('<br>');
+            } else {
+                certEl.innerHTML = '—';
+            }
 
             const langsEl = document.getElementById('pv-languages');
             langsEl.innerHTML = '';
@@ -286,64 +897,262 @@
                     span.textContent = p;
                     langsEl.appendChild(span);
                 });
+            } else {
+                langsEl.innerHTML = '—';
             }
         }
 
-        // Attach event listeners for text inputs and textareas
-        ['name', 'email', 'phone', 'linkedin', 'github', 'languages', 'experience', 'projects'].forEach(id => {
+        ['name', 'email', 'phone', 'linkedin', 'github', 'languages'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('input', updatePreview);
         });
 
-        // Attach change listeners for dropdowns
-        ['education', 'college', 'skills'].forEach(id => {
+        ['school-edu-container', 'higher-edu-container'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('change', updatePreview);
+            el.addEventListener('input', updatePreview);
         });
 
-        // Listen on custom college text input too
         const collegeOtherEl = document.getElementById('collegeOther');
         if (collegeOtherEl) {
             collegeOtherEl.addEventListener('input', updatePreview);
         }
 
-        // Toggle custom college text input
-        function toggleOtherCollege() {
-            const collegeSelect = document.getElementById('college');
-            const otherInput = document.getElementById('collegeOther');
-            if (collegeSelect.value === 'Other') {
-                otherInput.style.display = 'block';
-                otherInput.focus();
-            } else {
-                otherInput.style.display = 'none';
-                otherInput.value = '';
-            }
+        // --- Toggle functions for "Other" fields ---
+        function toggleSchoolSyllabusOther(select) {
+            const wrap = select.closest('.row').querySelector('.school-syllabus-other-wrap');
+            if(select.value === 'Other') wrap.style.display = 'block';
+            else wrap.style.display = 'none';
+        }
+        function toggleHigherDegreeOther(select) {
+            const wrap = select.closest('.row').querySelector('.higher-degree-other-wrap');
+            if(select.value === 'Others') wrap.style.display = 'block';
+            else wrap.style.display = 'none';
+        }
+        function toggleHigherSpecOther(select) {
+            const wrap = select.closest('.row').querySelector('.higher-spec-other-wrap');
+            if(select.value === 'Other') wrap.style.display = 'block';
+            else wrap.style.display = 'none';
+        }
+        function toggleHigherCollegeOther(select) {
+            const wrap = select.closest('.row').querySelector('.higher-college-other-wrap');
+            if(select.value === 'Other') wrap.style.display = 'block';
+            else wrap.style.display = 'none';
+        }
+        function toggleHigherUnivOther(select) {
+            const wrap = select.closest('.row').querySelector('.higher-univ-other-wrap');
+            if(select.value === 'Other') wrap.style.display = 'block';
+            else wrap.style.display = 'none';
+        }
+
+        const indiaStateDistricts = {
+            "Kerala": ["Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha", "Kottayam", "Idukki", "Ernakulam", "Thrissur", "Palakkad", "Malappuram", "Kozhikode", "Wayanad", "Kannur", "Kasaragod"],
+            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi-Dharwad", "Belagavi", "Kalaburagi"],
+            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Solapur"],
+            "Other": ["Other"]
+        };
+
+        function loadDistricts(stateSelect) {
+            const districtSelect = stateSelect.closest('.row').querySelector('select[name="higher_district[]"]');
+            districtSelect.innerHTML = '<option value="" disabled selected>-Select District-</option>';
+            const state = stateSelect.value;
+            let dists = indiaStateDistricts[state] || ["Other"];
+            dists.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                districtSelect.appendChild(opt);
+            });
+        }
+
+        // --- Add/Remove Entry Functions ---
+        function addSchoolEntry() {
+            const container = document.getElementById('school-edu-container');
+            const row = document.createElement('div');
+            row.className = 'school-edu-row';
+            row.innerHTML = `
+                <button type="button" class="btn-remove-edu" onclick="removeEduEntry(this, 'school-edu-container')"><i class="fa-solid fa-xmark"></i></button>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Qualification</label>
+                        <select name="school_qualification[]" class="form-select form-select-sm" required onchange="updatePreview()">
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="SSLC (10th)">SSLC (10th)</option>
+                            <option value="Plus Two (12th)">Plus Two (12th)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Syllabus / Board</label>
+                        <select name="school_syllabus[]" class="form-select form-select-sm" required onchange="toggleSchoolSyllabusOther(this);updatePreview();">
+                            <option value="" disabled selected>-Select-</option>
+                            <option>Kerala State Syllabus</option>
+                            <option>CBSE</option>
+                            <option>ICSE</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-12 school-syllabus-other-wrap" style="display:none;">
+                        <input type="text" class="form-control form-control-sm" name="school_syllabus_other[]" placeholder="Specify syllabus / board" oninput="updatePreview()">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Year of Completion</label>
+                        <select name="school_year[]" class="form-select form-select-sm" required onchange="updatePreview()">
+                            <option value="" disabled selected>-Select Year-</option>
+                            ${Array.from({length: 29}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Percentage (%)</label>
+                        <input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm" name="school_percentage[]" placeholder="E.g. 85.5" oninput="updatePreview()">
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
             updatePreview();
         }
 
-        // Add event listeners to initial cert inputs
-        document.querySelectorAll('#indexCertsContainer input').forEach(el => {
-            el.addEventListener('input', updatePreview);
-        });
+        function addHigherEntry() {
+            const container = document.getElementById('higher-edu-container');
+            // Duplicate the first higher-edu-row
+            const firstRow = container.querySelector('.higher-edu-row');
+            if(!firstRow) return;
+            const newRow = firstRow.cloneNode(true);
+            
+            newRow.querySelectorAll('input').forEach(el => {
+                if (el.classList.contains('degree-display')) {
+                    el.value = '-Select-';
+                } else {
+                    el.value = '';
+                }
+            });
+            newRow.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+            newRow.querySelectorAll('[style*="display: block"]').forEach(el => el.style.display = 'none');
+            // Add remove button if not exists
+            if(!newRow.querySelector('.btn-remove-edu')) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-remove-edu';
+                btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                btn.onclick = function() { removeEduEntry(this, 'higher-edu-container'); };
+                newRow.insertBefore(btn, newRow.firstChild);
+            }
+            container.appendChild(newRow);
+            updatePreview();
+        }
+        
+        function removeEduEntry(btn, containerId) {
+            const container = document.getElementById(containerId);
+            const rowClass = containerId === 'school-edu-container' ? '.school-edu-row' : '.higher-edu-row';
+            if (container.querySelectorAll(rowClass).length > 1) {
+                btn.parentElement.remove();
+                updatePreview();
+            } else {
+                alert("At least one entry is required.");
+            }
+        }
 
-        function addIndexCertRow() {
+        function addExperience() {
+            const container = document.getElementById('experience-container');
+            const row = document.createElement('div');
+            row.className = 'experience-row';
+            row.innerHTML = `
+                <button type="button" class="btn-remove-exp" onclick="removeExperience(this)"><i class="fa-solid fa-xmark"></i></button>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Company Name</label>
+                        <input type="text" class="form-control form-control-sm" name="exp_company[]" placeholder="E.g. Google" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Job Role</label>
+                        <input type="text" class="form-control form-control-sm" name="exp_role[]" placeholder="E.g. Senior Developer" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small text-muted">Duration</label>
+                        <input type="text" class="form-control form-control-sm" name="exp_duration[]" placeholder="E.g. Jan 2020 - Present">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small text-muted">Description (Optional)</label>
+                        <textarea class="form-control form-control-sm" name="exp_desc[]" rows="3" placeholder="Key responsibilities and achievements..."></textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            row.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', updatePreview));
+            updatePreview();
+        }
+
+        function removeExperience(btn) {
+            const container = document.getElementById('experience-container');
+            if (container.querySelectorAll('.experience-row').length > 1) {
+                btn.parentElement.remove();
+                updatePreview();
+            } else {
+                alert("At least one experience entry is required.");
+            }
+        }
+
+        function addProject() {
+            const container = document.getElementById('projects-container');
+            const row = document.createElement('div');
+            row.className = 'project-row';
+            row.innerHTML = `
+                <button type="button" class="btn-remove-project" onclick="this.parentElement.remove(); updatePreview();"><i class="fa-solid fa-xmark"></i></button>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Project Title</label>
+                        <input type="text" class="form-control form-control-sm" name="project_title[]" placeholder="E.g. E-commerce Platform" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Role Name</label>
+                        <input type="text" class="form-control form-control-sm" name="project_role[]" placeholder="E.g. Full Stack Developer" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Organization / Company</label>
+                        <input type="text" class="form-control form-control-sm" name="project_org[]" placeholder="E.g. Tech Corp">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Duration</label>
+                        <input type="text" class="form-control form-control-sm" name="project_duration[]" placeholder="E.g. Jan 2023 - Present">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small text-muted">Description (Key achievements)</label>
+                        <textarea class="form-control form-control-sm" name="project_desc[]" rows="3" placeholder="Bullet points of what you did..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small text-muted">Technologies Used (Optional)</label>
+                        <input type="text" class="form-control form-control-sm" name="project_tech[]" placeholder="E.g. React, Node.js, AWS">
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            row.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', updatePreview));
+            updatePreview();
+        }
+
+        function addCertification() {
             const container = document.getElementById('indexCertsContainer');
             const row = document.createElement('div');
-            row.className = 'index-cert-row';
-            row.style.marginBottom = '8px';
-            row.style.paddingBottom = '8px';
-            row.style.borderBottom = '1px dashed #cbd5e1';
+            row.className = 'cert-row';
             row.innerHTML = `
-                <div style="display: flex; gap: 8px; margin-bottom: 6px;">
-                    <input type="text" name="cert_name[]" placeholder="Cert Name" style="margin: 0; flex: 2;" required>
-                    <input type="text" name="cert_year[]" placeholder="Year" style="margin: 0; flex: 1;">
+                <button type="button" class="btn-remove-cert" onclick="this.parentElement.remove(); updatePreview();"><i class="fa-solid fa-xmark"></i></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-8">
+                        <input type="text" class="form-control form-control-sm" name="cert_name[]" placeholder="Certificate Name" required>
+                    </div>
+                    <div class="col-4">
+                        <input type="text" class="form-control form-control-sm" name="cert_year[]" placeholder="Year">
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" name="cert_org[]" placeholder="Organization" style="margin: 0; flex: 1;">
-                    <input type="text" name="cert_link[]" placeholder="Link (URL)" style="margin: 0; flex: 1;">
-                    <button type="button" onclick="this.parentElement.parentElement.remove(); updatePreview();" style="width: auto; padding: 4px 8px; margin: 0; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px;">X</button>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="text" class="form-control form-control-sm" name="cert_org[]" placeholder="Organization">
+                    </div>
+                    <div class="col-6">
+                        <input type="text" class="form-control form-control-sm" name="cert_link[]" placeholder="Link URL">
+                    </div>
                 </div>
             `;
             container.appendChild(row);
@@ -351,10 +1160,102 @@
             updatePreview();
         }
 
-        // initialize preview with empty or default values
         updatePreview();
     </script>
+    
+    <!-- Degree Selection Modal -->
+    <div class="modal fade" id="degreeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0" style="background:#1e1e2e; border-radius:12px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white" style="font-size:1.1rem; font-weight: 600;">Select Degree</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <style>
+                        .degree-category { font-size: 0.8rem; font-weight: 600; color: #a5b4fc; text-transform: uppercase; margin-bottom: 0.5rem; margin-top: 1rem; }
+                        .degree-category:first-child { margin-top: 0; }
+                        .degree-radio { display: none; }
+                        .degree-label {
+                            display: block; width: 100%; padding: 0.6rem 1rem; margin-bottom: 0.4rem;
+                            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
+                            border-radius: 8px; color: #e2e8f0; font-size: 0.9rem; cursor: pointer;
+                            transition: all 0.2s ease;
+                        }
+                        .degree-label:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); }
+                        .degree-radio:checked + .degree-label {
+                            background: rgba(16,185,129,0.15); border-color: #10b981; color: #10b981; font-weight: 600;
+                            box-shadow: 0 0 10px rgba(16,185,129,0.1);
+                        }
+                    </style>
+                    <form id="degreeSelectionForm">
+                        <div class="degree-category">Undergraduate</div>
+                        {% for deg in ['B.Tech / B.E.', 'B.Sc', 'BCA', 'BBA / BBM / BBS', 'B.Com', 'B.Arch', 'B.Pharm', 'MBBS', 'BDS', 'B.Sc Nursing', 'B.Sc (Dairy Science / Dairy Technology)'] %}
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_{{ loop.index }}" value="{{ deg }}" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_{{ loop.index }}">{{ deg }}</label>
+                        {% endfor %}
 
+                        <div class="degree-category">Postgraduate</div>
+                        {% for deg in ['M.Tech / M.E.', 'M.Sc', 'MCA', 'MBA', 'M.Com', 'M.Pharm'] %}
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_pg_{{ loop.index }}" value="{{ deg }}" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_pg_{{ loop.index }}">{{ deg }}</label>
+                        {% endfor %}
+
+                        <div class="degree-category">Doctorate</div>
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_phd" value="PhD" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_phd">PhD</label>
+
+                        <div class="degree-category">Other</div>
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_dip" value="Diploma" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_dip">Diploma</label>
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_oth" value="Others" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_oth">Others</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeDegreeTarget = null;
+        function openDegreeModal(el) {
+            activeDegreeTarget = el;
+            
+            // Reset radio buttons
+            document.querySelectorAll('.degree-radio').forEach(r => r.checked = false);
+            // Check the current value if it exists among predefined
+            const currentVal = el.nextElementSibling.value;
+            if (currentVal) {
+                const radio = document.querySelector(`.degree-radio[value="${currentVal}"]`);
+                if (radio) radio.checked = true;
+                else if (currentVal !== "" && currentVal !== "-Select-") {
+                    document.querySelector(`.degree-radio[value="Others"]`).checked = true;
+                }
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('degreeModal'));
+            modal.show();
+        }
+
+        function selectDegree(val) {
+            if (activeDegreeTarget) {
+                let displayVal = val;
+                
+                if (val === 'Others' || val === 'Other') {
+                    const manual = prompt("Enter your degree:");
+                    if (manual) displayVal = manual;
+                    else return; // If cancelled, do nothing
+                }
+                
+                activeDegreeTarget.value = displayVal;
+                activeDegreeTarget.nextElementSibling.value = displayVal;
+                
+                updatePreview();
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('degreeModal'));
+            if (modal) modal.hide();
+        }
+    </script>
+    {% include 'chatbot.html' %}
 </body>
-
 </html>

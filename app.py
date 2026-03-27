@@ -5,7 +5,7 @@ from PyPDF2 import PdfReader
 from functools import wraps
 
 # Import the new modules
-from modules import resume_processor, jd_matcher, groq_analyzer, pdf_generator, ats_analyzer
+from modules import resume_processor, groq_analyzer, pdf_generator, ats_analyzer, role_analyzer
 from modules.database import create_user, authenticate_user, get_user_by_id, save_resume, get_user_resumes, delete_resume
 
 app = Flask(__name__)
@@ -193,13 +193,44 @@ def download_ats_report():
         return send_file(buffer, as_attachment=True, attachment_filename=report_name, mimetype='application/pdf')
 
 
+@app.route('/analyze-role', methods=['GET', 'POST'])
+def analyze_role():
+    if request.method == 'POST':
+        role_name = request.form.get('role')
+        if 'file' in request.files and request.files['file'].filename != '':
+            file = request.files['file']
+            resume_text = resume_processor.extract_text_from_pdf(file)
+        else:
+            resume_text = request.form.get('resume_text', '')
+
+        if not resume_text:
+            flash("Please upload a resume or provide text.")
+            return redirect(url_for('analyze_role'))
+
+        analysis = role_analyzer.match_resume_to_role(resume_text, role_name)
+        if not analysis:
+            flash("Invalid role selected.")
+            return redirect(url_for('analyze_role'))
+            
+        session['role_analysis'] = analysis
+        return redirect(url_for('role_dashboard'))
+
+    roles = role_analyzer.get_role_list()
+    return render_template('analyze_role.html', roles=roles)
+
+@app.route('/role-dashboard')
+def role_dashboard():
+    analysis = session.get('role_analysis')
+    if not analysis:
+        return redirect(url_for('analyze_role'))
+    return render_template('role_dashboard.html', analysis=analysis)
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if request.method == 'GET':
         return render_template('dashboard.html')
 
-    job_description = request.form.get('job_description', '').strip()
-    resume_text     = request.form.get('resume_text', '').strip()
+    resume_text = request.form.get('resume_text', '').strip()
 
     # ── Resume: prefer PDF upload over pasted text ──────────────────────
     resume_file = request.files.get('resume_file')
@@ -213,40 +244,16 @@ def dashboard():
         else:
             return render_template('dashboard.html', error='Resume must be a PDF file.')
 
-    # ── Job Description: prefer file upload over pasted text ─────────────
-    jd_file = request.files.get('jd_file')
-    if jd_file and jd_file.filename:
-        fname = jd_file.filename.lower()
-        if fname.endswith('.pdf'):
-            try:
-                job_description = resume_processor.extract_text_from_pdf(jd_file.stream)
-            except Exception as e:
-                return render_template('dashboard.html', error=f'Error reading JD PDF: {e}')
-        elif fname.endswith('.txt'):
-            try:
-                job_description = jd_file.read().decode('utf-8', errors='ignore')
-            except Exception as e:
-                return render_template('dashboard.html', error=f'Error reading JD text file: {e}')
-        else:
-            return render_template('dashboard.html', error='Job description file must be PDF or TXT.')
-
     # ── Validate ─────────────────────────────────────────────────────────
-    if not job_description:
-        return render_template('dashboard.html',
-                               error='Please paste a job description or upload a JD file.')
     if not resume_text:
         return render_template('dashboard.html',
                                error='Please upload your resume PDF or paste resume text.')
 
-    # ── Analyse ──────────────────────────────────────────────────────────
-    report, score = groq_analyzer.analyze_resume_improvement(resume_text, job_description)
-
+    # ── Extraction ──────────────────────────────────────────────────────
     name, email, phone = resume_processor.extract_contact_info(resume_text)
     sections           = resume_processor.split_into_sections(resume_text)
 
     return render_template('dashboard.html',
-                           report=report,
-                           score=score,
                            name=name,
                            email=email,
                            phone=phone,
@@ -254,13 +261,65 @@ def dashboard():
                            skills=sections.get('skills', ''),
                            projects=sections.get('projects', ''),
                            experience=sections.get('experience', ''),
-                           job_description=job_description)
+                           resume_text=resume_text)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.get_json() or {}
+    msg = data.get('message', '').lower()
+    
+    response_msg = "I can help you with resume improvement tips, rewrite your sentences, or provide role-specific guidance if you've done a Role Match. Try saying 'rewrite: I led a team'."
+    
+    role_analysis = session.get('role_analysis')
+    
+    if 'rewrite' in msg or 'improve' in msg or 'bullet' in msg:
+
+        target_text = ""
+        if ':' in msg:
+            target_text = msg.split(':', 1)[1].strip()
+        else:
+            for kw in ['rewrite', 'improve', 'bullet']:
+                if kw in msg:
+                    parts = msg.split(kw, 1)
+                    if len(parts) > 1:
+                        target_text = parts[1].strip()
+                        break
+        
+        if target_text:
+            try:
+                rewritten = groq_analyzer.rewrite_bullet_point(target_text)
+                response_msg = f"Here is a professional version: \"{rewritten}\""
+            except Exception as e:
+                response_msg = f"I tried to rewrite that, but ran into an issue: {str(e)}"
+        else:
+            response_msg = "Please provide the text you want me to rewrite. Example: 'rewrite: I made a website'."
+
+    elif role_analysis and ('role' in msg or 'match' in msg or 'skill' in msg or 'missing' in msg):
+        role = role_analysis.get('role')
+        missing = role_analysis.get('missing_skills', [])
+        score = role_analysis.get('score', 0)
+        
+        if 'missing' in msg or 'skill' in msg:
+            if missing:
+                response_msg = f"For the {role} role, you're missing: {', '.join(missing[:4])}. Adding these will boost your score!"
+            else:
+                response_msg = f"Your skills are a great match for a {role}! Focus on highlighting your projects now."
+        elif 'match' in msg or 'score' in msg:
+            response_msg = f"Your current strength for the {role} role is {score}%. Try adding some of the recommended projects to improve it."
+        else:
+            response_msg = f"We're currently analyzing your fit for a {role} position. Check the 'Role Match' dashboard for full details."
+
+    elif 'resume' in msg:
+        response_msg = "To optimize your resume: Add measurable achievements in your experience section and ensure you use a clean, ATS-friendly layout."
+
+        
+    return {"response": response_msg}
 
 
 def _get_resume_data_from_request():
-    # Extract dynamic certifications
+    # Extract certifications
     cert_names = request.form.getlist('cert_name[]')
-    cert_orgs = request.form.getlist('cert_org[]')
+    cert_orgs  = request.form.getlist('cert_org[]')
     cert_years = request.form.getlist('cert_year[]')
     cert_links = request.form.getlist('cert_link[]')
     
@@ -278,19 +337,147 @@ def _get_resume_data_from_request():
         skills_input = [request.form.get('skills')]
     skills_str = ", ".join(filter(None, skills_input))
 
+    # Extract structured experience
+    exp_companies = request.form.getlist('exp_company[]')
+    exp_roles     = request.form.getlist('exp_role[]')
+    exp_durations = request.form.getlist('exp_duration[]')
+    exp_descs     = request.form.getlist('exp_desc[]')
+    
+    experience_list = []
+    # Support backward compatibility for single 'experience' field
+    if not exp_companies and request.form.get('experience'):
+        experience_list.append({
+            'company': '',
+            'role': '',
+            'duration': '',
+            'description': request.form.get('experience', '')
+        })
+    else:
+        for i in range(len(exp_companies)):
+            if exp_companies[i].strip() or (i < len(exp_roles) and exp_roles[i].strip()) or \
+               (i < len(exp_durations) and exp_durations[i].strip()) or \
+               (i < len(exp_descs) and exp_descs[i].strip()):
+                experience_list.append({
+                    'company': exp_companies[i].strip() if i < len(exp_companies) else '',
+                    'role': exp_roles[i].strip() if i < len(exp_roles) else '',
+                    'duration': exp_durations[i].strip() if i < len(exp_durations) else '',
+                    'description': exp_descs[i].strip() if i < len(exp_descs) else ''
+                })
+
+    # Extract structured projects
+    p_titles   = request.form.getlist('project_title[]')
+    p_roles    = request.form.getlist('project_role[]')
+    p_orgs     = request.form.getlist('project_org[]')
+    p_durations = request.form.getlist('project_duration[]')
+    p_descs    = request.form.getlist('project_desc[]')
+    p_techs    = request.form.getlist('project_tech[]')
+    
+    projects_list = []
+    # Support backward compatibility for single 'projects' field
+    if not p_titles and request.form.get('projects'):
+        projects_list.append({
+            'title': '',
+            'role': '',
+            'org': '',
+            'duration': '',
+            'description': request.form.get('projects', ''),
+            'technologies': ''
+        })
+    else:
+        for i in range(len(p_titles)):
+            if p_titles[i].strip():
+                projects_list.append({
+                    'title': p_titles[i].strip(),
+                    'role': p_roles[i].strip() if i < len(p_roles) else '',
+                    'org': p_orgs[i].strip() if i < len(p_orgs) else '',
+                    'duration': p_durations[i].strip() if i < len(p_durations) else '',
+                    'description': p_descs[i].strip() if i < len(p_descs) else '',
+                    'technologies': p_techs[i].strip() if i < len(p_techs) else ''
+                })
+
+    # Extract School Education
+    school_quals = request.form.getlist('school_qualification[]')
+    school_syllabi = request.form.getlist('school_syllabus[]')
+    school_syllabi_other = request.form.getlist('school_syllabus_other[]')
+    school_years = request.form.getlist('school_year[]')
+    school_percs = request.form.getlist('school_percentage[]')
+
+    school_list = []
+    for i in range(len(school_quals)):
+        if school_quals[i].strip():
+            syllabus = school_syllabi[i] if i < len(school_syllabi) else ''
+            if syllabus == 'Other' and i < len(school_syllabi_other):
+                syllabus = school_syllabi_other[i].strip()
+            
+            school_list.append({
+                'qualification': school_quals[i].strip(),
+                'syllabus': syllabus,
+                'year': school_years[i].strip() if i < len(school_years) else '',
+                'percentage': school_percs[i].strip() if i < len(school_percs) else ''
+            })
+
+    # Extract Higher Education
+    h_degrees = request.form.getlist('higher_degree[]')
+    h_courses = request.form.getlist('higher_course[]')
+    h_specs = request.form.getlist('higher_specialization[]')
+    h_specs_other = request.form.getlist('higher_specialization_other[]')
+    h_types = request.form.getlist('higher_inst_type[]')
+    h_colleges = request.form.getlist('higher_college[]')
+    h_colleges_other = request.form.getlist('higher_college_other[]')
+    h_univs = request.form.getlist('higher_univ[]')
+    h_univs_other = request.form.getlist('higher_univ_other[]')
+    h_states = request.form.getlist('higher_state[]')
+    h_districts = request.form.getlist('higher_district[]')
+    h_durations = request.form.getlist('higher_duration[]')
+    h_years = request.form.getlist('higher_grad_year[]')
+    h_cgpas = request.form.getlist('higher_cgpa[]')
+
+    higher_list = []
+    for i in range(len(h_degrees)):
+        if h_degrees[i].strip() or (i < len(h_courses) and h_courses[i].strip()):
+            spec = h_specs[i] if i < len(h_specs) else ''
+            if spec == 'Other' and i < len(h_specs_other):
+                spec = h_specs_other[i].strip()
+            
+            college = h_colleges[i] if i < len(h_colleges) else ''
+            if college == 'Other' and i < len(h_colleges_other):
+                college = h_colleges_other[i].strip()
+            
+            univ = h_univs[i] if i < len(h_univs) else ''
+            if univ == 'Other' and i < len(h_univs_other):
+                univ = h_univs_other[i].strip()
+
+            higher_list.append({
+                'degree': h_degrees[i].strip(),
+                'courseName': h_courses[i].strip() if i < len(h_courses) else '',
+                'specialization': spec,
+                'institutionType': h_types[i].strip() if i < len(h_types) else '',
+                'college': college,
+                'university': univ,
+                'state': h_states[i].strip() if i < len(h_states) else '',
+                'district': h_districts[i].strip() if i < len(h_districts) else '',
+                'duration': h_durations[i].strip() if i < len(h_durations) else '',
+                'graduationYear': h_years[i].strip() if i < len(h_years) else '',
+                'cgpa': h_cgpas[i].strip() if i < len(h_cgpas) else ''
+            })
+
+    education_data = {
+        'school': school_list,
+        'higher': higher_list
+    }
+
     return {
         'name': request.form.get('name', ''),
         'email': request.form.get('email', ''),
         'phone': request.form.get('phone', ''),
-        'education': request.form.get('education', ''),
-        'college': request.form.get('college_other', '').strip() if request.form.get('college', '') == 'Other' else request.form.get('college', ''),
-        'skills': skills_str,
-        'projects': request.form.get('projects', ''),
-        'experience': request.form.get('experience', ''),
-        'certifications': certifications,
         'linkedin': request.form.get('linkedin', ''),
         'github': request.form.get('github', ''),
-        'languages': request.form.get('languages', '')
+        'languages': request.form.get('languages', ''),
+        'education': education_data,
+        'skills': request.form.getlist('skills'),
+        'experience': experience_list, # Now a list of dicts
+        'projects': projects_list, # Now a list of dicts
+        'certifications': certifications
     }
 
 @app.route('/download', methods=['POST'])
@@ -334,42 +521,7 @@ def preview():
         return f"Error generating PDF preview: {e}", 500
 
 
-@app.route('/match', methods=['GET', 'POST'])
-def match():
-    """Legacy match route to maintain backward compatibility, redirects/points to dashboard implicitly."""
-    if request.method == 'GET':
-        return render_template('match.html')
 
-    job_description = request.form.get('job_description', '')
-    resume_text = request.form.get('resume_text', '')
-
-    uploaded = request.files.get('resume_file')
-    if uploaded and uploaded.filename and uploaded.filename.lower().endswith('.pdf'):
-        try:
-            resume_text = resume_processor.extract_text_from_pdf(uploaded.stream)
-        except Exception as e:
-            return render_template('match.html', error=f'Error reading uploaded PDF: {e}')
-
-    if not job_description or not job_description.strip():
-        return render_template('match.html', error='Please paste a job description to analyze.')
-
-    # Using the new smart analyzer instead of the old cosine similarity
-    report, score = groq_analyzer.analyze_resume_improvement(resume_text, job_description)
-    
-    jd_keywords = [cat for sublist in jd_matcher.TECH_CATEGORIES.values() for cat in sublist if cat in job_description.lower()]
-    suggested_skills = report.get('skills_to_add', [])[:6]
-    
-    present = [kw for kw in jd_keywords if kw in resume_text.lower()]
-    missing = [kw for kw in jd_keywords if kw not in resume_text.lower()]
-
-    return render_template('match.html',
-                           job_description=job_description,
-                           jd_keywords=jd_keywords,
-                           suggested_skills=suggested_skills,
-                           present=present,
-                           missing=missing,
-                           similarity=score,
-                           resume_text=resume_text)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # AUTH ROUTES

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JD Match Dashboard – Resume Builder ATS</title>
+    <title>Resume Dashboard – Resume Builder ATS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -585,12 +585,11 @@
     <div class="upload-wrapper">
         <div class="glass-card">
             <div class="feature-badge">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> JD Match Analyzer
+                <i class="fa-solid fa-file-pen"></i> Resume Dashboard
             </div>
-            <h1 class="upload-title">Resume × Job Description<br>Deep Match Analysis</h1>
+            <h1 class="upload-title">Professional Resume Builder</h1>
             <p class="upload-sub">
-                Upload your resume and paste a job description to get targeted skill gap analysis,
-                improvement suggestions across 6 categories, and a download-ready tailored resume.
+                Upload your resume PDF or paste your experience to extract details into our professional editor and generate a tailored, ATS-friendly PDF.
             </p>
 
             {% if error %}
@@ -601,31 +600,7 @@
 
             <form action="/dashboard" method="post" enctype="multipart/form-data" id="dashForm">
 
-                <div class="mb-3">
-                    <label class="form-label-custom">
-                        <i class="fa-solid fa-briefcase" style="color:#a5b4fc;"></i> Job Description <span
-                            style="color:#ef4444;">*</span>
-                    </label>
-                    <div class="row g-2">
-                        <div class="col-md-7">
-                            <textarea class="form-control-dark" name="job_description" rows="5"
-                                placeholder="Paste the full job description here..."></textarea>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="drop-zone" id="jdDropZone"
-                                style="height:100%; display:flex; flex-direction:column; justify-content:center; padding:1rem;">
-                                <input type="file" name="jd_file" accept=".txt,.pdf" id="jdFileInput">
-                                <i class="fa-solid fa-file-lines"
-                                    style="font-size:1.2rem;color:#a5b4fc;margin-bottom:0.5rem;"></i>
-                                <p class="drop-text mb-0" style="font-size:0.75rem;">Or upload JD (.pdf, .txt)</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="file-indicator" id="jdFileIndicator" style="margin-top:0.5rem; display:none;">
-                        <i class="fa-solid fa-circle-check"></i>
-                        <span id="jdFileName">jd.pdf</span>
-                    </div>
-                </div>
+
 
                 <div class="mb-3">
                     <label class="form-label-custom">
@@ -652,8 +627,8 @@
 
                 <button type="submit" class="btn-analyze" id="analyzeBtn">
                     <div class="spinner-ring" id="spinner"></div>
-                    <i class="fa-solid fa-magnifying-glass-chart" id="btnIcon"></i>
-                    <span id="btnText">Analyze Match & Generate Suggestions</span>
+                    <i class="fa-solid fa-file-export" id="btnIcon"></i>
+                    <span id="btnText">Extract & Edit Resume</span>
                 </button>
             </form>
 
@@ -671,11 +646,11 @@
     <div class="dash-header">
         <div class="container text-center">
             <div class="feature-badge mx-auto mb-2">
-                <i class="fa-solid fa-magnifying-glass-chart"></i> Analysis Complete
+                <i class="fa-solid fa-file-pen"></i> Resume Editor
             </div>
-            <h2 class="fw-bold mb-1" style="color:#fff; font-size:1.65rem;">Resume × Job Description Results</h2>
+            <h2 class="fw-bold mb-1" style="color:#fff; font-size:1.65rem;">Review & Download Your Resume</h2>
             <p style="color:rgba(255,255,255,0.45); font-size:0.92rem; margin:0;">
-                Review gaps below, edit your resume on the right, then download a tailored PDF.
+                We've extracted your details below. You can now edit and download your professional PDF.
             </p>
         </div>
     </div>
@@ -685,306 +660,13 @@
         <!-- Action bar -->
         <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-2 gap-2">
             <div>
-                <a href="/dashboard" class="btn-prev me-2"><i class="fa-solid fa-arrow-left"></i> New Analysis</a>
-                <a href="/upload" class="btn-prev"><i class="fa-solid fa-robot"></i> ATS Score</a>
-            </div>
-            <div class="match-chip"><i class="fa-solid fa-bullseye"></i> JD Match: <span class="val">{{ score }}%</span>
+                <a href="/dashboard" class="btn-prev me-2"><i class="fa-solid fa-arrow-left"></i> Start Over</a>
+                <a href="/upload" class="btn-prev me-2"><i class="fa-solid fa-robot"></i> ATS Score</a>
+                <a href="/analyze-role" class="btn-prev"><i class="fa-solid fa-wand-magic-sparkles"></i> Role Match</a>
             </div>
         </div>
-
-        <div class="row g-4">
-
-            <!-- ════ LEFT: Analysis Report (7 cols) ════ -->
-            <div class="col-lg-7">
-
-                <!-- ── Score + Stats ── -->
-                <div class="dash-card">
-                    <div class="row align-items-center g-3">
-                        <!-- Ring -->
-                        <div class="col-md-4 text-center">
-                            <div class="score-wrapper">
-                                {% set sc = score %}
-                                {% if sc >= 70 %}{% set ring_col = '#10b981' %}{% set grade = 'Strong Match' %}{% set
-                                pill_cls = 'background:rgba(16,185,129,0.2);border:1px solid
-                                rgba(16,185,129,0.4);color:#6ee7b7;' %}
-                                {% elif sc >= 45 %}{% set ring_col = '#f59e0b' %}{% set grade = 'Partial Match' %}{% set
-                                pill_cls = 'background:rgba(245,158,11,0.2);border:1px solid
-                                rgba(245,158,11,0.4);color:#fcd34d;' %}
-                                {% else %}{% set ring_col = '#ef4444' %}{% set grade = 'Low Match' %}{% set pill_cls =
-                                'background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;' %}
-                                {% endif %}
-
-                                <svg width="130" height="130" viewBox="0 0 130 130">
-                                    <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.07)"
-                                        stroke-width="11" />
-                                    <circle cx="65" cy="65" r="54" fill="none" stroke="{{ ring_col }}" stroke-width="11"
-                                        stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3"
-                                        style="transform:rotate(-90deg);transform-origin:50% 50%;" id="scoreArc" />
-                                    <text x="65" y="61" text-anchor="middle" font-size="30" font-weight="800"
-                                        fill="{{ ring_col }}" font-family="Inter,sans-serif">{{ score }}</text>
-                                    <text x="65" y="77" text-anchor="middle" font-size="11"
-                                        fill="rgba(255,255,255,0.35)" font-family="Inter,sans-serif">/100</text>
-                                </svg>
-                                <span class="grade-pill" style="{{ pill_cls }}">{{ grade }}</span>
-                            </div>
-                        </div>
-                        <!-- Stats chips -->
-                        <div class="col-md-8">
-                            <div class="row g-2 text-center">
-                                <div class="col-6">
-                                    <div
-                                        style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
-                                        <div style="font-size:1.4rem;font-weight:800;color:#a5b4fc;">{{
-                                            report.programming_languages|length + report.frameworks_and_libs|length }}
-                                        </div>
-                                        <div style="font-size:0.75rem;color:var(--muted);">Skills to Add</div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div
-                                        style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
-                                        <div style="font-size:1.4rem;font-weight:800;color:#fcd34d;">{{
-                                            report.tools_and_infra|length }}</div>
-                                        <div style="font-size:0.75rem;color:var(--muted);">Tools/Infra Gaps</div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div
-                                        style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
-                                        <div style="font-size:1.4rem;font-weight:800;color:#93c5fd;">{{
-                                            report.knowledge_areas|length }}</div>
-                                        <div style="font-size:0.75rem;color:var(--muted);">Knowledge Gaps</div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div
-                                        style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:0.8rem 0.5rem;">
-                                        <div style="font-size:1.4rem;font-weight:800;color:#6ee7b7;">{{
-                                            report.matched_skills|length }}</div>
-                                        <div style="font-size:0.75rem;color:var(--muted);">Matched Skills</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── 1. Programming Languages ── -->
-                {% if report.programming_languages %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><i
-                                class="fa-solid fa-code"></i></div>
-                        Programming Languages to Learn
-                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
-                            report.programming_languages|length }} missing from resume</span>
-                    </div>
-                    <div>
-                        {% for lang in report.programming_languages %}
-                        <span class="tag tag-lang"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
-                            lang }}</span>
-                        {% endfor %}
-                    </div>
-                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
-                        These languages appear in the job description but are not detected in your resume. Add them to
-                        your Skills section if you know them, or prioritize learning those most relevant to the role.
-                    </p>
-                </div>
-                {% endif %}
-
-                <!-- ── 2. Frameworks & Libraries ── -->
-                {% if report.frameworks_and_libs %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(236,72,153,0.12);color:#f9a8d4;"><i
-                                class="fa-solid fa-layer-group"></i></div>
-                        Frameworks & Libraries
-                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
-                            report.frameworks_and_libs|length }} gaps found</span>
-                    </div>
-                    <div>
-                        {% for fw in report.frameworks_and_libs %}
-                        <span class="tag tag-fw"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
-                            fw }}</span>
-                        {% endfor %}
-                    </div>
-                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
-                        The job description specifically mentions these frameworks. Highlight existing experience, or
-                        build small demo projects to demonstrate familiarity.
-                    </p>
-                </div>
-                {% endif %}
-
-                <!-- ── 3. Tools & Infrastructure ── -->
-                {% if report.tools_and_infra %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(245,158,11,0.12);color:#fcd34d;"><i
-                                class="fa-solid fa-wrench"></i></div>
-                        Tools, Platforms & Infrastructure
-                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
-                            report.tools_and_infra|length }} gaps</span>
-                    </div>
-                    <div>
-                        {% for t in report.tools_and_infra %}
-                        <span class="tag tag-tool"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
-                            t }}</span>
-                        {% endfor %}
-                    </div>
-                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
-                        These tools and platforms are expected by the employer. Add any you have used to your Skills or
-                        Experience sections.
-                    </p>
-                </div>
-                {% endif %}
-
-                <!-- ── 4. Knowledge Areas ── -->
-                {% if report.knowledge_areas %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(59,130,246,0.12);color:#93c5fd;"><i
-                                class="fa-solid fa-brain"></i></div>
-                        Knowledge Areas & Concepts
-                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">{{
-                            report.knowledge_areas|length }} concepts</span>
-                    </div>
-                    <div>
-                        {% for k in report.knowledge_areas %}
-                        <span class="tag tag-know"><i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>{{
-                            k }}</span>
-                        {% endfor %}
-                    </div>
-                    <p style="font-size:0.8rem;color:var(--muted);margin-top:0.9rem;margin-bottom:0;">
-                        These methodologies and concept areas are required for the role. Reference them in your
-                        experience bullets or add a dedicated section.
-                    </p>
-                </div>
-                {% endif %}
-
-                <!-- ── 5. Resume Structure Improvements ── -->
-                {% if report.resume_structure %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(239,68,68,0.12);color:#fca5a5;"><i
-                                class="fa-solid fa-file-circle-exclamation"></i></div>
-                        Resume Structure Improvements
-                    </div>
-                    {% for tip in report.resume_structure %}
-                    <div class="detail-item">
-                        <div class="det-ic" style="background:rgba(239,68,68,0.12);color:#fca5a5;"><i
-                                class="fa-solid fa-circle-exclamation"></i></div>
-                        <div class="det-body">{{ tip | safe }}</div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- ── 6. Measurable Achievements ── -->
-                {% if report.measurable_achievements %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
-                                class="fa-solid fa-chart-line"></i></div>
-                        Measurable Achievements
-                    </div>
-                    {% for tip in report.measurable_achievements %}
-                    <div class="detail-item">
-                        <div class="det-ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
-                                class="fa-solid fa-arrow-trend-up"></i></div>
-                        <div class="det-body">{{ tip | safe }}</div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- ── 7. Experience Gaps ── -->
-                {% if report.experience_gaps %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(139,92,246,0.15);color:#c4b5fd;"><i
-                                class="fa-solid fa-user-tie"></i></div>
-                        Missing Experience Areas
-                    </div>
-                    {% for gap in report.experience_gaps %}
-                    <div class="detail-item">
-                        <div class="det-ic" style="background:rgba(139,92,246,0.15);color:#c4b5fd;"><i
-                                class="fa-solid fa-triangle-exclamation"></i></div>
-                        <div class="det-body">{{ gap | safe }}</div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- ── 8. Suggested Projects ── -->
-                {% if report.suggested_projects %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><i
-                                class="fa-solid fa-lightbulb"></i></div>
-                        Recommended Projects to Build
-                    </div>
-                    {% for proj in report.suggested_projects %}
-                    <div class="detail-item">
-                        <div class="det-ic" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><i
-                                class="fa-solid fa-code-branch"></i></div>
-                        <div class="det-body">{{ proj }}</div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- ── 9. Certifications ── -->
-                {% if report.certifications %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
-                                class="fa-solid fa-certificate"></i></div>
-                        Certifications That Could Help
-                    </div>
-                    <div>
-                        {% for cert in report.certifications %}
-                        <span class="tag tag-cert"><i class="fa-solid fa-award" style="font-size:0.68rem;"></i>{{ cert
-                            }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- ── 10. Already Matched Skills ── -->
-                {% if report.matched_skills %}
-                <div class="dash-card">
-                    <div class="card-hdr">
-                        <div class="ic" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);"><i
-                                class="fa-solid fa-circle-check"></i></div>
-                        Skills Already in Your Resume
-                        <span class="ms-auto" style="font-weight:400;font-size:0.78rem;color:var(--muted);">Keep these
-                            visible!</span>
-                    </div>
-                    <div>
-                        {% for sk in report.matched_skills %}
-                        <span class="tag tag-match">✓ {{ sk }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Perfect match message -->
-                {% if not (report.programming_languages or report.frameworks_and_libs or report.tools_and_infra or
-                report.knowledge_areas or report.resume_structure or report.experience_gaps) %}
-                <div class="dash-card text-center py-4" style="border-color:rgba(16,185,129,0.35);">
-                    <i class="fa-solid fa-trophy fa-2x mb-3" style="color:#fcd34d;display:block;"></i>
-                    <h5 style="color:#6ee7b7;font-weight:700;">Excellent Match!</h5>
-                    <p style="color:var(--muted);font-size:0.88rem;margin:0;">
-                        Your resume is well-aligned with this job description. Focus on tailoring your summary and
-                        quantifying achievements.
-                    </p>
-                </div>
-                {% endif %}
-
-            </div>
-
-            <!-- ════ RIGHT: Resume Editor + Download (5 cols) ════ -->
-            <div class="col-lg-5">
+            <!-- ════ CENTER: Resume Editor + Download ════ -->
+            <div class="col-lg-8 offset-lg-2">
                 <div class="dash-card" style="position:sticky;top:1.5rem;">
                     <div class="card-hdr mb-2">
                         <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
@@ -992,7 +674,7 @@
                         Edit & Download Updated Resume
                     </div>
                     <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1.2rem;">
-                        Apply the suggestions on the left, then choose a template and download your updated PDF.
+                        Choose a professional template and download your updated PDF.
                     </p>
 
                     <form action="/download" method="post" id="resumeForm">
@@ -1020,20 +702,372 @@
                             </div>
                             <div class="col-6">
                                 <label class="editor-label">GitHub (optional)</label>
-                                <input type="text" class="editor-ctrl" name="github" placeholder="github.com/you">
+                                <input type="text" class="editor-ctrl" name="github" value="{{ github }}" placeholder="github.com/you">
                             </div>
                         </div>
 
                         <hr class="section-divider">
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="editor-label">
                                 <i class="fa-solid fa-briefcase" style="color:#a5b4fc;font-size:0.75rem;"></i>
                                 Experience
-                                <span style="color:var(--muted);font-size:0.75rem;font-weight:400;"> — add metrics &
-                                    missing tools here</span>
                             </label>
-                            <textarea class="editor-ctrl" name="experience" rows="5">{{ experience }}</textarea>
+                            <div id="experienceContainer">
+                                {% if experience is iterable and experience is not string %}
+                                    {% for exp in experience %}
+                                    <div class="experience-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="removeExperienceRow(this)"></button>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" value="{{ exp.company }}" placeholder="Company" required></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" value="{{ exp.role }}" placeholder="Role" required></div>
+                                        </div>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" value="{{ exp.duration }}" placeholder="Duration (e.g. 2020-2023)">
+                                        <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities...">{{ exp.description }}</textarea>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="experience-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" placeholder="Company" required></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" placeholder="Role" required></div>
+                                        </div>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" placeholder="Duration (e.g. 2020-2023)">
+                                        <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities...">{{ experience }}</textarea>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1 mb-2" style="font-size:0.75rem;" onclick="addExperienceRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add Company
+                            </button>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <div class="mb-4">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-school" style="color:#a5b4fc;font-size:0.75rem;"></i>
+                                School Education
+                            </label>
+                            <div id="schoolEducationContainer">
+                                {% if education and education.school %}
+                                    {% for school in education.school %}
+                                    <div class="school-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="SSLC (10th)" {% if school.qualification == 'SSLC (10th)' %}selected{% endif %}>SSLC (10th)</option>
+                                                    <option value="Plus Two (12th)" {% if school.qualification == 'Plus Two (12th)' %}selected{% endif %}>Plus Two (12th)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala State Syllabus" {% if school.syllabus == 'Kerala State Syllabus' %}selected{% endif %}>Kerala State Syllabus</option>
+                                                    <option value="CBSE" {% if school.syllabus == 'CBSE' %}selected{% endif %}>CBSE</option>
+                                                    <option value="ICSE" {% if school.syllabus == 'ICSE' %}selected{% endif %}>ICSE</option>
+                                                    <option value="Other" {% if school.syllabus not in ['Kerala State Syllabus', 'CBSE', 'ICSE'] and school.syllabus %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if school.syllabus not in ['Kerala State Syllabus', 'CBSE', 'ICSE'] and school.syllabus %}block{% else %}none{% endif %};" value="{{ school.syllabus if school.syllabus not in ['Kerala State Syllabus', 'CBSE', 'ICSE'] else '' }}" placeholder="Enter Syllabus">
+                                            </div>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 3) %}
+                                                        <option value="{{ y }}" {% if school.year|string == y|string %}selected{% endif %}>{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" value="{{ school.percentage }}" placeholder="Percentage (%)" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Seed first entry if empty -->
+                                    <div class="school-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="SSLC (10th)">SSLC (10th)</option>
+                                                    <option value="Plus Two (12th)">Plus Two (12th)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala State Syllabus">Kerala State Syllabus</option>
+                                                    <option value="CBSE">CBSE</option>
+                                                    <option value="ICSE">ICSE</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Syllabus">
+                                            </div>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 3) %}
+                                                        <option value="{{ y }}">{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" placeholder="Percentage (%)" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1 mb-2" style="font-size:0.75rem; border-color:#a5b4fc; color:#a5b4fc;" onclick="addSchoolRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add School Education
+                            </button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-graduation-cap" style="color:#10b981;font-size:0.75rem;"></i>
+                                Higher Education
+                            </label>
+                            <div id="higherEducationContainer">
+                                {% if education and education.higher %}
+                                    {% for higher in education.higher %}
+                                    <div class="higher-entry mb-4 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                                        
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
+                                            <input type="text" class="editor-ctrl editor-ctrl-sm degree-display" readonly value="{{ higher.degree or '-Select-' }}" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3);">
+                                            <input type="hidden" name="higher_degree[]" value="{{ higher.degree }}">
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+                                                <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" value="{{ higher.courseName }}" placeholder="e.g. B.Tech, BBA Integrated" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                                                <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Computer Science and Engineering" {% if higher.specialization == 'Computer Science and Engineering' %}selected{% endif %}>Computer Science and Engineering</option>
+                                                    <option value="Electronics and Communication" {% if higher.specialization == 'Electronics and Communication' %}selected{% endif %}>Electronics and Communication</option>
+                                                    <option value="Mechanical Engineering" {% if higher.specialization == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                                                    <option value="Civil Engineering" {% if higher.specialization == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                                                    <option value="Electrical Engineering" {% if higher.specialization == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                                                    <option value="Other" {% if higher.specialization not in ['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering'] and higher.specialization %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if higher.specialization not in ['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering'] and higher.specialization %}block{% else %}none{% endif %};" value="{{ higher.specialization if higher.specialization not in ['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering'] else '' }}" placeholder="Enter Specialization">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+                                            <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                <option value="" disabled selected>-Select-</option>
+                                                <option value="Government" {% if higher.institutionType == 'Government' %}selected{% endif %}>Government</option>
+                                                <option value="Aided" {% if higher.institutionType == 'Aided' %}selected{% endif %}>Aided</option>
+                                                <option value="Private" {% if higher.institutionType == 'Private' %}selected{% endif %}>Private</option>
+                                                <option value="Deemed" {% if higher.institutionType == 'Deemed' %}selected{% endif %}>Deemed</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+                                                <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="College of Engineering Trivandrum (CET)" {% if higher.college == 'College of Engineering Trivandrum (CET)' %}selected{% endif %}>CET</option>
+                                                    <option value="National Institute of Technology Calicut (NITC)" {% if higher.college == 'National Institute of Technology Calicut (NITC)' %}selected{% endif %}>NITC</option>
+                                                    <option value="IIT Madras" {% if higher.college == 'IIT Madras' %}selected{% endif %}>IIT Madras</option>
+                                                    <option value="Other" {% if higher.college not in ['College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)', 'IIT Madras'] and higher.college %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if higher.college not in ['College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)', 'IIT Madras'] and higher.college %}block{% else %}none{% endif %};" value="{{ higher.college if higher.college not in ['College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)', 'IIT Madras'] else '' }}" placeholder="Enter College Name">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                                                <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="APJ Abdul Kalam Technological University (KTU)" {% if higher.university == 'APJ Abdul Kalam Technological University (KTU)' %}selected{% endif %}>KTU</option>
+                                                    <option value="Kerala University" {% if higher.university == 'Kerala University' %}selected{% endif %}>Kerala University</option>
+                                                    <option value="Calicut University" {% if higher.university == 'Calicut University' %}selected{% endif %}>Calicut University</option>
+                                                    <option value="Other" {% if higher.university not in ['APJ Abdul Kalam Technological University (KTU)', 'Kerala University', 'Calicut University'] and higher.university %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if higher.university not in ['APJ Abdul Kalam Technological University (KTU)', 'Kerala University', 'Calicut University'] and higher.university %}block{% else %}none{% endif %};" value="{{ higher.university if higher.university not in ['APJ Abdul Kalam Technological University (KTU)', 'Kerala University', 'Calicut University'] else '' }}" placeholder="Enter University Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+                                                <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala" {% if higher.state == 'Kerala' %}selected{% endif %}>Kerala</option>
+                                                    <option value="Tamil Nadu" {% if higher.state == 'Tamil Nadu' %}selected{% endif %}>Tamil Nadu</option>
+                                                    <option value="Karnataka" {% if higher.state == 'Karnataka' %}selected{% endif %}>Karnataka</option>
+                                                    <option value="Other" {% if higher.state not in ['Kerala', 'Tamil Nadu', 'Karnataka'] and higher.state %}selected{% endif %}>Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+                                                <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" data-selected="{{ higher.district }}" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mb-2">
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+                                                <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="2" {% if higher.duration == '2' %}selected{% endif %}>2 Years</option>
+                                                    <option value="3" {% if higher.duration == '3' %}selected{% endif %}>3 Years</option>
+                                                    <option value="4" {% if higher.duration == '4' %}selected{% endif %}>4 Years</option>
+                                                    <option value="5" {% if higher.duration == '5' %}selected{% endif %}>5 Years</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+                                                <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 6) %}
+                                                        <option value="{{ y }}" {% if higher.graduationYear|string == y|string %}selected{% endif %}>{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+                                                <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" value="{{ higher.cgpa }}" placeholder="CGPA" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="higher-entry mb-4 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
+                                            <input type="text" class="editor-ctrl editor-ctrl-sm degree-display" readonly value="-Select-" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3);">
+                                            <input type="hidden" name="higher_degree[]" value="">
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+                                                <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" placeholder="e.g. B.Tech, BBA Integrated" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                                                <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                                                    <option value="Electronics and Communication">Electronics and Communication</option>
+                                                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                                    <option value="Civil Engineering">Civil Engineering</option>
+                                                    <option value="Electrical Engineering">Electrical Engineering</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Specialization">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+                                            <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                <option value="" disabled selected>-Select-</option>
+                                                <option value="Government">Government</option>
+                                                <option value="Aided">Aided</option>
+                                                <option value="Private">Private</option>
+                                                <option value="Deemed">Deemed</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+                                                <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="College of Engineering Trivandrum (CET)">CET</option>
+                                                    <option value="National Institute of Technology Calicut (NITC)">NITC</option>
+                                                    <option value="IIT Madras">IIT Madras</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter College Name">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                                                <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
+                                                    <option value="Kerala University">Kerala University</option>
+                                                    <option value="Calicut University">Calicut University</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter University Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+                                                <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala">Kerala</option>
+                                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                                    <option value="Karnataka">Karnataka</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+                                                <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mb-2">
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+                                                <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="2">2 Years</option>
+                                                    <option value="3">3 Years</option>
+                                                    <option value="4">4 Years</option>
+                                                    <option value="5">5 Years</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+                                                <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 6) %}
+                                                        <option value="{{ y }}">{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+                                                <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" placeholder="CGPA" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1 mb-2" style="font-size:0.75rem; border-color:#10b981; color:#10b981;" onclick="addHigherRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add Higher Education
+                            </button>
                         </div>
 
                         <div class="mb-2">
@@ -1069,56 +1103,48 @@
                             </select>
                         </div>
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="editor-label">
                                 <i class="fa-solid fa-diagram-project" style="color:#f9a8d4;font-size:0.75rem;"></i>
                                 Projects
                             </label>
-                            <textarea class="editor-ctrl" name="projects" rows="4">{{ projects }}</textarea>
+                            <div id="projectsContainer">
+                                {% if projects is iterable and projects is not string %}
+                                    {% for proj in projects %}
+                                    <div class="project-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" value="{{ proj.title }}" placeholder="Project Title"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" value="{{ proj.role }}" placeholder="Role"></div>
+                                        </div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" value="{{ proj.org }}" placeholder="Org"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" value="{{ proj.duration }}" placeholder="Duration"></div>
+                                        </div>
+                                        <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description">{{ proj.description }}</textarea>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" value="{{ proj.technologies }}" placeholder="Tech (e.g. Python, AWS)">
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="project-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" placeholder="Project Title"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" placeholder="Role"></div>
+                                        </div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" placeholder="Org"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" placeholder="Duration"></div>
+                                        </div>
+                                        <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description">{{ projects }}</textarea>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" placeholder="Tech (e.g. Python, AWS)">
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1" style="font-size:0.75rem;" onclick="addProjectRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add Project
+                            </button>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="editor-label">
-                                <i class="fa-solid fa-graduation-cap" style="color:#93c5fd;font-size:0.75rem;"></i>
-                                Education Degree
-                            </label>
-                            <select class="select-dark" name="education">
-                                <option value="" disabled selected>Select Degree</option>
-                                <option value="B.Tech" {% if 'B.Tech' in education %}selected{% endif %}>B.Tech</option>
-                                <option value="B.E." {% if 'B.E.' in education %}selected{% endif %}>B.E.</option>
-                                <option value="BCA" {% if 'BCA' in education %}selected{% endif %}>BCA</option>
-                                <option value="BSc" {% if 'BSc' in education %}selected{% endif %}>BSc</option>
-                                <option value="M.Tech" {% if 'M.Tech' in education %}selected{% endif %}>M.Tech</option>
-                                <option value="MCA" {% if 'MCA' in education %}selected{% endif %}>MCA</option>
-                                <option value="MSc" {% if 'MSc' in education %}selected{% endif %}>MSc</option>
-                                <option value="MBA" {% if 'MBA' in education %}selected{% endif %}>MBA</option>
-                                <option value="BBA" {% if 'BBA' in education %}selected{% endif %}>BBA</option>
-                                <option value="Diploma" {% if 'Diploma' in education %}selected{% endif %}>Diploma</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="editor-label">
-                                <i class="fa-solid fa-school" style="color:#93c5fd;font-size:0.75rem;"></i>
-                                College / University (Kerala)
-                            </label>
-                            <select class="select-dark" name="college">
-                                <option value="" disabled selected>Select College</option>
-                                <option value="College of Engineering Trivandrum (CET)">College of Engineering Trivandrum (CET)</option>
-                                <option value="National Institute of Technology Calicut (NITC)">National Institute of Technology Calicut (NITC)</option>
-                                <option value="Model Engineering College (MEC), Kochi">Model Engineering College (MEC), Kochi</option>
-                                <option value="Cochin University of Science and Technology (CUSAT)">Cochin University of Science and Technology (CUSAT)</option>
-                                <option value="TKM College of Engineering, Kollam">TKM College of Engineering, Kollam</option>
-                                <option value="Rajagiri School of Engineering & Technology (RSET), Kochi">Rajagiri School of Engineering & Technology (RSET), Kochi</option>
-                                <option value="Mar Athanasius College of Engineering (MACE), Kothamangalam">Mar Athanasius College of Engineering (MACE), Kothamangalam</option>
-                                <option value="NSS College of Engineering, Palakkad">NSS College of Engineering, Palakkad</option>
-                                <option value="Government Engineering College, Thrissur (GECT)">Government Engineering College, Thrissur (GECT)</option>
-                                <option value="Government Engineering College, Barton Hill">Government Engineering College, Barton Hill</option>
-                                <option value="Muthoot Institute of Technology and Science (MITS)">Muthoot Institute of Technology and Science (MITS)</option>
-                                <option value="Saintgits College of Engineering, Kottayam">Saintgits College of Engineering, Kottayam</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
 
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -1197,11 +1223,6 @@
         const indicator = document.getElementById('fileIndicator');
         const fileNameEl = document.getElementById('fileName');
 
-        const jdFileInput = document.getElementById('jdFileInput');
-        const jdDropZone = document.getElementById('jdDropZone');
-        const jdIndicator = document.getElementById('jdFileIndicator');
-        const jdFileName = document.getElementById('jdFileName');
-
         const analyzeBtn = document.getElementById('analyzeBtn');
         const btnText = document.getElementById('btnText');
         const btnIcon = document.getElementById('btnIcon');
@@ -1230,50 +1251,20 @@
             });
         }
 
-        // JD Upload handlers
-        if (jdFileInput) {
-            jdFileInput.addEventListener('change', () => {
-                if (jdFileInput.files[0]) {
-                    jdFileName.textContent = jdFileInput.files[0].name;
-                    jdIndicator.style.display = 'flex';
-                }
-            });
-        }
-        if (jdDropZone) {
-            jdDropZone.addEventListener('dragover', e => { e.preventDefault(); jdDropZone.classList.add('dragover'); });
-            jdDropZone.addEventListener('dragleave', () => jdDropZone.classList.remove('dragover'));
-            jdDropZone.addEventListener('drop', e => {
-                e.preventDefault(); jdDropZone.classList.remove('dragover');
-                if (e.dataTransfer.files[0]) {
-                    jdFileInput.files = e.dataTransfer.files;
-                    jdFileName.textContent = e.dataTransfer.files[0].name;
-                    jdIndicator.style.display = 'flex';
-                }
-            });
-        }
+
 
         if (dashForm) {
             dashForm.addEventListener('submit', () => {
                 if (btnIcon) btnIcon.style.display = 'none';
                 if (spinner) spinner.style.display = 'block';
                 if (analyzeBtn) analyzeBtn.disabled = true;
-                if (btnText) btnText.textContent = 'Analyzing…';
+                if (btnText) btnText.textContent = 'Extracting…';
             });
         }
 
         // ── Results page animations ─────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
-            const arc = document.getElementById('scoreArc');
-            if (arc) {
-                const score = {{ score if report else 0 }};
-                const circumference = 339.3;
-                const offset = circumference - (score / 100) * circumference;
-                setTimeout(() => { arc.style.strokeDashoffset = offset; }, 150);
-            }
-            document.querySelectorAll('.bar-fill').forEach(bar => {
-                const pct = bar.getAttribute('data-pct');
-                if (pct) setTimeout(() => { bar.style.width = pct + '%'; }, 200);
-            });
+            // No animations needed
         });
 
         // ── Resume preview ──────────────────────────────────
@@ -1288,6 +1279,289 @@
         }
 
         // ── Dynamic Certifications ──────────────────────────
+        // ── Education Helpers ──────────────────────────────
+        function toggleManualInput(select) {
+            const manual = select.nextElementSibling;
+            if (select.value === 'Other') {
+                manual.style.display = 'block';
+                manual.setAttribute('required', 'required');
+            } else {
+                manual.style.display = 'none';
+                manual.removeAttribute('required');
+            }
+        }
+
+        const districtData = {
+            "Kerala": ["Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha", "Kottayam", "Idukki", "Ernakulam", "Thrissur", "Palakkad", "Malappuram", "Kozhikode", "Wayanad", "Kannur", "Kasaragod"],
+            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Trichy", "Salem", "Tirunelveli"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru", "Belagavi"]
+        };
+
+        function loadDistricts(select) {
+            const entry = select.closest('.higher-entry');
+            const districtDropdown = entry.querySelector('.district-dropdown');
+            const state = select.value;
+            
+            districtDropdown.innerHTML = '<option value="" disabled selected>-Select-</option>';
+            
+            if (districtData[state]) {
+                districtData[state].forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    districtDropdown.appendChild(opt);
+                });
+            } else if (state === 'Other') {
+               const opt = document.createElement('option');
+               opt.value = 'Other';
+               opt.textContent = 'Other';
+               districtDropdown.appendChild(opt);
+            }
+        }
+
+        function addSchoolRow() {
+            const container = document.getElementById('schoolEducationContainer');
+            const div = document.createElement('div');
+            div.className = 'school-entry mb-3 p-2';
+            div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            div.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="SSLC (10th)">SSLC (10th)</option>
+                            <option value="Plus Two (12th)">Plus Two (12th)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="Kerala State Syllabus">Kerala State Syllabus</option>
+                            <option value="CBSE">CBSE</option>
+                            <option value="ICSE">ICSE</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Syllabus">
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                            <option value="" disabled selected>-Select-</option>
+                            ${Array.from({length: 29}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" placeholder="Percentage (%)" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function addHigherRow() {
+            const container = document.getElementById('higherEducationContainer');
+            const div = document.createElement('div');
+            div.className = 'higher-entry mb-4 p-2';
+            div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            div.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                
+                <div class="mb-2">
+                    <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
+                    <input type="text" class="editor-ctrl editor-ctrl-sm degree-display" readonly value="-Select-" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3);">
+                    <input type="hidden" name="higher_degree[]" value="">
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" placeholder="e.g. B.Tech, BBA Integrated" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                        <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                            <option value="Electronics and Communication">Electronics and Communication</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Electrical Engineering">Electrical Engineering</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Specialization">
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+                    <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required>
+                        <option value="" disabled selected>-Select-</option>
+                        <option value="Government">Government</option>
+                        <option value="Aided">Aided</option>
+                        <option value="Private">Private</option>
+                        <option value="Deemed">Deemed</option>
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+                        <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="College of Engineering Trivandrum (CET)">CET</option>
+                            <option value="National Institute of Technology Calicut (NITC)">NITC</option>
+                            <option value="IIT Madras">IIT Madras</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter College Name">
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                        <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
+                            <option value="Kerala University">Kerala University</option>
+                            <option value="Calicut University">Calicut University</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter University Name">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+                        <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this)" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+                        <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" required>
+                            <option value="" disabled selected>-Select-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2">
+                    <div class="col-4">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+                        <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="2">2 Years</option>
+                            <option value="3">3 Years</option>
+                            <option value="4">4 Years</option>
+                            <option value="5">5 Years</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+                        <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                            <option value="" disabled selected>-Select-</option>
+                            ${Array.from({length: 31}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+                        <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" placeholder="CGPA" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        let activeDegreeTarget = null;
+        function openDegreeModal(el) {
+            activeDegreeTarget = el;
+            const modal = new bootstrap.Modal(document.getElementById('degreeModal'));
+            modal.show();
+        }
+
+        function selectDegree(val) {
+            if (activeDegreeTarget) {
+                activeDegreeTarget.value = val;
+                const hiddenInput = activeDegreeTarget.nextElementSibling;
+                hiddenInput.value = val;
+                
+                // If "Others" is selected, we might want to allow manual input elsewhere, 
+                // but the requirement says "enable manual input" for "Others".
+                // Let's add a manual input if "Others" is selected.
+                if (val === 'Others') {
+                    const manual = prompt("Enter your degree:");
+                    if (manual) {
+                        activeDegreeTarget.value = manual;
+                        hiddenInput.value = manual;
+                    }
+                }
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('degreeModal'));
+            modal.hide();
+        }
+
+        // Initialize any existing districts on load
+        document.addEventListener('DOMContentLoaded', () => {
+           document.querySelectorAll('.state-dropdown').forEach(select => {
+               if (select.value) loadDistricts(select);
+               const entry = select.closest('.higher-entry');
+               const districtDropdown = entry.querySelector('.district-dropdown');
+               const selectedDistrict = districtDropdown.getAttribute('data-selected');
+               if (selectedDistrict) districtDropdown.value = selectedDistrict;
+           });
+        });
+
+        function addExperienceRow() {
+            const container = document.getElementById('experienceContainer');
+            const row = document.createElement('div');
+            row.className = 'experience-entry mb-3 p-2';
+            row.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            row.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="removeExperienceRow(this)"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" placeholder="Company" required></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" placeholder="Role" required></div>
+                </div>
+                <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" placeholder="Duration (e.g. 2020-2023)">
+                <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities..."></textarea>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeExperienceRow(btn) {
+            const container = document.getElementById('experienceContainer');
+            if (container.querySelectorAll('.experience-entry').length > 1) {
+                btn.parentElement.remove();
+            } else {
+                alert("At least one experience entry is required.");
+            }
+        }
+
+        function addProjectRow() {
+            const container = document.getElementById('projectsContainer');
+            const row = document.createElement('div');
+            row.className = 'project-entry mb-3 p-2';
+            row.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            row.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" placeholder="Project Title"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" placeholder="Role"></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" placeholder="Org"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" placeholder="Duration"></div>
+                </div>
+                <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description"></textarea>
+                <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" placeholder="Tech (e.g. Python, AWS)">
+            `;
+            container.appendChild(row);
+        }
+
         function addCertRow() {
             const container = document.getElementById('certsContainer');
             const row = document.createElement('div');
@@ -1309,6 +1583,52 @@
             container.appendChild(row);
         }
     </script>
+{% include 'chatbot.html' %}
+    <!-- Degree Selection Modal -->
+    <div class="modal fade" id="degreeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="background:#1e1e2e; border-radius:12px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white" style="font-size:1rem;">Select Degree</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('B.Tech')">B.Tech</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('B.E.')">B.E.</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('BCA')">BCA</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('BSc')">BSc</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('M.Tech')">M.Tech</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('MCA')">MCA</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('MSc')">MSc</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('MBA')">MBA</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('Diploma')">Diploma</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('Others')">Others</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
