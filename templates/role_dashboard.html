@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Analysis Dashboard | {{ analysis.role }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --card: rgba(255, 255, 255, 0.04);
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 0;
+        }
+
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .dash-card {
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 1.5rem;
+            height: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .score-circle {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto;
+        }
+
+        .score-val {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        .tag-matched { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .tag-missing { background: rgba(239, 68, 68, 0.12); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .suggestion-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .project-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        
+        .project-card:hover {
+            transform: scale(1.02);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-action {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-home { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-home:hover { background: rgba(255,255,255,0.1); }
+
+        .btn-edit { background: var(--primary); color: #fff; }
+        .btn-edit:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h5 class="text-muted mb-0">Role-Based Analysis</h5>
+            <h2 class="fw-bold text-white">{{ analysis.role }} Target</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/analyze-role" class="btn-action btn-home">New Analysis</a>
+            <a href="/dashboard" class="btn-action btn-edit">Edit Resume</a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- ── Score Card ── -->
+        <div class="col-lg-4">
+            <div class="dash-card text-center">
+                <div class="stat-label mb-3">Resume Strength</div>
+                <div class="score-circle">
+                    <svg width="180" height="180" viewBox="0 0 180 180">
+                        <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+                        <circle cx="90" cy="90" r="80" fill="none" stroke="var(--primary)" stroke-width="12"
+                            stroke-dasharray="502.6" stroke-dashoffset="{{ 502.6 - (analysis.score / 100) * 502.6 }}"
+                            stroke-linecap="round" style="transition: stroke-dashoffset 1s ease-out;"></circle>
+                    </svg>
+                    <div class="score-val">{{ analysis.score }}%</div>
+                </div>
+                <p class="mt-4 small text-muted">A score of 80%+ is recommended for this role.</p>
+            </div>
+        </div>
+
+        <!-- ── Skills Gap ── -->
+        <div class="col-lg-8">
+            <div class="dash-card">
+                <h5 class="fw-bold mb-4"><i class="fa-solid fa-microchip me-2" style="color:var(--success);"></i> Skill Gap Analysis</h5>
+                <div class="mb-4">
+                    <label class="small text-muted mb-2 d-block">MATCHED SKILLS</label>
+                    {% for skill in analysis.matched_skills %}
+                    <span class="tag tag-matched"><i class="fa-solid fa-check me-1"></i> {{ skill }}</span>
+                    {% endfor %}
+                    {% if not analysis.matched_skills %}
+                    <span class="text-muted small italic">No matching skills found.</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="small text-muted mb-2 d-block">MISSING SKILLS (IMPROVE THESE)</label>
+                    {% for skill in analysis.missing_skills %}
+                    <span class="tag tag-missing"><i class="fa-solid fa-xmark me-1"></i> {{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- ── Role Suggestions ── -->
+        <div class="col-lg-7">
+            <div class="dash-card">
+                <h5 class="fw-bold mb-4"><i class="fa-solid fa-lightbulb me-2" style="color:var(--warning);"></i> Improvement Suggestions</h5>
+                {% for suggestion in analysis.recommendations %}
+                <div class="suggestion-item">
+                    <i class="fa-solid fa-circle-arrow-up mt-1"></i>
+                    <div>
+                        <div class="text-white fw-600">{{ suggestion }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ── Project Recs ── -->
+        <div class="col-lg-5">
+            <div class="dash-card">
+                <h5 class="fw-bold mb-4"><i class="fa-solid fa-code-branch me-2" style="color:var(--primary);"></i> Recommended Projects</h5>
+                {% for project in analysis.projects %}
+                <div class="project-card">
+                    <div class="fw-bold text-white mb-1">{{ project }}</div>
+                    <div class="small text-muted">Building this will significantly boost your {{ analysis.role }} profile.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ name or 'Resume' }} — Professional Resume</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Print-friendly adjustments for resume */
+        @media print {
+            body { background: white; }
+            .resume-card { box-shadow: none; max-width: 720px; margin: 0 auto; }
+            a[href]:after { content: " (" attr(href) ")"; font-size: 10px; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="resume-container">
+    <div class="resume-card">
+
+        <header class="resume-top">
+            <div class="top-left">
+                <h1 class="name">{{ name }}</h1>
+                <div class="title-muted muted">{{ email }}{% if phone %} · {{ phone }}{% endif %}</div>
+                <div class="links muted" style="margin-top:8px">
+                    {% if linkedin %}<a href="{{ linkedin }}" target="_blank">LinkedIn</a>{% endif %}
+                    {% if github %}{% if linkedin %} · {% endif %}<a href="{{ github }}" target="_blank">GitHub</a>{% endif %}
+                </div>
+            </div>
+            <div class="top-right no-print">
+                <div class="score-box">
+                    <div>
+                        <div class="score-circle" style="--score: {{ score }};"></div>
+                        <div style="text-align:center;margin-top:6px">ATS Score<br><strong>{{ score }}%</strong></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="no-print" style="text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <form action="{{ url_for('download') }}" method="post" style="display: inline;">
+                <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                    📄 Download PDF Resume
+                </button>
+            </form>
+        </div>
+
+        <main class="resume-main">
+            <section class="col-left">
+                <div class="section">
+                    <h2>Education</h2>
+                    <div class="section-body">{{ education or '—' }}</div>
+                </div>
+
+                <div class="section">
+                    <h2>Skills</h2>
+                    <div class="section-body">{{ skills or '—' }}</div>
+                </div>
+
+                {% if languages %}
+                <div class="section">
+                    <h2>Languages</h2>
+                    <div class="languages">
+                        {% for lang in (languages.split(',') if languages else []) %}
+                            <span class="lang-pill">{{ lang.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+
+            <section class="col-right">
+                <div class="section">
+                    <h2>Projects</h2>
+                    <div class="section-body">{{ projects or '—' }}</div>
+                </div>
+
+                {% if experience %}
+                <div class="section">
+                    <h2>Experience</h2>
+                    <div class="section-body">{{ experience or '—' }}</div>
+                </div>
+                {% endif %}
+
+                {% if certifications %}
+                <div class="section">
+                    <h2>Certifications</h2>
+                    <div class="section-body">{{ certifications or '—' }}</div>
+                </div>
+                {% endif %}
+
+                {% if extracted %}
+                <div class="section">
+                    <h2>Extracted Resume Text</h2>
+                    <pre class="extracted">{{ extracted }}</pre>
+                </div>
+                {% endif %}
+            </section>
+        </main>
+
+        {% if report %}
+        <div class="improvement-section no-print" style="margin-top:20px;padding:20px;background:#f8f9fa;border-radius:8px;border:1px solid #e9ecef">
+            <h2 style="color:#2c3e50;margin-bottom:15px">Resume Improvement Suggestions</h2>
+            <p style="color:#6c757d;margin-bottom:20px">Based on the job description you provided, here are targeted suggestions to improve your resume's match:</p>
+            
+            {% if report.skills_to_add %}
+            <div class="suggestion-group">
+                <h3 style="color:#495057;margin-bottom:8px">Skills to Add or Highlight</h3>
+                <ul style="margin:0;padding-left:20px">
+                    {% for skill in report.skills_to_add %}
+                    <li style="margin-bottom:4px">{{ skill }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if report.technologies_to_learn %}
+            <div class="suggestion-group">
+                <h3 style="color:#495057;margin-bottom:8px">Tools & Technologies to Learn</h3>
+                <ul style="margin:0;padding-left:20px">
+                    {% for tech in report.technologies_to_learn %}
+                    <li style="margin-bottom:4px">{{ tech }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if report.knowledge_areas_required %}
+            <div class="suggestion-group">
+                <h3 style="color:#495057;margin-bottom:8px">Knowledge Areas to Develop</h3>
+                <ul style="margin:0;padding-left:20px">
+                    {% for area in report.knowledge_areas_required %}
+                    <li style="margin-bottom:4px">{{ area }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if report.resume_content_improvements %}
+            <div class="suggestion-group">
+                <h3 style="color:#495057;margin-bottom:8px">Resume Structure & Content Improvements</h3>
+                <ul style="margin:0;padding-left:20px">
+                    {% for improvement in report.resume_content_improvements %}
+                    <li style="margin-bottom:4px">{{ improvement }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if report.suggested_projects_to_add %}
+            <div class="suggestion-group">
+                <h3 style="color:#495057;margin-bottom:8px">Suggested Projects to Add</h3>
+                <ul style="margin:0;padding-left:20px">
+                    {% for project in report.suggested_projects_to_add %}
+                    <li style="margin-bottom:4px">{{ project }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if report.certifications_that_could_help %}
+            <div class="suggestion-group">
+                <h3 style="color:#495057;margin-bottom:8px">Certifications That Could Help</h3>
+                <ul style="margin:0;padding-left:20px">
+                    {% for cert in report.certifications_that_could_help %}
+                    <li style="margin-bottom:4px">{{ cert }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <footer class="no-print" style="margin-top:18px;display:flex;gap:12px;align-items:center">
+            <a href="/" class="back-link">Create Another Resume</a>
+            <form action="/download" method="post" style="margin:0">
+                <input type="hidden" name="name" value="{{ name }}">
+                <input type="hidden" name="email" value="{{ email }}">
+                <input type="hidden" name="phone" value="{{ phone }}">
+                <input type="hidden" name="education" value="{{ education }}">
+                <input type="hidden" name="skills" value="{{ skills }}">
+                <input type="hidden" name="projects" value="{{ projects }}">
+                <input type="hidden" name="linkedin" value="{{ linkedin }}">
+                <input type="hidden" name="github" value="{{ github }}">
+                <input type="hidden" name="languages" value="{{ languages }}">
+                <button type="submit" class="download-btn">Download PDF</button>
+            </form>
+        </footer>
+
+    </div>
+</div>
+
+</body>
+</html>

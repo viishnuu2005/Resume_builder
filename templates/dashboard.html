@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Dashboard – Resume Builder ATS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d2e;
+            --surface2: #1e2235;
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #e2e8f0;
+            --muted: rgba(255, 255, 255, 0.45);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* ══════════════════════════════════
+           UPLOAD FORM STATE
+        ══════════════════════════════════ */
+        .upload-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 55%, #24243e 100%);
+            padding: 2rem 1rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.9rem;
+            border-radius: 50rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.1rem;
+        }
+
+        .upload-title {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1.25;
+        }
+
+        .upload-sub {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .form-label-custom {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.45rem;
+            display: block;
+        }
+
+        .form-control-dark {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control-dark::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-control-dark:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Select dropdown styling */
+        .form-control-dark[type="select"],
+        .form-control-dark select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .form-control-dark select option {
+            background: #1a1d2e;
+            color: #fff;
+            padding: 8px;
+        }
+
+        .form-control-dark select option:checked {
+            background: rgba(99, 102, 241, 0.5);
+            color: #fff;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(99, 102, 241, 0.04);
+            transition: all 0.25s;
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-text {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+        }
+
+        .file-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            color: #6ee7b7;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-analyze:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner-ring {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert-err {
+            background: rgba(220, 38, 38, 0.12);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            color: #fca5a5;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.25rem;
+        }
+
+        .nav-foot {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .nav-foot a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.83rem;
+            margin: 0 0.6rem;
+            transition: color .2s;
+        }
+
+        .nav-foot a:hover {
+            color: #a5b4fc;
+        }
+
+        /* ══════════════════════════════════
+           RESULTS DASHBOARD STATE
+        ══════════════════════════════════ */
+        .dash-header {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%);
+            padding: 2.5rem 0 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .dash-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-hdr {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 1.1rem;
+        }
+
+        .card-hdr .ic {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* Score ring */
+        .score-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .grade-pill {
+            display: inline-block;
+            padding: 0.3rem 0.9rem;
+            border-radius: 50rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        /* Bar */
+        .seg-row {
+            margin-bottom: 0.85rem;
+        }
+
+        .seg-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .bar-track {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 50rem;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 50rem;
+            width: 0%;
+            transition: width 1.1s ease;
+        }
+
+        /* Tags / pills */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.32rem 0.75rem;
+            border-radius: 50rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        .tag-lang {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+        }
+
+        .tag-fw {
+            background: rgba(236, 72, 153, 0.12);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            color: #f9a8d4;
+        }
+
+        .tag-tool {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fcd34d;
+        }
+
+        .tag-know {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .tag-cert {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .tag-match {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Detail cards (structure / achievement / gap / project) */
+        .detail-item {
+            display: flex;
+            gap: 0.9rem;
+            align-items: flex-start;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 0.7rem;
+            transition: border-color 0.2s;
+        }
+
+        .detail-item:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .det-ic {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .det-title {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .det-body {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .det-body strong {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .det-body em {
+            color: #a5b4fc;
+            font-style: normal;
+        }
+
+        /* Editor card */
+        .editor-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .editor-ctrl {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.87rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .editor-ctrl-sm {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        /* Select dropdown styling for editor-ctrl */
+        select.editor-ctrl,
+        select.editor-ctrl-sm {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.65rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .editor-ctrl:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-dl {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px var(--primary-glow);
+            text-decoration: none;
+        }
+
+        .btn-dl:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(99, 102, 241, 0.5);
+            color: white;
+        }
+
+        .btn-prev {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 0.63rem 1.15rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .select-dark {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: #fff;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.87rem;
+            font-family: inherit;
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23fff%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.65rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .select-dark option {
+            background: #1a1d2e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 1.5rem 0;
+        }
+
+        .match-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .match-chip i {
+            color: var(--primary);
+        }
+
+        .match-chip .val {
+            color: #fff;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    {% if not report %}
+    <!-- ╔══════════════════════════════ UPLOAD FORM ══════════════════════════════╗ -->
+    <div class="upload-wrapper">
+        <div class="glass-card">
+            <div class="feature-badge">
+                <i class="fa-solid fa-file-pen"></i> Resume Dashboard
+            </div>
+            <h1 class="upload-title">Professional Resume Builder</h1>
+            <p class="upload-sub">
+                Upload your resume PDF or paste your experience to extract details into our professional editor and generate a tailored, ATS-friendly PDF.
+            </p>
+
+            {% if error %}
+            <div class="alert-err">
+                <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/dashboard" method="post" enctype="multipart/form-data" id="dashForm">
+
+
+
+                <div class="mb-3">
+                    <label class="form-label-custom">
+                        <i class="fa-regular fa-file-pdf" style="color:#f9a8d4;"></i> Upload Resume PDF
+                    </label>
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" name="resume_file" accept=".pdf" id="fileInput">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.4rem;color:#a5b4fc;"></i>
+                        <p class="drop-text mb-0">Drag & drop PDF, or click to browse</p>
+                    </div>
+                    <div class="file-indicator" id="fileIndicator">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="fileName">file.pdf</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom">
+                        <i class="fa-solid fa-align-left" style="color:#fcd34d;"></i> Or Paste Resume Text
+                    </label>
+                    <textarea class="form-control-dark" name="resume_text" rows="4"
+                        placeholder="If not uploading a PDF, paste your resume text here..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-analyze" id="analyzeBtn">
+                    <div class="spinner-ring" id="spinner"></div>
+                    <i class="fa-solid fa-file-export" id="btnIcon"></i>
+                    <span id="btnText">Extract & Edit Resume</span>
+                </button>
+            </form>
+
+            <div class="nav-foot">
+                <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/upload"><i class="fa-solid fa-robot"></i> ATS Score Only</a>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- ╔══════════════════════════════ RESULTS DASHBOARD ══════════════════════════════╗ -->
+
+    <!-- Header -->
+    <div class="dash-header">
+        <div class="container text-center">
+            <div class="feature-badge mx-auto mb-2">
+                <i class="fa-solid fa-file-pen"></i> Resume Editor
+            </div>
+            <h2 class="fw-bold mb-1" style="color:#fff; font-size:1.65rem;">Review & Download Your Resume</h2>
+            <p style="color:rgba(255,255,255,0.45); font-size:0.92rem; margin:0;">
+                We've extracted your details below. You can now edit and download your professional PDF.
+            </p>
+        </div>
+    </div>
+
+    <div class="container-fluid px-3 px-lg-5 pb-5">
+
+        <!-- Action bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-2 gap-2">
+            <div>
+                <a href="/dashboard" class="btn-prev me-2"><i class="fa-solid fa-arrow-left"></i> Start Over</a>
+                <a href="/upload" class="btn-prev me-2"><i class="fa-solid fa-robot"></i> ATS Score</a>
+                <a href="/analyze-role" class="btn-prev"><i class="fa-solid fa-wand-magic-sparkles"></i> Role Match</a>
+            </div>
+        </div>
+            <!-- ════ CENTER: Resume Editor + Download ════ -->
+            <div class="col-lg-8 offset-lg-2">
+                <div class="dash-card" style="position:sticky;top:1.5rem;">
+                    <div class="card-hdr mb-2">
+                        <div class="ic" style="background:rgba(16,185,129,0.12);color:#6ee7b7;"><i
+                                class="fa-solid fa-pen-to-square"></i></div>
+                        Edit & Download Updated Resume
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1.2rem;">
+                        Choose a professional template and download your updated PDF.
+                    </p>
+
+                    <form action="/download" method="post" id="resumeForm">
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-12">
+                                <label class="editor-label">Full Name</label>
+                                <input type="text" class="editor-ctrl" name="name" value="{{ name }}"
+                                    placeholder="Your Name">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">Email</label>
+                                <input type="email" class="editor-ctrl" name="email" value="{{ email }}"
+                                    placeholder="email@example.com">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">Phone</label>
+                                <input type="text" class="editor-ctrl" name="phone" value="{{ phone }}"
+                                    placeholder="+1 234 567 8900">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">LinkedIn (optional)</label>
+                                <input type="text" class="editor-ctrl" name="linkedin"
+                                    placeholder="linkedin.com/in/you">
+                            </div>
+                            <div class="col-6">
+                                <label class="editor-label">GitHub (optional)</label>
+                                <input type="text" class="editor-ctrl" name="github" value="{{ github }}" placeholder="github.com/you">
+                            </div>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-briefcase" style="color:#a5b4fc;font-size:0.75rem;"></i>
+                                Experience
+                            </label>
+                            <div id="experienceContainer">
+                                {% if experience is iterable and experience is not string %}
+                                    {% for exp in experience %}
+                                    <div class="experience-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="removeExperienceRow(this)"></button>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" value="{{ exp.company }}" placeholder="Company" required></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" value="{{ exp.role }}" placeholder="Role" required></div>
+                                        </div>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" value="{{ exp.duration }}" placeholder="Duration (e.g. 2020-2023)">
+                                        <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities...">{{ exp.description }}</textarea>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="experience-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" placeholder="Company" required></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" placeholder="Role" required></div>
+                                        </div>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" placeholder="Duration (e.g. 2020-2023)">
+                                        <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities...">{{ experience }}</textarea>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1 mb-2" style="font-size:0.75rem;" onclick="addExperienceRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add Company
+                            </button>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <div class="mb-4">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-school" style="color:#a5b4fc;font-size:0.75rem;"></i>
+                                School Education
+                            </label>
+                            <div id="schoolEducationContainer">
+                                {% if education and education.school %}
+                                    {% for school in education.school %}
+                                    <div class="school-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="SSLC (10th)" {% if school.qualification == 'SSLC (10th)' %}selected{% endif %}>SSLC (10th)</option>
+                                                    <option value="Plus Two (12th)" {% if school.qualification == 'Plus Two (12th)' %}selected{% endif %}>Plus Two (12th)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala State Syllabus" {% if school.syllabus == 'Kerala State Syllabus' %}selected{% endif %}>Kerala State Syllabus</option>
+                                                    <option value="CBSE" {% if school.syllabus == 'CBSE' %}selected{% endif %}>CBSE</option>
+                                                    <option value="ICSE" {% if school.syllabus == 'ICSE' %}selected{% endif %}>ICSE</option>
+                                                    <option value="Other" {% if school.syllabus not in ['Kerala State Syllabus', 'CBSE', 'ICSE'] and school.syllabus %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if school.syllabus not in ['Kerala State Syllabus', 'CBSE', 'ICSE'] and school.syllabus %}block{% else %}none{% endif %};" value="{{ school.syllabus if school.syllabus not in ['Kerala State Syllabus', 'CBSE', 'ICSE'] else '' }}" placeholder="Enter Syllabus">
+                                            </div>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 3) %}
+                                                        <option value="{{ y }}" {% if school.year|string == y|string %}selected{% endif %}>{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" value="{{ school.percentage }}" placeholder="Percentage (%)" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Seed first entry if empty -->
+                                    <div class="school-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="SSLC (10th)">SSLC (10th)</option>
+                                                    <option value="Plus Two (12th)">Plus Two (12th)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala State Syllabus">Kerala State Syllabus</option>
+                                                    <option value="CBSE">CBSE</option>
+                                                    <option value="ICSE">ICSE</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Syllabus">
+                                            </div>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 3) %}
+                                                        <option value="{{ y }}">{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" placeholder="Percentage (%)" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1 mb-2" style="font-size:0.75rem; border-color:#a5b4fc; color:#a5b4fc;" onclick="addSchoolRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add School Education
+                            </button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-graduation-cap" style="color:#10b981;font-size:0.75rem;"></i>
+                                Higher Education
+                            </label>
+                            <div id="higherEducationContainer">
+                                {% if education and education.higher %}
+                                    {% for higher in education.higher %}
+                                    <div class="higher-entry mb-4 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                                        
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
+                                            <input type="text" class="editor-ctrl editor-ctrl-sm degree-display" readonly value="{{ higher.degree or '-Select-' }}" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3);">
+                                            <input type="hidden" name="higher_degree[]" value="{{ higher.degree }}">
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+                                                <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" value="{{ higher.courseName }}" placeholder="e.g. B.Tech, BBA Integrated" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                                                <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Computer Science and Engineering" {% if higher.specialization == 'Computer Science and Engineering' %}selected{% endif %}>Computer Science and Engineering</option>
+                                                    <option value="Electronics and Communication" {% if higher.specialization == 'Electronics and Communication' %}selected{% endif %}>Electronics and Communication</option>
+                                                    <option value="Mechanical Engineering" {% if higher.specialization == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                                                    <option value="Civil Engineering" {% if higher.specialization == 'Civil Engineering' %}selected{% endif %}>Civil Engineering</option>
+                                                    <option value="Electrical Engineering" {% if higher.specialization == 'Electrical Engineering' %}selected{% endif %}>Electrical Engineering</option>
+                                                    <option value="Other" {% if higher.specialization not in ['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering'] and higher.specialization %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if higher.specialization not in ['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering'] and higher.specialization %}block{% else %}none{% endif %};" value="{{ higher.specialization if higher.specialization not in ['Computer Science and Engineering', 'Electronics and Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering'] else '' }}" placeholder="Enter Specialization">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+                                            <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                <option value="" disabled selected>-Select-</option>
+                                                <option value="Government" {% if higher.institutionType == 'Government' %}selected{% endif %}>Government</option>
+                                                <option value="Aided" {% if higher.institutionType == 'Aided' %}selected{% endif %}>Aided</option>
+                                                <option value="Private" {% if higher.institutionType == 'Private' %}selected{% endif %}>Private</option>
+                                                <option value="Deemed" {% if higher.institutionType == 'Deemed' %}selected{% endif %}>Deemed</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+                                                <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="College of Engineering Trivandrum (CET)" {% if higher.college == 'College of Engineering Trivandrum (CET)' %}selected{% endif %}>CET</option>
+                                                    <option value="National Institute of Technology Calicut (NITC)" {% if higher.college == 'National Institute of Technology Calicut (NITC)' %}selected{% endif %}>NITC</option>
+                                                    <option value="IIT Madras" {% if higher.college == 'IIT Madras' %}selected{% endif %}>IIT Madras</option>
+                                                    <option value="Other" {% if higher.college not in ['College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)', 'IIT Madras'] and higher.college %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if higher.college not in ['College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)', 'IIT Madras'] and higher.college %}block{% else %}none{% endif %};" value="{{ higher.college if higher.college not in ['College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)', 'IIT Madras'] else '' }}" placeholder="Enter College Name">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                                                <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="APJ Abdul Kalam Technological University (KTU)" {% if higher.university == 'APJ Abdul Kalam Technological University (KTU)' %}selected{% endif %}>KTU</option>
+                                                    <option value="Kerala University" {% if higher.university == 'Kerala University' %}selected{% endif %}>Kerala University</option>
+                                                    <option value="Calicut University" {% if higher.university == 'Calicut University' %}selected{% endif %}>Calicut University</option>
+                                                    <option value="Other" {% if higher.university not in ['APJ Abdul Kalam Technological University (KTU)', 'Kerala University', 'Calicut University'] and higher.university %}selected{% endif %}>Other</option>
+                                                </select>
+                                                <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: {% if higher.university not in ['APJ Abdul Kalam Technological University (KTU)', 'Kerala University', 'Calicut University'] and higher.university %}block{% else %}none{% endif %};" value="{{ higher.university if higher.university not in ['APJ Abdul Kalam Technological University (KTU)', 'Kerala University', 'Calicut University'] else '' }}" placeholder="Enter University Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+                                                <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala" {% if higher.state == 'Kerala' %}selected{% endif %}>Kerala</option>
+                                                    <option value="Tamil Nadu" {% if higher.state == 'Tamil Nadu' %}selected{% endif %}>Tamil Nadu</option>
+                                                    <option value="Karnataka" {% if higher.state == 'Karnataka' %}selected{% endif %}>Karnataka</option>
+                                                    <option value="Other" {% if higher.state not in ['Kerala', 'Tamil Nadu', 'Karnataka'] and higher.state %}selected{% endif %}>Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+                                                <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" data-selected="{{ higher.district }}" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mb-2">
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+                                                <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="2" {% if higher.duration == '2' %}selected{% endif %}>2 Years</option>
+                                                    <option value="3" {% if higher.duration == '3' %}selected{% endif %}>3 Years</option>
+                                                    <option value="4" {% if higher.duration == '4' %}selected{% endif %}>4 Years</option>
+                                                    <option value="5" {% if higher.duration == '5' %}selected{% endif %}>5 Years</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+                                                <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 6) %}
+                                                        <option value="{{ y }}" {% if higher.graduationYear|string == y|string %}selected{% endif %}>{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+                                                <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" value="{{ higher.cgpa }}" placeholder="CGPA" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="higher-entry mb-4 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
+                                            <input type="text" class="editor-ctrl editor-ctrl-sm degree-display" readonly value="-Select-" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3);">
+                                            <input type="hidden" name="higher_degree[]" value="">
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+                                                <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" placeholder="e.g. B.Tech, BBA Integrated" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                                                <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                                                    <option value="Electronics and Communication">Electronics and Communication</option>
+                                                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                                    <option value="Civil Engineering">Civil Engineering</option>
+                                                    <option value="Electrical Engineering">Electrical Engineering</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Specialization">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+                                            <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                <option value="" disabled selected>-Select-</option>
+                                                <option value="Government">Government</option>
+                                                <option value="Aided">Aided</option>
+                                                <option value="Private">Private</option>
+                                                <option value="Deemed">Deemed</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+                                                <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="College of Engineering Trivandrum (CET)">CET</option>
+                                                    <option value="National Institute of Technology Calicut (NITC)">NITC</option>
+                                                    <option value="IIT Madras">IIT Madras</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter College Name">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                                                <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
+                                                    <option value="Kerala University">Kerala University</option>
+                                                    <option value="Calicut University">Calicut University</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter University Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+                                                <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this)" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="Kerala">Kerala</option>
+                                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                                    <option value="Karnataka">Karnataka</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+                                                <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mb-2">
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+                                                <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    <option value="2">2 Years</option>
+                                                    <option value="3">3 Years</option>
+                                                    <option value="4">4 Years</option>
+                                                    <option value="5">5 Years</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+                                                <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required>
+                                                    <option value="" disabled selected>-Select-</option>
+                                                    {% set cur_year = 2026 %}
+                                                    {% for y in range(2000, cur_year + 6) %}
+                                                        <option value="{{ y }}">{{ y }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+                                                <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" placeholder="CGPA" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1 mb-2" style="font-size:0.75rem; border-color:#10b981; color:#10b981;" onclick="addHigherRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add Higher Education
+                            </button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-code" style="color:#fcd34d;font-size:0.75rem;"></i> Skills (Select Multiple)
+                            </label>
+                            <div id="skillsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:0.75rem;">
+                                <!-- Skill checkboxes will be generated here -->
+                            </div>
+                            <div id="selectedSkillsDisplay" style="margin-top:1rem; display:none;">
+                                <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:0.5rem;">Selected Skills:</p>
+                                <div id="selectedSkillsTags" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+                            </div>
+                            <!-- Hidden input to store selected skills for form submission -->
+                            <input type="hidden" name="skills" id="skillsInput" value="">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-diagram-project" style="color:#f9a8d4;font-size:0.75rem;"></i>
+                                Projects
+                            </label>
+                            <div id="projectsContainer">
+                                {% if projects is iterable and projects is not string %}
+                                    {% for proj in projects %}
+                                    <div class="project-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;">
+                                        <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" value="{{ proj.title }}" placeholder="Project Title"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" value="{{ proj.role }}" placeholder="Role"></div>
+                                        </div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" value="{{ proj.org }}" placeholder="Org"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" value="{{ proj.duration }}" placeholder="Duration"></div>
+                                        </div>
+                                        <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description">{{ proj.description }}</textarea>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" value="{{ proj.technologies }}" placeholder="Tech (e.g. Python, AWS)">
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="project-entry mb-3 p-2" style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" placeholder="Project Title"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" placeholder="Role"></div>
+                                        </div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" placeholder="Org"></div>
+                                            <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" placeholder="Duration"></div>
+                                        </div>
+                                        <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description">{{ projects }}</textarea>
+                                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" placeholder="Tech (e.g. Python, AWS)">
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-prev w-100 py-1" style="font-size:0.75rem;" onclick="addProjectRow()">
+                                <i class="fa-solid fa-plus pe-1"></i> Add Project
+                            </button>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="editor-label mb-0">
+                                    <i class="fa-solid fa-award" style="color:#6ee7b7;font-size:0.75rem;"></i>
+                                    Certifications
+                                </label>
+                                <button type="button" class="btn btn-sm py-0"
+                                    style="color:#a5b4fc; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); font-size:0.75rem;"
+                                    onclick="addCertRow()">+ Add</button>
+                            </div>
+                            <div id="certsContainer">
+                                <!-- Initial cert row -->
+                                <div class="cert-row mb-2 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-7"><input type="text" class="editor-ctrl editor-ctrl-sm"
+                                                name="cert_name[]"
+                                                placeholder="Cert Name (e.g. AWS Solutions Architect)"></div>
+                                        <div class="col-5"><input type="text" class="editor-ctrl editor-ctrl-sm"
+                                                name="cert_year[]" placeholder="Year"></div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm"
+                                                name="cert_org[]" placeholder="Organization (e.g. Amazon)"></div>
+                                        <div class="col-6 position-relative">
+                                            <input type="text" class="editor-ctrl editor-ctrl-sm pe-4"
+                                                name="cert_link[]" placeholder="Link URL (optional)">
+                                            <button type="button"
+                                                class="btn-close btn-close-white position-absolute end-0 top-50 translate-middle-y me-2"
+                                                style="width:0.5rem;height:0.5rem;"
+                                                onclick="this.closest('.cert-row').remove()"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="editor-label">Languages Spoken (optional)</label>
+                            <input type="text" class="editor-ctrl" name="languages" placeholder="English, Spanish...">
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <div class="mb-3">
+                            <label class="editor-label">PDF Template</label>
+                            <select class="select-dark" name="template_id">
+                                <option value="modern">Modern Professional (Blue)</option>
+                                <option value="classic">Simple ATS (Black & White)</option>
+                                <option value="tech">Developer (Terminal Green)</option>
+                                <option value="creative">Creative (Purple)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn-prev flex-fill" onclick="previewResume()">
+                                <i class="fa-solid fa-eye"></i> Preview
+                            </button>
+                            <button type="submit" class="btn-dl flex-fill">
+                                <i class="fa-solid fa-file-pdf"></i> Download PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div><!-- /row -->
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // SKILLS MULTI-SELECT INITIALIZATION
+        // ══════════════════════════════════════════════════════════════════════════════════
+        const skillsList = [
+            'Python', 'JavaScript', 'TypeScript', 'Java', 'C++', 'C#',
+            'React', 'Angular', 'Vue', 'Node.js', 'Django', 'Flask',
+            'Spring Boot', 'SQL', 'MongoDB', 'PostgreSQL', 'Docker',
+            'Kubernetes', 'AWS', 'GCP', 'Git', 'CI/CD', 'Machine Learning'
+        ];
+
+        function initializeSkills() {
+            const container = document.getElementById('skillsContainer');
+            const existingSkills = (document.querySelector('input[name="skills"]')?.value || '').split(',').map(s => s.trim()).filter(s => s);
+            
+            container.innerHTML = '';
+            skillsList.forEach(skill => {
+                const label = document.createElement('label');
+                label.style.cssText = 'display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; cursor:pointer; transition:all 0.2s; font-size:0.85rem;';
+                label.innerHTML = `
+                    <input type="checkbox" class="skill-checkbox" value="${skill}" style="cursor:pointer;" ${existingSkills.includes(skill) ? 'checked' : ''}>
+                    <span>${skill}</span>
+                `;
+                label.addEventListener('mouseover', () => label.style.background = 'rgba(99,102,241,0.15)');
+                label.addEventListener('mouseout', () => label.style.background = 'rgba(255,255,255,0.04)');
+                container.appendChild(label);
+            });
+        }
+
+        function updateSelectedSkills() {
+            const checkboxes = document.querySelectorAll('.skill-checkbox:checked');
+            const selected = Array.from(checkboxes).map(cb => cb.value);
+            document.getElementById('skillsInput').value = selected.join(',');
+            
+            const tagsContainer = document.getElementById('selectedSkillsTags');
+            tagsContainer.innerHTML = selected.map(skill => `
+                <span style="background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.4); color:#a5b4fc; padding:0.3rem 0.75rem; border-radius:50rem; font-size:0.8rem; display:inline-flex; align-items:center; gap:0.4rem;">
+                    ${skill}
+                    <button type="button" class="skill-remove" data-skill="${skill}" style="background:none; border:none; color:inherit; cursor:pointer; font-weight:700; padding:0;" onclick="removeSkill('${skill}')">×</button>
+                </span>
+            `).join('');
+            
+            document.getElementById('selectedSkillsDisplay').style.display = selected.length > 0 ? 'block' : 'none';
+        }
+
+        function removeSkill(skill) {
+            const checkbox = document.querySelector(`.skill-checkbox[value="${skill}"]`);
+            if (checkbox) {
+                checkbox.checked = false;
+                updateSelectedSkills();
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // LIVE PREVIEW FUNCTIONALITY
+        // ══════════════════════════════════════════════════════════════════════════════════
+        function updateLivePreview() {
+            const form = document.getElementById('resumeForm');
+            if (!form) return;
+            
+            // Collect all form data
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    if (!Array.isArray(data[key])) data[key] = [data[key]];
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // Build preview HTML (simplified for live preview)
+            const previewContent = `
+                <div style="font-family: Arial, sans-serif; max-width: 8.5in; margin: 0 auto; padding: 1rem; background: white; color: black; line-height: 1.6;">
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 1.5rem; border-bottom: 2px solid #333; padding-bottom: 1rem;">
+                        <h1 style="margin: 0; font-size: 24px; color: #333;">${data.name || 'Your Name'}</h1>
+                        <div style="font-size: 13px; color: #666;">
+                            ${data.email || 'email@example.com'} | ${data.phone || '+1 234 567 8900'}
+                            ${data.linkedin ? ` | <a href="${data.linkedin}" style="color: #0077b5; text-decoration: none;">${data.linkedin}</a>` : ''}
+                            ${data.github ? ` | <a href="${data.github}" style="color: #333; text-decoration: none;">${data.github}</a>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Experience -->
+                    ${Array.isArray(data['exp_company[]']) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">EXPERIENCE</h3>
+                            ${data['exp_company[]'].map((company, i) => `
+                                <div style="margin-bottom: 0.8rem;">
+                                    <strong>${company}</strong> - <em>${data['exp_role[]'][i] || ''}</em><br>
+                                    <small style="color: #666;">${data['exp_duration[]'][i] || ''}</small><br>
+                                    <small style="color: #555;">${data['exp_desc[]'][i] || ''}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Skills -->
+                    ${data.skills ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">SKILLS</h3>
+                            <p style="margin: 0; font-size: 13px;">${data.skills.split(',').map(s => s.trim()).join(' • ')}</p>
+                        </div>
+                    ` : ''}
+
+                    <!-- Projects -->
+                    ${Array.isArray(data['project_title[]']) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">PROJECTS</h3>
+                            ${data['project_title[]'].map((title, i) => `
+                                <div style="margin-bottom: 0.8rem;">
+                                    <strong>${title}</strong> - <em>${data['project_role[]'][i] || ''}</em><br>
+                                    <small style="color: #666;">${data['project_duration[]'][i] || ''}</small><br>
+                                    <small style="color: #555;">${data['project_desc[]'][i] || ''}</small><br>
+                                    <small style="color: #666;"><strong>Tech:</strong> ${data['project_tech[]'][i] || ''}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Certifications -->
+                    ${Array.isArray(data['cert_name[]']) && data['cert_name[]'].some(c => c) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">CERTIFICATIONS</h3>
+                            ${data['cert_name[]'].map((cert, i) => cert ? `
+                                <div style="margin-bottom: 0.5rem; font-size: 13px;">
+                                    <strong>${cert}</strong> (${data['cert_year[]'][i] || ''}) - ${data['cert_org[]'][i] || ''}
+                                </div>
+                            ` : '').join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Education -->
+                    ${Array.isArray(data['higher_course[]']) && data['higher_course[]'].some(c => c) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">EDUCATION</h3>
+                            ${data['higher_course[]'].map((course, i) => course ? `
+                                <div style="margin-bottom: 0.5rem; font-size: 13px;">
+                                    <strong>${course}</strong> - ${data['higher_specialization[]'][i] || ''}<br>
+                                    <small style="color: #666;">${data['higher_college[]'][i] || ''}, ${data['higher_district[]'][i] || ''}</small><br>
+                                    <small style="color: #666;">CGPA: ${data['higher_cgpa[]'][i] || ''}</small>
+                                </div>
+                            ` : '').join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Languages -->
+                    ${data.languages ? `
+                        <div><h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">LANGUAGES</h3>
+                        <p style="margin: 0; font-size: 13px;">${data.languages}</p></div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Store preview content in sessionStorage or update a hidden div
+            sessionStorage.setItem('previewContent', previewContent);
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // FORM VALIDATION
+        // ══════════════════════════════════════════════════════════════════════════════════
+        function validateForm() {
+            const requiredFields = {
+                'name': 'Full Name',
+                'email': 'Email',
+                'phone': 'Phone'
+            };
+
+            const errors = [];
+
+            for (let [fieldName, label] of Object.entries(requiredFields)) {
+                const field = document.querySelector(`input[name="${fieldName}"]`);
+                if (!field || !field.value.trim()) {
+                    errors.push(`${label} is required`);
+                }
+            }
+
+            // Email format validation
+            const emailField = document.querySelector('input[name="email"]');
+            if (emailField && emailField.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value)) {
+                errors.push('Please enter a valid email address');
+            }
+
+            // Phone format validation
+            const phoneField = document.querySelector('input[name="phone"]');
+            if (phoneField && phoneField.value && !/^\d{10}|^\+\d{1,3}\s?\d{1,14}$/.test(phoneField.value.replace(/[\s\-()]/g, ''))) {
+                // Allow various phone formats
+                if (phoneField.value.length < 10) {
+                    errors.push('Please enter a valid phone number (at least 10 digits)');
+                }
+            }
+
+            return errors;
+        }
+
+        function showValidationErrors(errors) {
+            // Remove existing error message if any
+            const existingError = document.querySelector('.validation-errors');
+            if (existingError) existingError.remove();
+
+            if (errors.length > 0) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'validation-errors';
+                errorDiv.style.cssText = 'background:rgba(220,38,38,0.15); border:1px solid rgba(220,38,38,0.4); border-radius:10px; padding:1rem; margin-bottom:1.5rem; color:#fca5a5; font-size:0.9rem;';
+                errorDiv.innerHTML = `
+                    <div style="display:flex; gap:0.75rem; margin-bottom:0.5rem;">
+                        <i class="fa-solid fa-triangle-exclamation" style="flex-shrink:0; margin-top:0.2rem;"></i>
+                        <div>
+                            <strong>Required fields missing:</strong>
+                            <ul style="margin:0.5rem 0 0; padding-left:1.25rem;">
+                                ${errors.map(err => `<li>${err}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                const form = document.querySelector('.dash-card');
+                if (form) form.parentElement.insertBefore(errorDiv, form);
+                return false;
+            }
+            return true;
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // INITIALIZATION & EVENT LISTENERS
+        // ══════════════════════════════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize skills
+            initializeSkills();
+
+            // Add event listeners to skill checkboxes
+            document.querySelectorAll('.skill-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    updateSelectedSkills();
+                    updateLivePreview();
+                });
+            });
+
+            // Add live preview listeners to all form inputs
+            const resumeForm = document.getElementById('resumeForm');
+            if (resumeForm) {
+                resumeForm.addEventListener('input', (e) => {
+                    updateLivePreview();
+                    
+                    // Real-time validation for name, email, phone
+                    if (['name', 'email', 'phone'].includes(e.target.name)) {
+                        const errors = validateForm();
+                        if (errors.length > 0) {
+                            showValidationErrors(errors);
+                        } else {
+                            const existingError = document.querySelector('.validation-errors');
+                            if (existingError) existingError.remove();
+                        }
+                    }
+                });
+
+                resumeForm.addEventListener('change', (e) => {
+                    updateLivePreview();
+                    
+                    // Handle district changes
+                    if (e.target.classList.contains('district-dropdown')) {
+                        updateLivePreview();
+                    }
+                });
+            }
+
+            // Submit validation
+            const resumeForm2 = document.querySelector('form[action="/download"]') || document.getElementById('resumeForm');
+            if (resumeForm2) {
+                resumeForm2.addEventListener('submit', (e) => {
+                    const errors = validateForm();
+                    if (errors.length > 0) {
+                        e.preventDefault();
+                        showValidationErrors(errors);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            }
+
+            // Fix select dropdown appearance on page load
+            const selectElements = document.querySelectorAll('select.form-control-dark');
+            selectElements.forEach(select => {
+                select.style.height = 'auto';
+                select.style.minHeight = '40px';
+            });
+        });
+
+        // ── Upload form helpers ──────────────────────────────
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const indicator = document.getElementById('fileIndicator');
+        const fileNameEl = document.getElementById('fileName');
+
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const spinner = document.getElementById('spinner');
+        const dashForm = document.getElementById('dashForm');
+
+        // Resume Upload handlers
+        if (fileInput) {
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files[0]) {
+                    fileNameEl.textContent = fileInput.files[0].name;
+                    indicator.style.display = 'flex';
+                }
+            });
+        }
+        if (dropZone) {
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault(); dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileNameEl.textContent = e.dataTransfer.files[0].name;
+                    indicator.style.display = 'flex';
+                }
+            });
+        }
+
+
+
+        if (dashForm) {
+            dashForm.addEventListener('submit', () => {
+                if (btnIcon) btnIcon.style.display = 'none';
+                if (spinner) spinner.style.display = 'block';
+                if (analyzeBtn) analyzeBtn.disabled = true;
+                if (btnText) btnText.textContent = 'Extracting…';
+            });
+        }
+
+        // ── Results page animations ─────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            // No animations needed
+        });
+
+        // ──────────────────────────────────────────────────────────────────────────────────
+        // HANDLE DYNAMIC FORM ROWS
+        // ──────────────────────────────────────────────────────────────────────────────────
+        function attachLivePreviewListeners(element) {
+            if (!element) return;
+            
+            // Input, textarea, and select elements
+            const inputs = element.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (!input.classList.contains('listener-attached')) {
+                    input.addEventListener('input', updateLivePreview);
+                    input.addEventListener('change', updateLivePreview);
+                    input.classList.add('listener-attached');
+                }
+            });
+        }
+
+        function addExperienceRow() {
+            const container = document.getElementById('experienceContainer');
+            const row = document.createElement('div');
+            row.className = 'experience-entry mb-3 p-2';
+            row.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            row.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="removeExperienceRow(this)"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" placeholder="Company" required onchange="updateLivePreview();"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" placeholder="Role" required onchange="updateLivePreview();"></div>
+                </div>
+                <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" placeholder="Duration (e.g. 2020-2023)" onchange="updateLivePreview();">
+                <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities..." onchange="updateLivePreview();"></textarea>
+            `;
+            container.appendChild(row);
+            attachLivePreviewListeners(row);
+            updateLivePreview();
+        }
+
+        function removeExperienceRow(btn) {
+            const container = document.getElementById('experienceContainer');
+            if (container.querySelectorAll('.experience-entry').length > 1) {
+                btn.parentElement.remove();
+                updateLivePreview();
+            } else {
+                alert("At least one experience entry is required.");
+            }
+        }
+
+        function addProjectRow() {
+            const container = document.getElementById('projectsContainer');
+            const row = document.createElement('div');
+            row.className = 'project-entry mb-3 p-2';
+            row.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            row.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove(); updateLivePreview();"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" placeholder="Project Title" onchange="updateLivePreview();"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" placeholder="Role" onchange="updateLivePreview();"></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" placeholder="Org" onchange="updateLivePreview();"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" placeholder="Duration" onchange="updateLivePreview();"></div>
+                </div>
+                <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description" onchange="updateLivePreview();"></textarea>
+                <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" placeholder="Tech (e.g. Python, AWS)" onchange="updateLivePreview();">
+            `;
+            container.appendChild(row);
+            attachLivePreviewListeners(row);
+            updateLivePreview();
+        }
+
+        function addCertRow() {
+            const container = document.getElementById('certsContainer');
+            const row = document.createElement('div');
+            row.className = 'cert-row mb-2 pb-2';
+            row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            row.innerHTML = `
+            <div class="row g-2 mb-2">
+                <div class="col-7"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_name[]" placeholder="Cert Name" onchange="updateLivePreview();"></div>
+                <div class="col-5"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_year[]" placeholder="Year" onchange="updateLivePreview();"></div>
+            </div>
+            <div class="row g-2">
+                <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_org[]" placeholder="Organization" onchange="updateLivePreview();"></div>
+                <div class="col-6 position-relative">
+                    <input type="text" class="editor-ctrl editor-ctrl-sm pe-4" name="cert_link[]" placeholder="Link URL" onchange="updateLivePreview();">
+                    <button type="button" class="btn-close btn-close-white position-absolute end-0 top-50 translate-middle-y me-2" style="width:0.5rem;height:0.5rem;" onclick="this.closest('.cert-row').remove(); updateLivePreview();"></button>
+                </div>
+            </div>
+        `;
+            container.appendChild(row);
+            attachLivePreviewListeners(row);
+            updateLivePreview();
+        }
+        function toggleManualInput(select) {
+            const manual = select.nextElementSibling;
+            if (select.value === 'Other') {
+                manual.style.display = 'block';
+                manual.setAttribute('required', 'required');
+            } else {
+                manual.style.display = 'none';
+                manual.removeAttribute('required');
+            }
+        }
+
+        const districtData = {
+            "Kerala": ["Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha", "Kottayam", "Idukki", "Ernakulam", "Thrissur", "Palakkad", "Malappuram", "Kozhikode", "Wayanad", "Kannur", "Kasaragod"],
+            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Trichy", "Salem", "Tirunelveli"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru", "Belagavi"]
+        };
+
+        function loadDistricts(select) {
+            const entry = select.closest('.higher-entry');
+            const districtDropdown = entry.querySelector('.district-dropdown');
+            const state = select.value;
+            
+            districtDropdown.innerHTML = '<option value="" disabled selected>-Select-</option>';
+            
+            if (districtData[state]) {
+                districtData[state].forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    districtDropdown.appendChild(opt);
+                });
+            } else if (state === 'Other') {
+               const opt = document.createElement('option');
+               opt.value = 'Other';
+               opt.textContent = 'Other';
+               districtDropdown.appendChild(opt);
+            }
+        }
+
+        function addSchoolRow() {
+            const container = document.getElementById('schoolEducationContainer');
+            const div = document.createElement('div');
+            div.className = 'school-entry mb-3 p-2';
+            div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            div.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove(); updateLivePreview();"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="SSLC (10th)">SSLC (10th)</option>
+                            <option value="Plus Two (12th)">Plus Two (12th)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="Kerala State Syllabus">Kerala State Syllabus</option>
+                            <option value="CBSE">CBSE</option>
+                            <option value="ICSE">ICSE</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Syllabus" onchange="updateLivePreview();">
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+                            <option value="" disabled selected>-Select-</option>
+                            ${Array.from({length: 29}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" placeholder="Percentage (%)" required onchange="updateLivePreview();">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            updateLivePreview();
+        }
+
+        function addHigherRow() {
+            const container = document.getElementById('higherEducationContainer');
+            const div = document.createElement('div');
+            div.className = 'higher-entry mb-4 p-2';
+            div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            div.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove(); updateLivePreview();"></button>
+                
+                <div class="mb-2">
+                    <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
+                    <input type="text" class="editor-ctrl editor-ctrl-sm degree-display" readonly value="-Select-" onclick="openDegreeModal(this)" style="cursor:pointer; background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3);">
+                    <input type="hidden" name="higher_degree[]" value="">
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" placeholder="e.g. B.Tech, BBA Integrated" required onchange="updateLivePreview();">
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                        <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                            <option value="Electronics and Communication">Electronics and Communication</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Electrical Engineering">Electrical Engineering</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Specialization" onchange="updateLivePreview();">
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+                    <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+                        <option value="" disabled selected>-Select-</option>
+                        <option value="Government">Government</option>
+                        <option value="Aided">Aided</option>
+                        <option value="Private">Private</option>
+                        <option value="Deemed">Deemed</option>
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+                        <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="College of Engineering Trivandrum (CET)">CET</option>
+                            <option value="National Institute of Technology Calicut (NITC)">NITC</option>
+                            <option value="IIT Madras">IIT Madras</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter College Name" onchange="updateLivePreview();">
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                        <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
+                            <option value="Kerala University">Kerala University</option>
+                            <option value="Calicut University">Calicut University</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter University Name" onchange="updateLivePreview();">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+                        <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this); updateLivePreview();" required>
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+                        <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" required onchange="updateLivePreview();">
+                            <option value="" disabled selected>-Select-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-2">
+                    <div class="col-4">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+                        <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+                            <option value="" disabled selected>-Select-</option>
+                            <option value="2">2 Years</option>
+                            <option value="3">3 Years</option>
+                            <option value="4">4 Years</option>
+                            <option value="5">5 Years</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+                        <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+                            <option value="" disabled selected>-Select-</option>
+                            ${Array.from({length: 31}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+                        <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" placeholder="CGPA" required onchange="updateLivePreview();">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            updateLivePreview();
+        }
+
+        let activeDegreeTarget = null;
+        function openDegreeModal(el) {
+            activeDegreeTarget = el;
+            const modal = new bootstrap.Modal(document.getElementById('degreeModal'));
+            modal.show();
+        }
+
+        function selectDegree(val) {
+            if (activeDegreeTarget) {
+                activeDegreeTarget.value = val;
+                const hiddenInput = activeDegreeTarget.nextElementSibling;
+                hiddenInput.value = val;
+                
+                if (val === 'Others') {
+                    const manual = prompt("Enter your degree:");
+                    if (manual) {
+                        activeDegreeTarget.value = manual;
+                        hiddenInput.value = manual;
+                    }
+                }
+                updateLivePreview();
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('degreeModal'));
+            modal.hide();
+        }
+
+        // Initialize on page load  
+        document.addEventListener('DOMContentLoaded', () => {
+           // Attach listeners to all existing form inputs
+           const resumeForm = document.getElementById('resumeForm');
+           if (resumeForm) {
+               const allInputs = resumeForm.querySelectorAll('input:not([name="skills"]), textarea, select');
+               allInputs.forEach(input => {
+                   if (!input.classList.contains('listener-attached') && !input.classList.contains('degree-display')) {
+                       input.addEventListener('input', updateLivePreview);
+                       input.addEventListener('change', updateLivePreview);
+                       input.classList.add('listener-attached');
+                   }
+               });
+           }
+           
+           // Load and initialize district dropdowns
+           document.querySelectorAll('.state-dropdown').forEach(select => {
+               if (select.value) loadDistricts(select);
+               const entry = select.closest('.higher-entry');
+               if (entry) {
+                   const districtDropdown = entry.querySelector('.district-dropdown');
+                   const selectedDistrict = districtDropdown.getAttribute('data-selected');
+                   if (selectedDistrict) districtDropdown.value = selectedDistrict;
+               }
+           });
+           
+           // Initial live preview render
+           updateLivePreview();
+        });
+    </script>
+{% include 'chatbot.html' %}
+    <!-- Degree Selection Modal -->
+    <div class="modal fade" id="degreeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="background:#1e1e2e; border-radius:12px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white" style="font-size:1rem;">Select Degree</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('B.Tech')">B.Tech</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('B.E.')">B.E.</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('BCA')">BCA</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('BSc')">BSc</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('M.Tech')">M.Tech</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('MCA')">MCA</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('MSc')">MSc</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('MBA')">MBA</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('Diploma')">Diploma</button>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <button type="button" class="btn btn-dark w-100 py-2 border-0" style="background:rgba(99,102,241,0.1); color:#a5b4fc; font-size:0.85rem;" onclick="selectDegree('Others')">Others</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
