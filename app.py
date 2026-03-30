@@ -6,7 +6,11 @@ from functools import wraps
 
 # Import the new modules
 from modules import resume_processor, groq_analyzer, pdf_generator, ats_analyzer, role_analyzer
+<<<<<<< HEAD
 from modules.database import create_user, authenticate_user, get_user_by_id, save_resume, get_user_resumes, delete_resume
+=======
+from modules.database import create_user, authenticate_user, get_user_by_id, save_resume, get_user_resumes, delete_resume, update_resume
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 
 app = Flask(__name__)
 app.secret_key = 'resume-builder-ats-secret-key-2026'
@@ -23,6 +27,7 @@ def login_required(f):
 
 @app.route('/')
 def home():
+<<<<<<< HEAD
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
@@ -39,6 +44,105 @@ def generate():
     languages = request.form.get('languages', '')
 
     resume_text = " ".join([name, education, skills, projects, linkedin, github, languages])
+=======
+    resume_data = session.get('edit_resume_data', None)
+    edit_resume_id = session.get('edit_resume_id', None)
+    return render_template('index.html', resume_data=resume_data or {}, edit_resume_id=edit_resume_id or '')
+
+@app.route('/edit-resume/<resume_id>')
+@login_required
+def edit_resume(resume_id):
+    resumes = get_user_resumes(session['user_id'])
+    target = None
+    for r in resumes:
+        if r['_id'] == resume_id:
+            target = r
+            break
+    if not target:
+        flash('Resume not found.')
+        return redirect(url_for('my_resumes'))
+
+    session['edit_resume_data'] = target['data']
+    session['edit_resume_id'] = resume_id
+    return redirect(url_for('home'))
+
+@app.route('/generate', methods=['POST'])
+def generate():
+    # Updated to use structured data for consistency with download
+    data = _get_resume_data_from_request()
+    
+    # For backward compatibility, extract simple strings for template
+    name = data.get('name', '')
+    email = data.get('email', '')
+    phone = data.get('phone', '')
+    
+    # Format education for display
+    education_data = data.get('education', {})
+    education_display = ""
+    if isinstance(education_data, dict):
+        school_list = education_data.get('school', [])
+        higher_list = education_data.get('higher', [])
+        edu_parts = []
+        for school in school_list:
+            parts = [school.get('qualification', ''), school.get('year', '')]
+            edu_parts.append(' - '.join(filter(None, parts)))
+        for higher in higher_list:
+            parts = [higher.get('degree', ''), higher.get('courseName', ''), higher.get('graduationYear', '')]
+            edu_parts.append(' - '.join(filter(None, parts)))
+        education_display = '\n'.join(edu_parts)
+    
+    skills_display = ', '.join(data.get('skills', [])) if isinstance(data.get('skills', []), list) else data.get('skills', '')
+    
+    # Format projects for display
+    projects_list = data.get('projects', [])
+    projects_display = ""
+    if isinstance(projects_list, list):
+        proj_parts = []
+        for proj in projects_list:
+            title = proj.get('title', '')
+            desc = proj.get('description', '')
+            parts = [title, desc]
+            proj_parts.append('\n'.join(filter(None, parts)))
+        projects_display = '\n\n'.join(proj_parts)
+    
+    # Format experience for display
+    experience_list = data.get('experience', [])
+    experience_display = ""
+    if isinstance(experience_list, list):
+        exp_parts = []
+        for exp in experience_list:
+            company = exp.get('company', '')
+            role = exp.get('role', '')
+            duration = exp.get('duration', '')
+            desc = exp.get('description', '')
+            parts = [f"{role} at {company}" if role and company else role or company, duration, desc]
+            exp_parts.append('\n'.join(filter(None, parts)))
+        experience_display = '\n\n'.join(exp_parts)
+    
+    linkedin = data.get('linkedin', '')
+    github = data.get('github', '')
+    languages = data.get('languages', '')
+    
+    # Format certifications for display
+    certifications_list = data.get('certifications', [])
+    certifications_display = ""
+    if isinstance(certifications_list, list):
+        cert_parts = []
+        for cert in certifications_list:
+            if isinstance(cert, dict):
+                name_cert = cert.get('name', '')
+                org = cert.get('org', '')
+                year = cert.get('year', '')
+                parts = [name_cert, org, year]
+                cert_parts.append(' - '.join(filter(None, parts)))
+            else:
+                cert_parts.append(str(cert))
+        certifications_display = '\n'.join(cert_parts)
+    else:
+        certifications_display = str(certifications_list) if certifications_list else ""
+
+    resume_text = " ".join([name, education_display, skills_display, projects_display, certifications_display, linkedin, github, languages])
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 
     keywords = ["Python", "Java", "SQL", "HTML", "CSS", "Flask"]
 
@@ -49,10 +153,17 @@ def generate():
 
     score = int((count / len(keywords)) * 100) if keywords else 0
 
+<<<<<<< HEAD
+=======
+    # Store data in session for download
+    session['resume_data'] = data
+
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     return render_template('result.html',
                            name=name,
                            email=email,
                            phone=phone,
+<<<<<<< HEAD
                            education=education,
                            skills=skills,
                            projects=projects,
@@ -61,6 +172,16 @@ def generate():
                            languages=languages,
                            experience=request.form.get('experience', ''),
                            certifications=_get_resume_data_from_request().get('certifications', []),
+=======
+                           education=education_display,
+                           skills=skills_display,
+                           projects=projects_display,
+                           linkedin=linkedin,
+                           github=github,
+                           languages=languages,
+                           experience=experience_display,
+                           certifications=certifications_display,
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                            score=score)
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -196,17 +317,42 @@ def download_ats_report():
 @app.route('/analyze-role', methods=['GET', 'POST'])
 def analyze_role():
     if request.method == 'POST':
+<<<<<<< HEAD
         role_name = request.form.get('role')
         if 'file' in request.files and request.files['file'].filename != '':
             file = request.files['file']
             resume_text = resume_processor.extract_text_from_pdf(file)
         else:
             resume_text = request.form.get('resume_text', '')
+=======
+        # Support both predefined roles and custom roles
+        role_name = request.form.get('role', '').strip()
+        custom_role = request.form.get('custom_role', '').strip()
+        
+        # Use custom role if provided, otherwise use dropdown selection
+        if custom_role:
+            role_name = custom_role
+        elif not role_name:
+            flash("Please select a role or enter a custom job title.")
+            return redirect(url_for('analyze_role'))
+        
+        # Get resume from upload or text
+        if 'file' in request.files and request.files['file'].filename != '':
+            file = request.files['file']
+            try:
+                resume_text = resume_processor.extract_text_from_pdf(file)
+            except Exception as e:
+                flash(f"Error reading PDF: {str(e)}")
+                return redirect(url_for('analyze_role'))
+        else:
+            resume_text = request.form.get('resume_text', '').strip()
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 
         if not resume_text:
             flash("Please upload a resume or provide text.")
             return redirect(url_for('analyze_role'))
 
+<<<<<<< HEAD
         analysis = role_analyzer.match_resume_to_role(resume_text, role_name)
         if not analysis:
             flash("Invalid role selected.")
@@ -214,6 +360,19 @@ def analyze_role():
             
         session['role_analysis'] = analysis
         return redirect(url_for('role_dashboard'))
+=======
+        try:
+            analysis = role_analyzer.match_resume_to_role(resume_text, role_name)
+            if not analysis:
+                flash(f"Could not analyze resume for {role_name}. Please try again.")
+                return redirect(url_for('analyze_role'))
+            
+            session['role_analysis'] = analysis
+            return redirect(url_for('role_dashboard'))
+        except Exception as e:
+            flash(f"Error analyzing resume: {str(e)}")
+            return redirect(url_for('analyze_role'))
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 
     roles = role_analyzer.get_role_list()
     return render_template('analyze_role.html', roles=roles)
@@ -483,6 +642,7 @@ def _get_resume_data_from_request():
 @app.route('/download', methods=['POST'])
 def download():
     """Generate a PDF resume from posted form fields and return it as a download."""
+<<<<<<< HEAD
     data = _get_resume_data_from_request()
     template_id = request.form.get('template_id', 'classic')
     
@@ -494,6 +654,49 @@ def download():
             save_resume(session['user_id'], data)
         
         # Flask 2.0+ uses download_name; older versions use attachment_filename.
+=======
+    # Try to get data from session first (from /generate), else from form
+    data = session.get('resume_data')
+    if not data:
+        data = _get_resume_data_from_request()
+    
+    template_id = request.form.get('template_id', 'classic')
+    
+    try:
+        # Calculate ATS score
+        resume_text = " ".join([
+            data.get('name', ''),
+            data.get('email', ''),
+            data.get('phone', ''),
+            str(data.get('education', '')),
+            str(data.get('skills', '')),
+            str(data.get('projects', '')),
+            data.get('linkedin', ''),
+            data.get('github', ''),
+            data.get('languages', '')
+        ])
+        
+        ats_analysis = ats_analyzer.analyze(resume_text)
+        ats_score = ats_analysis.get('score', 0)
+        
+        buffer, filename = pdf_generator.generate_pdf_resume(data, template_id, ats_score=ats_score)
+
+        # Save or update resume in MongoDB if user is logged in
+        if 'user_id' in session:
+            editing_resume_id = request.form.get('editing_resume_id') or session.get('edit_resume_id')
+            if editing_resume_id:
+                success = update_resume(editing_resume_id, session['user_id'], data)
+                if not success:
+                    save_resume(session['user_id'], data)
+            else:
+                save_resume(session['user_id'], data)
+
+            session.pop('edit_resume_data', None)
+            session.pop('edit_resume_id', None)
+
+        # Flask 2.0+ uses download_name; older versions use attachment_filename.
+        buffer.seek(0)
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         try:
             return send_file(buffer, as_attachment=True, download_name=filename, mimetype='application/pdf')
         except TypeError:
@@ -507,10 +710,69 @@ def download():
 def preview():
     """Generate a PDF resume and return it for inline browser viewing."""
     data = _get_resume_data_from_request()
+<<<<<<< HEAD
     template_id = request.form.get('template_id', 'classic')
     
     try:
         buffer, filename = pdf_generator.generate_pdf_resume(data, template_id)
+=======
+    
+    # Convert all list fields to strings for consistency
+    def list_to_string(field):
+        if isinstance(field, list):
+            if not field:
+                return ""
+            if field and isinstance(field[0], dict):
+                # List of dicts - format appropriately
+                parts = []
+                for item in field:
+                    if isinstance(item, dict):
+                        item_str = ' - '.join(str(v) for v in item.values() if v)
+                        parts.append(item_str)
+                    else:
+                        parts.append(str(item))
+                return '\n'.join(parts)
+            else:
+                # List of strings
+                return ', '.join(str(x) for x in field if x)
+        return str(field) if field else ""
+    
+    # Convert lists to strings
+    if isinstance(data.get('skills'), list):
+        data['skills'] = ', '.join(data['skills'])
+    if isinstance(data.get('projects'), list):
+        data['projects'] = list_to_string(data['projects'])
+    if isinstance(data.get('experience'), list):
+        data['experience'] = list_to_string(data['experience'])
+    if isinstance(data.get('certifications'), list):
+        data['certifications'] = list_to_string(data['certifications'])
+    if isinstance(data.get('languages'), list):
+        data['languages'] = ', '.join(data['languages'])
+    
+    template_id = request.form.get('template_id', 'classic')
+    
+    try:
+        # Calculate ATS score with string data
+        resume_text = " ".join(str(v) for v in [
+            data.get('name', ''),
+            data.get('email', ''),
+            data.get('phone', ''),
+            data.get('education', ''),
+            data.get('skills', ''),
+            data.get('projects', ''),
+            data.get('experience', ''),
+            data.get('linkedin', ''),
+            data.get('github', ''),
+            data.get('languages', ''),
+            data.get('certifications', '')
+        ] if v)
+        
+        ats_analysis = ats_analyzer.analyze(resume_text)
+        ats_score = ats_analysis.get('score', 0)
+        
+        buffer, filename = pdf_generator.generate_pdf_resume(data, template_id, ats_score=ats_score)
+        buffer.seek(0)
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         
         try:
              # as_attachment=False makes it open in the browser tab
@@ -596,7 +858,28 @@ def download_saved(resume_id):
     data = target['data']
     template_id = data.get('template_id', 'modern')
     try:
+<<<<<<< HEAD
         buffer, filename = pdf_generator.generate_pdf_resume(data, template_id)
+=======
+        # Calculate ATS score
+        resume_text = " ".join([
+            data.get('name', ''),
+            data.get('email', ''),
+            data.get('phone', ''),
+            str(data.get('education', '')),
+            data.get('skills', ''),
+            str(data.get('projects', '')),
+            data.get('linkedin', ''),
+            data.get('github', ''),
+            data.get('languages', '')
+        ])
+        
+        ats_analysis = ats_analyzer.analyze(resume_text)
+        ats_score = ats_analysis.get('score', 0)
+        
+        buffer, filename = pdf_generator.generate_pdf_resume(data, template_id, ats_score=ats_score)
+        buffer.seek(0)
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         try:
             return send_file(buffer, as_attachment=True, download_name=filename, mimetype='application/pdf')
         except TypeError:

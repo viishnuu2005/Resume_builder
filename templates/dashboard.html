@@ -1118,6 +1118,7 @@
                             </button>
                         </div>
 
+<<<<<<< HEAD
                         <div class="mb-2">
                             <label class="editor-label">
                                 <i class="fa-solid fa-code" style="color:#fcd34d;font-size:0.75rem;"></i> Skills
@@ -1148,6 +1149,21 @@
                                 <option value="Machine Learning" {% if 'Machine Learning' in skills %}selected{% endif %}>Machine Learning</option>
                                 <option value="Other" {% if 'Other' in skills %}selected{% endif %}>Other</option>
                             </select>
+=======
+                        <div class="mb-3">
+                            <label class="editor-label">
+                                <i class="fa-solid fa-code" style="color:#fcd34d;font-size:0.75rem;"></i> Skills (Select Multiple)
+                            </label>
+                            <div id="skillsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:0.75rem;">
+                                <!-- Skill checkboxes will be generated here -->
+                            </div>
+                            <div id="selectedSkillsDisplay" style="margin-top:1rem; display:none;">
+                                <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:0.5rem;">Selected Skills:</p>
+                                <div id="selectedSkillsTags" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+                            </div>
+                            <!-- Hidden input to store selected skills for form submission -->
+                            <input type="hidden" name="skills" id="skillsInput" value="">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         </div>
 
                         <div class="mb-3">
@@ -1264,8 +1280,292 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+<<<<<<< HEAD
         // Fix select dropdown appearance on page load
         document.addEventListener('DOMContentLoaded', function() {
+=======
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // SKILLS MULTI-SELECT INITIALIZATION
+        // ══════════════════════════════════════════════════════════════════════════════════
+        const skillsList = [
+            'Python', 'JavaScript', 'TypeScript', 'Java', 'C++', 'C#',
+            'React', 'Angular', 'Vue', 'Node.js', 'Django', 'Flask',
+            'Spring Boot', 'SQL', 'MongoDB', 'PostgreSQL', 'Docker',
+            'Kubernetes', 'AWS', 'GCP', 'Git', 'CI/CD', 'Machine Learning'
+        ];
+
+        function initializeSkills() {
+            const container = document.getElementById('skillsContainer');
+            const existingSkills = (document.querySelector('input[name="skills"]')?.value || '').split(',').map(s => s.trim()).filter(s => s);
+            
+            container.innerHTML = '';
+            skillsList.forEach(skill => {
+                const label = document.createElement('label');
+                label.style.cssText = 'display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; cursor:pointer; transition:all 0.2s; font-size:0.85rem;';
+                label.innerHTML = `
+                    <input type="checkbox" class="skill-checkbox" value="${skill}" style="cursor:pointer;" ${existingSkills.includes(skill) ? 'checked' : ''}>
+                    <span>${skill}</span>
+                `;
+                label.addEventListener('mouseover', () => label.style.background = 'rgba(99,102,241,0.15)');
+                label.addEventListener('mouseout', () => label.style.background = 'rgba(255,255,255,0.04)');
+                container.appendChild(label);
+            });
+        }
+
+        function updateSelectedSkills() {
+            const checkboxes = document.querySelectorAll('.skill-checkbox:checked');
+            const selected = Array.from(checkboxes).map(cb => cb.value);
+            document.getElementById('skillsInput').value = selected.join(',');
+            
+            const tagsContainer = document.getElementById('selectedSkillsTags');
+            tagsContainer.innerHTML = selected.map(skill => `
+                <span style="background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.4); color:#a5b4fc; padding:0.3rem 0.75rem; border-radius:50rem; font-size:0.8rem; display:inline-flex; align-items:center; gap:0.4rem;">
+                    ${skill}
+                    <button type="button" class="skill-remove" data-skill="${skill}" style="background:none; border:none; color:inherit; cursor:pointer; font-weight:700; padding:0;" onclick="removeSkill('${skill}')">×</button>
+                </span>
+            `).join('');
+            
+            document.getElementById('selectedSkillsDisplay').style.display = selected.length > 0 ? 'block' : 'none';
+        }
+
+        function removeSkill(skill) {
+            const checkbox = document.querySelector(`.skill-checkbox[value="${skill}"]`);
+            if (checkbox) {
+                checkbox.checked = false;
+                updateSelectedSkills();
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // LIVE PREVIEW FUNCTIONALITY
+        // ══════════════════════════════════════════════════════════════════════════════════
+        function updateLivePreview() {
+            const form = document.getElementById('resumeForm');
+            if (!form) return;
+            
+            // Collect all form data
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    if (!Array.isArray(data[key])) data[key] = [data[key]];
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // Build preview HTML (simplified for live preview)
+            const previewContent = `
+                <div style="font-family: Arial, sans-serif; max-width: 8.5in; margin: 0 auto; padding: 1rem; background: white; color: black; line-height: 1.6;">
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 1.5rem; border-bottom: 2px solid #333; padding-bottom: 1rem;">
+                        <h1 style="margin: 0; font-size: 24px; color: #333;">${data.name || 'Your Name'}</h1>
+                        <div style="font-size: 13px; color: #666;">
+                            ${data.email || 'email@example.com'} | ${data.phone || '+1 234 567 8900'}
+                            ${data.linkedin ? ` | <a href="${data.linkedin}" style="color: #0077b5; text-decoration: none;">${data.linkedin}</a>` : ''}
+                            ${data.github ? ` | <a href="${data.github}" style="color: #333; text-decoration: none;">${data.github}</a>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Experience -->
+                    ${Array.isArray(data['exp_company[]']) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">EXPERIENCE</h3>
+                            ${data['exp_company[]'].map((company, i) => `
+                                <div style="margin-bottom: 0.8rem;">
+                                    <strong>${company}</strong> - <em>${data['exp_role[]'][i] || ''}</em><br>
+                                    <small style="color: #666;">${data['exp_duration[]'][i] || ''}</small><br>
+                                    <small style="color: #555;">${data['exp_desc[]'][i] || ''}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Skills -->
+                    ${data.skills ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">SKILLS</h3>
+                            <p style="margin: 0; font-size: 13px;">${data.skills.split(',').map(s => s.trim()).join(' • ')}</p>
+                        </div>
+                    ` : ''}
+
+                    <!-- Projects -->
+                    ${Array.isArray(data['project_title[]']) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">PROJECTS</h3>
+                            ${data['project_title[]'].map((title, i) => `
+                                <div style="margin-bottom: 0.8rem;">
+                                    <strong>${title}</strong> - <em>${data['project_role[]'][i] || ''}</em><br>
+                                    <small style="color: #666;">${data['project_duration[]'][i] || ''}</small><br>
+                                    <small style="color: #555;">${data['project_desc[]'][i] || ''}</small><br>
+                                    <small style="color: #666;"><strong>Tech:</strong> ${data['project_tech[]'][i] || ''}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Certifications -->
+                    ${Array.isArray(data['cert_name[]']) && data['cert_name[]'].some(c => c) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">CERTIFICATIONS</h3>
+                            ${data['cert_name[]'].map((cert, i) => cert ? `
+                                <div style="margin-bottom: 0.5rem; font-size: 13px;">
+                                    <strong>${cert}</strong> (${data['cert_year[]'][i] || ''}) - ${data['cert_org[]'][i] || ''}
+                                </div>
+                            ` : '').join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Education -->
+                    ${Array.isArray(data['higher_course[]']) && data['higher_course[]'].some(c => c) ? `
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">EDUCATION</h3>
+                            ${data['higher_course[]'].map((course, i) => course ? `
+                                <div style="margin-bottom: 0.5rem; font-size: 13px;">
+                                    <strong>${course}</strong> - ${data['higher_specialization[]'][i] || ''}<br>
+                                    <small style="color: #666;">${data['higher_college[]'][i] || ''}, ${data['higher_district[]'][i] || ''}</small><br>
+                                    <small style="color: #666;">CGPA: ${data['higher_cgpa[]'][i] || ''}</small>
+                                </div>
+                            ` : '').join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Languages -->
+                    ${data.languages ? `
+                        <div><h3 style="font-size: 14px; margin: 0.5rem 0; border-bottom: 1px solid #333; padding-bottom: 0.3rem;">LANGUAGES</h3>
+                        <p style="margin: 0; font-size: 13px;">${data.languages}</p></div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Store preview content in sessionStorage or update a hidden div
+            sessionStorage.setItem('previewContent', previewContent);
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // FORM VALIDATION
+        // ══════════════════════════════════════════════════════════════════════════════════
+        function validateForm() {
+            const requiredFields = {
+                'name': 'Full Name',
+                'email': 'Email',
+                'phone': 'Phone'
+            };
+
+            const errors = [];
+
+            for (let [fieldName, label] of Object.entries(requiredFields)) {
+                const field = document.querySelector(`input[name="${fieldName}"]`);
+                if (!field || !field.value.trim()) {
+                    errors.push(`${label} is required`);
+                }
+            }
+
+            // Email format validation
+            const emailField = document.querySelector('input[name="email"]');
+            if (emailField && emailField.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value)) {
+                errors.push('Please enter a valid email address');
+            }
+
+            // Phone format validation
+            const phoneField = document.querySelector('input[name="phone"]');
+            if (phoneField && phoneField.value && !/^\d{10}|^\+\d{1,3}\s?\d{1,14}$/.test(phoneField.value.replace(/[\s\-()]/g, ''))) {
+                // Allow various phone formats
+                if (phoneField.value.length < 10) {
+                    errors.push('Please enter a valid phone number (at least 10 digits)');
+                }
+            }
+
+            return errors;
+        }
+
+        function showValidationErrors(errors) {
+            // Remove existing error message if any
+            const existingError = document.querySelector('.validation-errors');
+            if (existingError) existingError.remove();
+
+            if (errors.length > 0) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'validation-errors';
+                errorDiv.style.cssText = 'background:rgba(220,38,38,0.15); border:1px solid rgba(220,38,38,0.4); border-radius:10px; padding:1rem; margin-bottom:1.5rem; color:#fca5a5; font-size:0.9rem;';
+                errorDiv.innerHTML = `
+                    <div style="display:flex; gap:0.75rem; margin-bottom:0.5rem;">
+                        <i class="fa-solid fa-triangle-exclamation" style="flex-shrink:0; margin-top:0.2rem;"></i>
+                        <div>
+                            <strong>Required fields missing:</strong>
+                            <ul style="margin:0.5rem 0 0; padding-left:1.25rem;">
+                                ${errors.map(err => `<li>${err}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                const form = document.querySelector('.dash-card');
+                if (form) form.parentElement.insertBefore(errorDiv, form);
+                return false;
+            }
+            return true;
+        }
+
+        // ══════════════════════════════════════════════════════════════════════════════════
+        // INITIALIZATION & EVENT LISTENERS
+        // ══════════════════════════════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize skills
+            initializeSkills();
+
+            // Add event listeners to skill checkboxes
+            document.querySelectorAll('.skill-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    updateSelectedSkills();
+                    updateLivePreview();
+                });
+            });
+
+            // Add live preview listeners to all form inputs
+            const resumeForm = document.getElementById('resumeForm');
+            if (resumeForm) {
+                resumeForm.addEventListener('input', (e) => {
+                    updateLivePreview();
+                    
+                    // Real-time validation for name, email, phone
+                    if (['name', 'email', 'phone'].includes(e.target.name)) {
+                        const errors = validateForm();
+                        if (errors.length > 0) {
+                            showValidationErrors(errors);
+                        } else {
+                            const existingError = document.querySelector('.validation-errors');
+                            if (existingError) existingError.remove();
+                        }
+                    }
+                });
+
+                resumeForm.addEventListener('change', (e) => {
+                    updateLivePreview();
+                    
+                    // Handle district changes
+                    if (e.target.classList.contains('district-dropdown')) {
+                        updateLivePreview();
+                    }
+                });
+            }
+
+            // Submit validation
+            const resumeForm2 = document.querySelector('form[action="/download"]') || document.getElementById('resumeForm');
+            if (resumeForm2) {
+                resumeForm2.addEventListener('submit', (e) => {
+                    const errors = validateForm();
+                    if (errors.length > 0) {
+                        e.preventDefault();
+                        showValidationErrors(errors);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            }
+
+            // Fix select dropdown appearance on page load
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
             const selectElements = document.querySelectorAll('select.form-control-dark');
             selectElements.forEach(select => {
                 select.style.height = 'auto';
@@ -1323,6 +1623,7 @@
             // No animations needed
         });
 
+<<<<<<< HEAD
         // ── Resume preview ──────────────────────────────────
         function previewResume() {
             const form = document.getElementById('resumeForm');
@@ -1336,6 +1637,99 @@
 
         // ── Dynamic Certifications ──────────────────────────
         // ── Education Helpers ──────────────────────────────
+=======
+        // ──────────────────────────────────────────────────────────────────────────────────
+        // HANDLE DYNAMIC FORM ROWS
+        // ──────────────────────────────────────────────────────────────────────────────────
+        function attachLivePreviewListeners(element) {
+            if (!element) return;
+            
+            // Input, textarea, and select elements
+            const inputs = element.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (!input.classList.contains('listener-attached')) {
+                    input.addEventListener('input', updateLivePreview);
+                    input.addEventListener('change', updateLivePreview);
+                    input.classList.add('listener-attached');
+                }
+            });
+        }
+
+        function addExperienceRow() {
+            const container = document.getElementById('experienceContainer');
+            const row = document.createElement('div');
+            row.className = 'experience-entry mb-3 p-2';
+            row.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            row.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="removeExperienceRow(this)"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_company[]" placeholder="Company" required onchange="updateLivePreview();"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="exp_role[]" placeholder="Role" required onchange="updateLivePreview();"></div>
+                </div>
+                <input type="text" class="editor-ctrl editor-ctrl-sm mb-2" name="exp_duration[]" placeholder="Duration (e.g. 2020-2023)" onchange="updateLivePreview();">
+                <textarea class="editor-ctrl editor-ctrl-sm" name="exp_desc[]" rows="3" placeholder="Responsibilities..." onchange="updateLivePreview();"></textarea>
+            `;
+            container.appendChild(row);
+            attachLivePreviewListeners(row);
+            updateLivePreview();
+        }
+
+        function removeExperienceRow(btn) {
+            const container = document.getElementById('experienceContainer');
+            if (container.querySelectorAll('.experience-entry').length > 1) {
+                btn.parentElement.remove();
+                updateLivePreview();
+            } else {
+                alert("At least one experience entry is required.");
+            }
+        }
+
+        function addProjectRow() {
+            const container = document.getElementById('projectsContainer');
+            const row = document.createElement('div');
+            row.className = 'project-entry mb-3 p-2';
+            row.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
+            row.innerHTML = `
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove(); updateLivePreview();"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_title[]" placeholder="Project Title" onchange="updateLivePreview();"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_role[]" placeholder="Role" onchange="updateLivePreview();"></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_org[]" placeholder="Org" onchange="updateLivePreview();"></div>
+                    <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="project_duration[]" placeholder="Duration" onchange="updateLivePreview();"></div>
+                </div>
+                <textarea class="editor-ctrl editor-ctrl-sm mb-2" name="project_desc[]" rows="2" placeholder="Description" onchange="updateLivePreview();"></textarea>
+                <input type="text" class="editor-ctrl editor-ctrl-sm" name="project_tech[]" placeholder="Tech (e.g. Python, AWS)" onchange="updateLivePreview();">
+            `;
+            container.appendChild(row);
+            attachLivePreviewListeners(row);
+            updateLivePreview();
+        }
+
+        function addCertRow() {
+            const container = document.getElementById('certsContainer');
+            const row = document.createElement('div');
+            row.className = 'cert-row mb-2 pb-2';
+            row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            row.innerHTML = `
+            <div class="row g-2 mb-2">
+                <div class="col-7"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_name[]" placeholder="Cert Name" onchange="updateLivePreview();"></div>
+                <div class="col-5"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_year[]" placeholder="Year" onchange="updateLivePreview();"></div>
+            </div>
+            <div class="row g-2">
+                <div class="col-6"><input type="text" class="editor-ctrl editor-ctrl-sm" name="cert_org[]" placeholder="Organization" onchange="updateLivePreview();"></div>
+                <div class="col-6 position-relative">
+                    <input type="text" class="editor-ctrl editor-ctrl-sm pe-4" name="cert_link[]" placeholder="Link URL" onchange="updateLivePreview();">
+                    <button type="button" class="btn-close btn-close-white position-absolute end-0 top-50 translate-middle-y me-2" style="width:0.5rem;height:0.5rem;" onclick="this.closest('.cert-row').remove(); updateLivePreview();"></button>
+                </div>
+            </div>
+        `;
+            container.appendChild(row);
+            attachLivePreviewListeners(row);
+            updateLivePreview();
+        }
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         function toggleManualInput(select) {
             const manual = select.nextElementSibling;
             if (select.value === 'Other') {
@@ -1381,39 +1775,66 @@
             div.className = 'school-entry mb-3 p-2';
             div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
             div.innerHTML = `
+<<<<<<< HEAD
                 <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required>
+=======
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove(); updateLivePreview();"></button>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <select name="school_qualification[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="SSLC (10th)">SSLC (10th)</option>
                             <option value="Plus Two (12th)">Plus Two (12th)</option>
                         </select>
                     </div>
                     <div class="col-6">
+<<<<<<< HEAD
                         <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+=======
+                        <select name="school_syllabus[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="Kerala State Syllabus">Kerala State Syllabus</option>
                             <option value="CBSE">CBSE</option>
                             <option value="ICSE">ICSE</option>
                             <option value="Other">Other</option>
                         </select>
+<<<<<<< HEAD
                         <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Syllabus">
+=======
+                        <input type="text" name="school_syllabus_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Syllabus" onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                     </div>
                 </div>
                 <div class="row g-2">
                     <div class="col-6">
+<<<<<<< HEAD
                         <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required>
+=======
+                        <select name="school_year[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             ${Array.from({length: 29}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
                         </select>
                     </div>
                     <div class="col-6">
+<<<<<<< HEAD
                         <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" placeholder="Percentage (%)" required>
+=======
+                        <input type="number" step="0.01" min="0" max="100" class="editor-ctrl editor-ctrl-sm" name="school_percentage[]" placeholder="Percentage (%)" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                     </div>
                 </div>
             `;
             container.appendChild(div);
+<<<<<<< HEAD
+=======
+            updateLivePreview();
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         }
 
         function addHigherRow() {
@@ -1422,7 +1843,11 @@
             div.className = 'higher-entry mb-4 p-2';
             div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); position:relative;';
             div.innerHTML = `
+<<<<<<< HEAD
                 <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove()"></button>
+=======
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 mt-1 me-1" style="font-size:0.5rem;" onclick="this.parentElement.remove(); updateLivePreview();"></button>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                 
                 <div class="mb-2">
                     <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Degree</label>
@@ -1433,11 +1858,19 @@
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Course / Degree Name</label>
+<<<<<<< HEAD
                         <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" placeholder="e.g. B.Tech, BBA Integrated" required>
                     </div>
                     <div class="col-6">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
                         <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+=======
+                        <input type="text" class="editor-ctrl editor-ctrl-sm" name="higher_course[]" placeholder="e.g. B.Tech, BBA Integrated" required onchange="updateLivePreview();">
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Specialization</label>
+                        <select name="higher_specialization[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="Computer Science and Engineering">Computer Science and Engineering</option>
                             <option value="Electronics and Communication">Electronics and Communication</option>
@@ -1446,13 +1879,21 @@
                             <option value="Electrical Engineering">Electrical Engineering</option>
                             <option value="Other">Other</option>
                         </select>
+<<<<<<< HEAD
                         <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Specialization">
+=======
+                        <input type="text" name="higher_specialization_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter Specialization" onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                     </div>
                 </div>
 
                 <div class="mb-2">
                     <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Institution Type</label>
+<<<<<<< HEAD
                     <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required>
+=======
+                    <select name="higher_inst_type[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         <option value="" disabled selected>-Select-</option>
                         <option value="Government">Government</option>
                         <option value="Aided">Aided</option>
@@ -1464,32 +1905,52 @@
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">College</label>
+<<<<<<< HEAD
                         <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+=======
+                        <select name="higher_college[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="College of Engineering Trivandrum (CET)">CET</option>
                             <option value="National Institute of Technology Calicut (NITC)">NITC</option>
                             <option value="IIT Madras">IIT Madras</option>
                             <option value="Other">Other</option>
                         </select>
+<<<<<<< HEAD
                         <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter College Name">
                     </div>
                     <div class="col-6">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
                         <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this)" required>
+=======
+                        <input type="text" name="higher_college_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter College Name" onchange="updateLivePreview();">
+                    </div>
+                    <div class="col-6">
+                        <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">University</label>
+                        <select name="higher_univ[]" class="editor-ctrl editor-ctrl-sm" onchange="toggleManualInput(this); updateLivePreview();" required>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="APJ Abdul Kalam Technological University (KTU)">KTU</option>
                             <option value="Kerala University">Kerala University</option>
                             <option value="Calicut University">Calicut University</option>
                             <option value="Other">Other</option>
                         </select>
+<<<<<<< HEAD
                         <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter University Name">
+=======
+                        <input type="text" name="higher_univ_other[]" class="editor-ctrl editor-ctrl-sm mt-1 manual-input" style="display: none;" placeholder="Enter University Name" onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                     </div>
                 </div>
 
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">State</label>
+<<<<<<< HEAD
                         <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this)" required>
+=======
+                        <select name="higher_state[]" class="editor-ctrl editor-ctrl-sm state-dropdown" onchange="loadDistricts(this); updateLivePreview();" required>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="Kerala">Kerala</option>
                             <option value="Tamil Nadu">Tamil Nadu</option>
@@ -1499,7 +1960,11 @@
                     </div>
                     <div class="col-6">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">District</label>
+<<<<<<< HEAD
                         <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" required>
+=======
+                        <select name="higher_district[]" class="editor-ctrl editor-ctrl-sm district-dropdown" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                         </select>
                     </div>
@@ -1508,7 +1973,11 @@
                 <div class="row g-3 mb-2">
                     <div class="col-4">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Duration</label>
+<<<<<<< HEAD
                         <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required>
+=======
+                        <select name="higher_duration[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             <option value="2">2 Years</option>
                             <option value="3">3 Years</option>
@@ -1518,18 +1987,30 @@
                     </div>
                     <div class="col-4">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">Grad Year</label>
+<<<<<<< HEAD
                         <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required>
+=======
+                        <select name="higher_grad_year[]" class="editor-ctrl editor-ctrl-sm" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                             <option value="" disabled selected>-Select-</option>
                             ${Array.from({length: 31}, (_, i) => 2000 + i).map(y => `<option value="${y}">${y}</option>`).join('')}
                         </select>
                     </div>
                     <div class="col-4">
                         <label class="editor-label px-1 mb-1" style="font-size:0.65rem;">CGPA (0-10)</label>
+<<<<<<< HEAD
                         <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" placeholder="CGPA" required>
+=======
+                        <input type="number" step="0.01" min="0" max="10" class="editor-ctrl editor-ctrl-sm" name="higher_cgpa[]" placeholder="CGPA" required onchange="updateLivePreview();">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                     </div>
                 </div>
             `;
             container.appendChild(div);
+<<<<<<< HEAD
+=======
+            updateLivePreview();
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         }
 
         let activeDegreeTarget = null;
@@ -1545,9 +2026,12 @@
                 const hiddenInput = activeDegreeTarget.nextElementSibling;
                 hiddenInput.value = val;
                 
+<<<<<<< HEAD
                 // If "Others" is selected, we might want to allow manual input elsewhere, 
                 // but the requirement says "enable manual input" for "Others".
                 // Let's add a manual input if "Others" is selected.
+=======
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                 if (val === 'Others') {
                     const manual = prompt("Enter your degree:");
                     if (manual) {
@@ -1555,11 +2039,16 @@
                         hiddenInput.value = manual;
                     }
                 }
+<<<<<<< HEAD
+=======
+                updateLivePreview();
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
             }
             const modal = bootstrap.Modal.getInstance(document.getElementById('degreeModal'));
             modal.hide();
         }
 
+<<<<<<< HEAD
         // Initialize any existing districts on load
         document.addEventListener('DOMContentLoaded', () => {
            document.querySelectorAll('.state-dropdown').forEach(select => {
@@ -1638,6 +2127,37 @@
         `;
             container.appendChild(row);
         }
+=======
+        // Initialize on page load  
+        document.addEventListener('DOMContentLoaded', () => {
+           // Attach listeners to all existing form inputs
+           const resumeForm = document.getElementById('resumeForm');
+           if (resumeForm) {
+               const allInputs = resumeForm.querySelectorAll('input:not([name="skills"]), textarea, select');
+               allInputs.forEach(input => {
+                   if (!input.classList.contains('listener-attached') && !input.classList.contains('degree-display')) {
+                       input.addEventListener('input', updateLivePreview);
+                       input.addEventListener('change', updateLivePreview);
+                       input.classList.add('listener-attached');
+                   }
+               });
+           }
+           
+           // Load and initialize district dropdowns
+           document.querySelectorAll('.state-dropdown').forEach(select => {
+               if (select.value) loadDistricts(select);
+               const entry = select.closest('.higher-entry');
+               if (entry) {
+                   const districtDropdown = entry.querySelector('.district-dropdown');
+                   const selectedDistrict = districtDropdown.getAttribute('data-selected');
+                   if (selectedDistrict) districtDropdown.value = selectedDistrict;
+               }
+           });
+           
+           // Initial live preview render
+           updateLivePreview();
+        });
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     </script>
 {% include 'chatbot.html' %}
     <!-- Degree Selection Modal -->

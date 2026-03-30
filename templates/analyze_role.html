@@ -281,12 +281,25 @@
                 
                 <div class="mb-4">
                     <label class="form-label"><i class="fa-solid fa-bullseye" style="color:var(--primary); margin-right:0.4rem;"></i>Target Job Role</label>
+<<<<<<< HEAD
                     <select name="role" class="form-select" required>
                         <option value="" disabled selected>Choose a role...</option>
                         {% for role in roles %}
                         <option value="{{ role }}">{{ role }}</option>
                         {% endfor %}
                     </select>
+=======
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                        <select name="role" class="form-select" id="roleSelect" style="flex: 1; min-width: 200px;" onchange="updateCustomRole()">
+                            <option value="" selected>Choose a role...</option>
+                            {% for role in roles %}
+                            <option value="{{ role }}">{{ role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="text" name="custom_role" id="customRole" class="form-select" placeholder="Or type your own role..." style="flex: 1; min-width: 200px;" onchange="clearDropdown()" oninput="clearDropdown()">
+                    <small style="color: var(--text-muted); margin-top: 0.3rem; display: block;">Select a predefined role or enter a custom job title</small>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                 </div>
 
                 <div class="mb-4">
@@ -335,6 +348,39 @@
         }
     }
 
+<<<<<<< HEAD
+=======
+    function updateCustomRole() {
+        const select = document.getElementById('roleSelect');
+        const customInput = document.getElementById('customRole');
+        if (select.value) {
+            customInput.value = '';
+            customInput.placeholder = 'Or type your own role...';
+        }
+    }
+
+    function clearDropdown() {
+        const customInput = document.getElementById('customRole');
+        const select = document.getElementById('roleSelect');
+        if (customInput.value.trim()) {
+            select.value = '';
+        }
+    }
+
+    // Validate form before submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const roleSelect = document.getElementById('roleSelect').value;
+        const customRole = document.getElementById('customRole').value.trim();
+        
+        if (!roleSelect && !customRole) {
+            e.preventDefault();
+            alert('Please select a role or enter a custom job title.');
+            return false;
+        }
+        return true;
+    });
+
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     // Drag and drop support
     const uploadZone = document.querySelector('.upload-zone');
     

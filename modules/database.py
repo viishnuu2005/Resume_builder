@@ -79,6 +79,21 @@ def get_user_resumes(user_id: str) -> list:
     return resumes
 
 
+<<<<<<< HEAD
+=======
+def update_resume(resume_id: str, user_id: str, resume_data: dict) -> bool:
+    """Update an existing resume document for the user."""
+    try:
+        result = resumes_col.update_one(
+            {"_id": ObjectId(resume_id), "user_id": user_id},
+            {"$set": {"data": resume_data, "updated_at": datetime.utcnow()}}
+        )
+        return result.modified_count > 0
+    except Exception:
+        return False
+
+
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 def delete_resume(resume_id: str, user_id: str) -> bool:
     """Delete a resume by ID (only if it belongs to the user)."""
     try:

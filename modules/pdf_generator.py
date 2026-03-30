@@ -4,16 +4,93 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
+<<<<<<< HEAD
 def generate_pdf_resume(data, template_id='classic'):
+=======
+def generate_pdf_resume(data, template_id='classic', ats_score=None):
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     """Generate a PDF resume from data dictionary with 4 professional templates."""
     name = data.get('name', '')
     email = data.get('email', '')
     phone = data.get('phone', '')
+<<<<<<< HEAD
     education = data.get('education', [])
     skills = data.get('skills', '')
     projects = data.get('projects', '')
     experience = data.get('experience', '')
     certifications = data.get('certifications', [])
+=======
+    
+    # Handle education: now a dict with 'school' and 'higher' lists
+    education_data = data.get('education', {})
+    education_str = ""
+    if isinstance(education_data, dict):
+        school_list = education_data.get('school', [])
+        higher_list = education_data.get('higher', [])
+        education_parts = []
+        for school in school_list:
+            parts = [school.get('qualification', ''), school.get('syllabus', ''), school.get('year', ''), school.get('percentage', '')]
+            education_parts.append(' - '.join(filter(None, parts)))
+        for higher in higher_list:
+            parts = [higher.get('degree', ''), higher.get('courseName', ''), higher.get('specialization', ''), higher.get('college', ''), higher.get('graduationYear', '')]
+            education_parts.append(' - '.join(filter(None, parts)))
+        education_str = '\n'.join(education_parts)
+    else:
+        education_str = str(education_data)
+    
+    # Handle skills: now a list
+    skills_list = data.get('skills', [])
+    skills_str = ', '.join(skills_list) if isinstance(skills_list, list) else str(skills_list)
+    
+    # Handle projects: now a list of dicts
+    projects_list = data.get('projects', [])
+    projects_str = ""
+    if isinstance(projects_list, list):
+        proj_parts = []
+        for proj in projects_list:
+            title = proj.get('title', '')
+            desc = proj.get('description', '')
+            tech = proj.get('technologies', '')
+            parts = [title, desc]
+            if tech:
+                parts.append(f"Technologies: {tech}")
+            proj_parts.append('\n'.join(filter(None, parts)))
+        projects_str = '\n\n'.join(proj_parts)
+    else:
+        projects_str = str(projects_list)
+    
+    # Handle experience: now a list of dicts
+    experience_list = data.get('experience', [])
+    experience_str = ""
+    if isinstance(experience_list, list):
+        exp_parts = []
+        for exp in experience_list:
+            company = exp.get('company', '')
+            role = exp.get('role', '')
+            duration = exp.get('duration', '')
+            desc = exp.get('description', '')
+            parts = [f"{role} at {company}" if role and company else role or company, duration, desc]
+            exp_parts.append('\n'.join(filter(None, parts)))
+        experience_str = '\n\n'.join(exp_parts)
+    else:
+        experience_str = str(experience_list)
+    
+    # Handle certifications: list of dicts
+    certifications_list = data.get('certifications', [])
+    certifications_str = ""
+    if isinstance(certifications_list, list):
+        cert_parts = []
+        for cert in certifications_list:
+            cert_name = cert.get('name', '')
+            org = cert.get('org', '')
+            year = cert.get('year', '')
+            parts = [cert_name, org, year]
+            cert_parts.append(' - '.join(filter(None, parts)))
+        certifications_str = '\n'.join(cert_parts)
+    else:
+        certifications_str = str(certifications_list)
+    
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     linkedin = data.get('linkedin', '')
     github = data.get('github', '')
     languages = data.get('languages', '')
@@ -53,7 +130,19 @@ def generate_pdf_resume(data, template_id='classic'):
         c.drawCentredString(width/2.0, y, name or 'Name')
     else:
         c.drawString(margin, y, name or 'Name')
+<<<<<<< HEAD
         
+=======
+    
+    # Add ATS Score in top right
+    if ats_score is not None:
+        score_text = f"ATS Score: {ats_score}/100"
+        c.setFont('Helvetica', 9)
+        score_width = c.stringWidth(score_text, 'Helvetica', 9)
+        c.setFillColorRGB(0.1, 0.5, 0.1) if ats_score >= 70 else c.setFillColorRGB(0.8, 0.5, 0.1) if ats_score >= 50 else c.setFillColorRGB(0.8, 0.2, 0.2)
+        c.drawString(width - margin - score_width, y, score_text)
+    
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     y -= 22
     
     c.setFillColorRGB(0, 0, 0)
@@ -380,9 +469,15 @@ def generate_pdf_resume(data, template_id='classic'):
 
     # Format Certifications into a string block
     certs_text = ""
+<<<<<<< HEAD
     if isinstance(certifications, list) and certifications:
         cert_blocks = []
         for cert in certifications:
+=======
+    if isinstance(certifications_list, list) and certifications_list:
+        cert_blocks = []
+        for cert in certifications_list:
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
             cname = cert.get('name', '')
             org = cert.get('org', '')
             year = cert.get('year', '')
@@ -394,6 +489,7 @@ def generate_pdf_resume(data, template_id='classic'):
                 if link: block += f"\nLink: {link}"
                 cert_blocks.append(block)
         certs_text = "\n\n".join(cert_blocks)
+<<<<<<< HEAD
     elif isinstance(certifications, str):
         certs_text = certifications
 
@@ -416,6 +512,30 @@ def generate_pdf_resume(data, template_id='classic'):
         draw_section('Projects', projects)
     if certs_text:
         draw_section('Certifications', certs_text)
+=======
+    elif isinstance(certifications_list, str):
+        certs_text = certifications_list
+
+    # Draw sections in standard order
+    if isinstance(experience_list, list):
+        draw_experience(experience_list)
+    else:
+        draw_section('Experience', experience_str)
+    
+    if isinstance(education_data, (list, dict)):
+        draw_education(education_data)
+    else:
+        draw_section('Education', education_str)
+    
+    draw_section('Skills', skills_str)
+    
+    if isinstance(projects_list, list):
+        draw_projects(projects_list)
+    else:
+        draw_section('Projects', projects_str)
+    if certifications_str:
+        draw_section('Certifications', certifications_str)
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 
     c.save()
 

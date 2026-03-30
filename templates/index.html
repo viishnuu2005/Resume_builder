@@ -325,6 +325,10 @@
             <div class="col-lg-6">
                 <div class="glass-panel">
                     <form id="resumeForm" action="/preview" method="post" target="_blank" onsubmit="return validateFormSubmission()">
+<<<<<<< HEAD
+=======
+                        <input type="hidden" name="editing_resume_id" id="editing_resume_id" value="{{ edit_resume_id|default('') }}">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         
                         <h4 class="brand-font mb-4 text-white"><i class="fa-regular fa-address-card" style="color:var(--primary);"></i> Personal Details</h4>
                         
@@ -639,6 +643,7 @@
                             <i class="fa-solid fa-plus me-2"></i> Add Another Project
                         </button>
 
+<<<<<<< HEAD
                         <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-code" style="color:#ec4899;"></i> Skills & Certs</h4>
                         <div class="mb-4">
                             <label class="form-label">Technical Skills</label>
@@ -671,6 +676,34 @@
                                 <option value="Machine Learning">Machine Learning</option>
                                 <option value="Data Analysis">Data Analysis</option>
                             </select>
+=======
+                        <h4 class="brand-font mb-4 text-white"><i class="fa-solid fa-code" style="color:#ec4899;"></i> Skills &amp; Certs</h4>
+
+                        <!-- SKILLS TAG INPUT WIDGET -->
+                        <div class="mb-4">
+                            <label class="form-label">Technical Skills</label>
+                            <!-- Hidden input carries comma-separated values to form submission -->
+                            <input type="hidden" id="skills" name="skills">
+                            <!-- Tag container + autocomplete input -->
+                            <div style="position:relative;">
+                                <div class="skills-tag-wrapper" id="skillsTagWrapper">
+                                    <div id="skillTagsDisplay"></div>
+                                    <input
+                                        type="text"
+                                        id="skillTypeInput"
+                                        class="skill-tag-input"
+                                        placeholder="Type a skill and press Enter or pick below…"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                                <div class="skill-suggestions" id="skillSuggestions" style="display:none;"></div>
+                            </div>
+                            <small style="color:rgba(255,255,255,0.4); font-size:0.78rem; display:block; margin-top:0.4rem;">
+                                Press <kbd style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;">Enter</kbd> or
+                                <kbd style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;">,</kbd>
+                                to add · Click × to remove
+                            </small>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         </div>
 
                         <div class="mb-4">
@@ -684,10 +717,19 @@
                                 <button type="button" class="btn btn-sm btn-outline-light" onclick="addCertification()"><i class="fa-solid fa-plus"></i> Add</button>
                             </div>
                             <div id="indexCertsContainer">
+<<<<<<< HEAD
                                 <div class="cert-row">
                                     <div class="row g-2 mb-2">
                                         <div class="col-8">
                                             <input type="text" class="form-control form-control-sm" name="cert_name[]" placeholder="Certificate Name" required>
+=======
+                                <!-- First cert row now has a remove button like all others -->
+                                <div class="cert-row">
+                                    <button type="button" class="btn-remove-cert" onclick="this.parentElement.remove(); updatePreview();"><i class="fa-solid fa-xmark"></i></button>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-8">
+                                            <input type="text" class="form-control form-control-sm" name="cert_name[]" placeholder="Certificate Name">
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                                         </div>
                                         <div class="col-4">
                                             <input type="text" class="form-control form-control-sm" name="cert_year[]" placeholder="Year">
@@ -707,17 +749,37 @@
 
                         <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
 
+<<<<<<< HEAD
+=======
+                        <!-- Inline validation error block (shown by JS when required fields are empty) -->
+                        <div class="validation-errors" id="validationErrors">
+                            <strong><i class="fa-solid fa-circle-exclamation"></i> Please fix the following:</strong>
+                            <ul id="validationList"></ul>
+                        </div>
+
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         <div class="mb-4">
                             <label class="form-label">Select PDF Theme</label>
                             <select name="template_id" class="form-select">
                                 <option value="modern">Modern Professional (Blue)</option>
+<<<<<<< HEAD
                                 <option value="classic">Simple ATS (Black & White)</option>
+=======
+                                <option value="classic">Simple ATS (Black &amp; White)</option>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                                 <option value="tech">Developer (Terminal Green)</option>
                                 <option value="creative">Creative (Purple)</option>
                             </select>
                         </div>
 
+<<<<<<< HEAD
                         <button type="submit" class="btn-primary-gradient"><i class="fa-solid fa-file-pdf"></i> Generate PDF Resume</button>
+=======
+                        <button type="submit" class="btn-primary-gradient" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-file-pdf"></i> Preview Resume</button>
+                        <button type="button" class="btn-download-pdf" onclick="submitDownload()" style="margin-bottom: 0;">
+                            <i class="fa-solid fa-download"></i> Download PDF
+                        </button>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                     </form>
                 </div>
             </div>
@@ -727,6 +789,7 @@
                 <div class="preview-sticky">
                     <h5 class="text-white mb-3"><i class="fa-solid fa-eye" style="color:var(--accent-teal);"></i> Live Preview Document</h5>
                     <div class="resume-preview-sheet" id="print-area">
+<<<<<<< HEAD
                         
                         <h2 id="pv-name" class="fw-bold mb-1" style="font-size:2.5rem; letter-spacing:-0.5px;">Your Name</h2>
                         <div id="pv-contact" class="text-muted mb-2" style="font-size:0.95rem;">email@example.com | +1 234 567</div>
@@ -740,16 +803,47 @@
                         <div class="mb-3">
                             <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Education</h5>
                             <div id="pv-education" style="font-size:0.95rem; color:#475569;">—</div>
+=======
+
+                        <!-- ATS Score bar → hidden until name/email filled -->
+                        <div class="ats-score-block" id="pv-ats-block" style="display:none;">
+                            <div>
+                                <div class="ats-score-label">ATS Score</div>
+                                <div class="ats-score-number" id="pv-ats-number">0/100</div>
+                            </div>
+                            <div class="ats-bar-track" style="flex:1;">
+                                <div class="ats-bar-fill" id="pv-ats-bar" style="width:0%;"></div>
+                            </div>
+                        </div>
+
+                        <h2 id="pv-name" class="fw-bold mb-1" style="font-size:2.2rem; letter-spacing:-0.5px;">Your Name</h2>
+                        <div id="pv-contact" class="text-muted mb-2" style="font-size:0.9rem;">email@example.com | +1 234 567</div>
+                        <div id="pv-links" class="mb-3" style="font-size:0.88rem;"></div>
+
+                        <div class="mb-3" id="pv-exp-section">
+                            <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Professional Experience</h5>
+                            <div id="pv-experience" style="font-size:0.9rem; color:#475569;">—</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Education</h5>
+                            <div id="pv-education" style="font-size:0.9rem; color:#475569;">—</div>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         </div>
 
                         <div class="mb-3">
                             <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Projects</h5>
+<<<<<<< HEAD
                             <div id="pv-projects" style="white-space:pre-wrap; font-size:0.95rem; color:#475569;">—</div>
+=======
+                            <div id="pv-projects" style="font-size:0.9rem; color:#475569;">—</div>
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Skills</h5>
+<<<<<<< HEAD
                                 <div id="pv-skills" style="font-size:0.95rem; color:#475569;">—</div>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -758,6 +852,16 @@
                             </div>
                         </div>
                         
+=======
+                                <div id="pv-skills" style="font-size:0.9rem; color:#475569;">—</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Certifications</h5>
+                                <div id="pv-certifications" style="font-size:0.9rem; color:#475569;">—</div>
+                            </div>
+                        </div>
+
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         <div class="mb-3">
                             <h5 class="fw-bold border-bottom pb-1" style="color:#334155; border-color:#cbd5e1!important;">Languages</h5>
                             <div id="pv-languages" class="pt-1">—</div>
@@ -772,6 +876,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+<<<<<<< HEAD
         // Live preview script
         function setText(id, value, placeholder) {
             const el = document.getElementById(id);
@@ -1000,6 +1105,404 @@
 
         // Initialize preview on page load
         updatePreview();
+=======
+        /* ============================================================
+           SKILLS TAG INPUT SYSTEM
+           ============================================================ */
+        const SKILL_PRESETS = [
+            'Python','JavaScript','TypeScript','Java','C++','C#','C','Go','Rust','Swift','Kotlin',
+            'HTML','CSS','React','Angular','Vue','Next.js','Svelte',
+            'Node.js','Django','Flask','Spring Boot','FastAPI','Laravel',
+            'SQL','MySQL','PostgreSQL','MongoDB','Redis','Firebase',
+            'Docker','Kubernetes','AWS','GCP','Azure','Git','CI/CD','Linux',
+            'Machine Learning','Deep Learning','Data Analysis','TensorFlow','PyTorch',
+            'Pandas','NumPy','Scikit-learn','Tableau','Power BI',
+            'React Native','Flutter','Android','iOS',
+            'GraphQL','REST API','Microservices','Agile','Scrum'
+        ];
+
+        let selectedSkills = []; // array of skill strings
+
+        function renderSkillTags() {
+            const display = document.getElementById('skillTagsDisplay');
+            display.innerHTML = '';
+            selectedSkills.forEach((skill, idx) => {
+                const tag = document.createElement('span');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `${escHtml(skill)} <button type="button" aria-label="Remove ${skill}" onclick="removeSkill(${idx})">×</button>`;
+                display.appendChild(tag);
+            });
+            // Sync hidden input for form submission
+            document.getElementById('skills').value = selectedSkills.join(', ');
+            updatePreview();
+        }
+
+        function addSkill(skill) {
+            skill = skill.trim();
+            if (!skill) return;
+            // Prevent duplicates (case-insensitive)
+            if (selectedSkills.some(s => s.toLowerCase() === skill.toLowerCase())) return;
+            selectedSkills.push(skill);
+            renderSkillTags();
+        }
+
+        function removeSkill(idx) {
+            selectedSkills.splice(idx, 1);
+            renderSkillTags();
+        }
+
+        function escHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        function showSuggestions(query) {
+            const box = document.getElementById('skillSuggestions');
+            if (!query) { box.style.display = 'none'; return; }
+            const matches = SKILL_PRESETS.filter(s =>
+                s.toLowerCase().includes(query.toLowerCase()) &&
+                !selectedSkills.some(sel => sel.toLowerCase() === s.toLowerCase())
+            ).slice(0, 8);
+            if (!matches.length) { box.style.display = 'none'; return; }
+            box.innerHTML = matches.map(m => `<div onclick="pickSuggestion('${escHtml(m)}')">${escHtml(m)}</div>`).join('');
+            box.style.display = 'block';
+        }
+
+        function pickSuggestion(skill) {
+            addSkill(skill);
+            document.getElementById('skillTypeInput').value = '';
+            document.getElementById('skillSuggestions').style.display = 'none';
+            document.getElementById('skillTypeInput').focus();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('skillTypeInput');
+            const suggestions = document.getElementById('skillSuggestions');
+
+            input.addEventListener('input', () => showSuggestions(input.value));
+
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = input.value.replace(/,/g, '').trim();
+                    if (val) { addSkill(val); input.value = ''; suggestions.style.display = 'none'; }
+                } else if (e.key === 'Backspace' && !input.value && selectedSkills.length) {
+                    removeSkill(selectedSkills.length - 1);
+                }
+            });
+
+            // Click on wrapper focuses input
+            document.getElementById('skillsTagWrapper').addEventListener('click', () => input.focus());
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', e => {
+                if (!e.target.closest('#skillsTagWrapper') && !e.target.closest('#skillSuggestions')) {
+                    suggestions.style.display = 'none';
+                }
+            });
+
+            // Pre-populate district dropdowns if state already selected
+            document.querySelectorAll('select[name="higher_state[]"]').forEach(sel => {
+                if (sel.value) loadDistricts(sel);
+            });
+
+            // Event delegation: experience container
+            const expContainer = document.getElementById('experience-container');
+            if (expContainer) {
+                expContainer.addEventListener('input', updatePreview);
+                expContainer.addEventListener('change', updatePreview);
+            }
+
+            // Event delegation: projects container
+            const projContainer = document.getElementById('projects-container');
+            if (projContainer) {
+                projContainer.addEventListener('input', updatePreview);
+            }
+
+            // Event delegation: cert container
+            const certContainer = document.getElementById('indexCertsContainer');
+            if (certContainer) {
+                certContainer.addEventListener('input', updatePreview);
+            }
+
+            // Event delegation: education containers
+            ['school-edu-container', 'higher-edu-container'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', updatePreview);
+                    el.addEventListener('input', updatePreview);
+                }
+            });
+
+            // Personal fields
+            ['name', 'email', 'phone', 'linkedin', 'github', 'languages'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', updatePreview);
+            });
+
+            // Initialize preview
+            updatePreview();
+        });
+
+        /* ============================================================
+           LIVE PREVIEW UPDATER  — called on every input change
+           ============================================================ */
+        function updatePreview() {
+            const name     = (document.getElementById('name')     || {}).value || '';
+            const email    = (document.getElementById('email')    || {}).value || '';
+            const phone    = (document.getElementById('phone')    || {}).value || '';
+            const linkedin = (document.getElementById('linkedin') || {}).value || '';
+            const github   = (document.getElementById('github')   || {}).value || '';
+            const languages = (document.getElementById('languages') || {}).value || '';
+
+            // --- Name & Contact ---
+            const pvName = document.getElementById('pv-name');
+            if (pvName) pvName.textContent = name.trim() || 'Your Name';
+
+            const contactParts = [];
+            if (email) contactParts.push(email);
+            if (phone) contactParts.push(phone);
+            const pvContact = document.getElementById('pv-contact');
+            if (pvContact) pvContact.textContent = contactParts.join(' | ') || 'email | phone';
+
+            // --- Links ---
+            const linksEl = document.getElementById('pv-links');
+            if (linksEl) {
+                linksEl.innerHTML = '';
+                [{ url: linkedin, label: '🔗 LinkedIn' }, { url: github, label: '💻 GitHub' }].forEach(link => {
+                    if (link.url) {
+                        const a = document.createElement('a');
+                        a.href = link.url;
+                        a.target = '_blank';
+                        a.textContent = link.label;
+                        a.style.cssText = 'margin-right:12px; color:#3b82f6; text-decoration:none; font-weight:500; font-size:0.88rem;';
+                        linksEl.appendChild(a);
+                    }
+                });
+            }
+
+            // --- Education ---
+            let eduHTML = '';
+            document.querySelectorAll('.school-edu-row').forEach(row => {
+                const qual = (row.querySelector('[name="school_qualification[]"]') || {}).value || '';
+                let syll   = (row.querySelector('[name="school_syllabus[]"]')      || {}).value || '';
+                const syllOther = (row.querySelector('[name="school_syllabus_other[]"]') || {}).value || '';
+                if (syll === 'Other' && syllOther) syll = syllOther;
+                const year = (row.querySelector('[name="school_year[]"]')       || {}).value || '';
+                const perc = (row.querySelector('[name="school_percentage[]"]') || {}).value || '';
+                if (qual || syll) {
+                    eduHTML += `<div style="margin-bottom:0.5rem;">`;
+                    eduHTML += `<strong>${escHtml(qual)}</strong>${syll ? ' — ' + escHtml(syll) : ''}<br>`;
+                    if (year) eduHTML += `<span style="color:#64748b; font-size:0.83rem;">Year: ${year}</span>`;
+                    if (perc) eduHTML += `<span style="color:#64748b; font-size:0.83rem;"> &nbsp;|&nbsp; ${perc}%</span>`;
+                    eduHTML += `</div>`;
+                }
+            });
+            document.querySelectorAll('.higher-edu-row').forEach(row => {
+                let deg    = (row.querySelector('[name="higher_degree[]"]')        || {}).value || '';
+                const degOther = (row.querySelector('[name="higher_degree_other[]"]') || {}).value || '';
+                if ((deg === 'Others' || deg === 'Other') && degOther) deg = degOther;
+                const course = (row.querySelector('[name="higher_course[]"]')     || {}).value || '';
+                let coll   = (row.querySelector('[name="higher_college[]"]')       || {}).value || '';
+                const collOther = (row.querySelector('[name="higher_college_other[]"]') || {}).value || '';
+                if (coll === 'Other' && collOther) coll = collOther;
+                let univ   = (row.querySelector('[name="higher_univ[]"]')          || {}).value || '';
+                const univOther = (row.querySelector('[name="higher_univ_other[]"]') || {}).value || '';
+                if (univ === 'Other' && univOther) univ = univOther;
+                const gyear    = (row.querySelector('[name="higher_grad_year[]"]') || {}).value || '';
+                const cgpa     = (row.querySelector('[name="higher_cgpa[]"]')      || {}).value || '';
+                // Read district from this row
+                const district = (row.querySelector('[name="higher_district[]"]')  || {}).value || '';
+
+                if (deg || coll || course) {
+                    const title = (deg && course) ? `${deg} — ${course}` : (deg || course);
+                    eduHTML += `<div style="margin-bottom:0.6rem;">`;
+                    eduHTML += `<strong>${escHtml(title)}</strong><br>`;
+                    if (coll) eduHTML += `${escHtml(coll)}<br>`;
+                    const meta = [univ, district, gyear].filter(Boolean);
+                    if (meta.length) eduHTML += `<span style="color:#64748b; font-size:0.83rem;">${meta.map(escHtml).join(' | ')}</span>`;
+                    if (cgpa) eduHTML += `<br><span style="font-size:0.83rem;">CGPA: ${cgpa}</span>`;
+                    eduHTML += `</div>`;
+                }
+            });
+            const pvEdu = document.getElementById('pv-education');
+            if (pvEdu) pvEdu.innerHTML = eduHTML || '—';
+
+            // --- Skills (from tag system) ---
+            const pvSkills = document.getElementById('pv-skills');
+            if (pvSkills) {
+                if (selectedSkills.length) {
+                    pvSkills.innerHTML = selectedSkills.map(s =>
+                        `<span class="skill-pill-preview">${escHtml(s)}</span>`
+                    ).join(' ');
+                } else {
+                    pvSkills.innerHTML = '—';
+                }
+            }
+
+            // --- Experience ---
+            const hasExpCb = document.getElementById('hasExperience');
+            const showExp  = hasExpCb ? hasExpCb.checked : true;
+            const expSection = document.getElementById('pv-exp-section');
+            const pvExp  = document.getElementById('pv-experience');
+
+            if (expSection) expSection.style.display = showExp ? 'block' : 'none';
+            if (showExp && pvExp) {
+                let expHtml = '';
+                const companies = document.getElementsByName('exp_company[]');
+                const roles     = document.getElementsByName('exp_role[]');
+                const durations = document.getElementsByName('exp_duration[]');
+                const descs     = document.getElementsByName('exp_desc[]');
+                for (let i = 0; i < companies.length; i++) {
+                    if (companies[i].value || roles[i].value) {
+                        expHtml += `<div style="margin-bottom:0.75rem;">`;
+                        expHtml += `<strong style="color:#1e40af;">${escHtml(companies[i].value)}</strong>`;
+                        if (roles[i].value) expHtml += ` <span style="color:#374151;">· ${escHtml(roles[i].value)}</span>`;
+                        if (durations[i] && durations[i].value) expHtml += `<br><span style="color:#64748b; font-size:0.83rem;">${escHtml(durations[i].value)}</span>`;
+                        if (descs[i] && descs[i].value.trim()) {
+                            expHtml += `<div style="margin-top:0.3rem; color:#374151; font-size:0.88rem;">${escHtml(descs[i].value).replace(/\n/g, '<br>')}</div>`;
+                        }
+                        expHtml += `</div>`;
+                    }
+                }
+                pvExp.innerHTML = expHtml || '—';
+            }
+
+            // --- Projects ---
+            const pvProj = document.getElementById('pv-projects');
+            if (pvProj) {
+                let projHtml = '';
+                document.querySelectorAll('.project-row').forEach(row => {
+                    const title    = (row.querySelector('[name="project_title[]"]')    || {}).value || '';
+                    const role     = (row.querySelector('[name="project_role[]"]')     || {}).value || '';
+                    const org      = (row.querySelector('[name="project_org[]"]')      || {}).value || '';
+                    const duration = (row.querySelector('[name="project_duration[]"]') || {}).value || '';
+                    const desc     = (row.querySelector('[name="project_desc[]"]')     || {}).value || '';
+                    const tech     = (row.querySelector('[name="project_tech[]"]')     || {}).value || '';
+                    if (title || desc) {
+                        projHtml += `<div style="margin-bottom:0.75rem;">`;
+                        projHtml += `<strong style="color:#1e40af;">${escHtml(title)}</strong>`;
+                        if (role) projHtml += ` <span style="color:#374151;">· ${escHtml(role)}</span>`;
+                        const meta = [org, duration].filter(Boolean);
+                        if (meta.length) projHtml += `<br><span style="color:#64748b; font-size:0.83rem;">${meta.map(escHtml).join(' | ')}</span>`;
+                        if (desc.trim()) projHtml += `<div style="margin-top:0.3rem; color:#374151; font-size:0.88rem;">${escHtml(desc).replace(/\n/g,'<br>')}</div>`;
+                        if (tech.trim()) projHtml += `<div style="margin-top:0.25rem;"><span style="font-size:0.8rem; color:#6366f1; font-weight:600;">Tech: </span><span style="font-size:0.83rem; color:#475569;">${escHtml(tech)}</span></div>`;
+                        projHtml += `</div>`;
+                    }
+                });
+                pvProj.innerHTML = projHtml || '—';
+            }
+
+            // --- Certifications ---
+            const pvCerts = document.getElementById('pv-certifications');
+            if (pvCerts) {
+                const certNames = document.getElementsByName('cert_name[]');
+                const certOrgs  = document.getElementsByName('cert_org[]');
+                const certYears = document.getElementsByName('cert_year[]');
+                let certsArr = [];
+                for (let i = 0; i < certNames.length; i++) {
+                    if (certNames[i].value.trim()) {
+                        let t = `<strong>${escHtml(certNames[i].value.trim())}</strong>`;
+                        if (certOrgs[i] && certOrgs[i].value.trim())  t += ` — ${escHtml(certOrgs[i].value.trim())}`;
+                        if (certYears[i] && certYears[i].value.trim()) t += ` (${escHtml(certYears[i].value.trim())})`;
+                        certsArr.push(t);
+                    }
+                }
+                pvCerts.innerHTML = certsArr.length ? certsArr.join('<br>') : '—';
+            }
+
+            // --- Languages ---
+            const langsEl = document.getElementById('pv-languages');
+            if (langsEl) {
+                langsEl.innerHTML = '';
+                if (languages.trim()) {
+                    languages.split(',').map(s => s.trim()).filter(Boolean).forEach(p => {
+                        const span = document.createElement('span');
+                        span.className = 'lang-pill';
+                        span.textContent = p;
+                        langsEl.appendChild(span);
+                    });
+                } else {
+                    langsEl.innerHTML = '—';
+                }
+            }
+
+            // --- ATS Score ---
+            updateATSScore(name, email, phone);
+        }
+
+        /* ============================================================
+           ATS SCORE CALCULATOR
+           Scoring (out of 100):
+             Name filled      → 10
+             Email filled     → 10
+             Phone filled     → 10
+             Education        → 15  (at least 1 school or higher entry filled)
+             Skills (≥ 1)     → 15  (bonus +5 at ≥ 3 skills)
+             Projects (≥ 1)   → 15
+             Experience       → 15  (if checked and at least 1 company filled)
+             Certifications   → 10
+           ============================================================ */
+        function updateATSScore(name, email, phone) {
+            let score = 0;
+
+            if (name.trim())  score += 10;
+            if (email.trim()) score += 10;
+            if (phone.trim()) score += 10;
+
+            // Education: at least one school OR one higher row with data
+            const hasSchoolEdu = Array.from(document.querySelectorAll('.school-edu-row')).some(r => {
+                const q = (r.querySelector('[name="school_qualification[]"]') || {}).value;
+                return q && q.trim() && q !== '';
+            });
+            const hasHigherEdu = Array.from(document.querySelectorAll('.higher-edu-row')).some(r => {
+                const d = (r.querySelector('[name="higher_degree[]"]') || {}).value;
+                const c = (r.querySelector('[name="higher_course[]"]') || {}).value;
+                return (d && d.trim()) || (c && c.trim());
+            });
+            if (hasSchoolEdu || hasHigherEdu) score += 15;
+
+            // Skills
+            if (selectedSkills.length >= 1) score += 10;
+            if (selectedSkills.length >= 3) score += 5;
+
+            // Projects
+            const hasProject = Array.from(document.querySelectorAll('.project-row')).some(r => {
+                const t = (r.querySelector('[name="project_title[]"]') || {}).value;
+                return t && t.trim();
+            });
+            if (hasProject) score += 15;
+
+            // Experience
+            const hasExpCb = document.getElementById('hasExperience');
+            const showExp  = hasExpCb ? hasExpCb.checked : false;
+            if (showExp) {
+                const hasExp = Array.from(document.getElementsByName('exp_company[]')).some(el => el.value.trim());
+                if (hasExp) score += 15;
+            }
+
+            // Certifications
+            const hasCert = Array.from(document.getElementsByName('cert_name[]')).some(el => el.value.trim());
+            if (hasCert) score += 10;
+
+            // Render ATS block
+            const atsBlock  = document.getElementById('pv-ats-block');
+            const atsNumber = document.getElementById('pv-ats-number');
+            const atsBar    = document.getElementById('pv-ats-bar');
+
+            if (atsBlock && atsNumber && atsBar) {
+                // Only show when the person has at least started filling
+                const hasAnyData = name.trim() || email.trim() || phone.trim();
+                atsBlock.style.display = hasAnyData ? 'flex' : 'none';
+                atsNumber.textContent = `${score}/100`;
+                atsBar.style.width = score + '%';
+                // Color coding
+                atsBar.className = 'ats-bar-fill';
+                if (score < 40) atsBar.classList.add('low');
+                else if (score < 70) atsBar.classList.add('medium');
+                // else keep green (default)
+            }
+        }
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
 
         // --- Experience Toggle Functionality ---
         const experienceCheckbox = document.getElementById('hasExperience');
@@ -1033,6 +1536,7 @@
             experienceCheckbox.addEventListener('change', toggleExperienceSection);
         }
 
+<<<<<<< HEAD
         // --- Form Validation Helper Functions ---
         /**
          * Validate form submission based on experience checkbox status
@@ -1068,6 +1572,91 @@
 
             // Experience fields are now optional - no 'required' needed
             // But this function is available for future enhancement
+=======
+        /* ============================================================
+           FORM VALIDATION — validates required fields before submit
+           ============================================================ */
+        function validateFormSubmission() {
+            const errors = [];
+            const nameEl  = document.getElementById('name');
+            const emailEl = document.getElementById('email');
+            const phoneEl = document.getElementById('phone');
+
+            // Clear previous error highlights
+            [nameEl, emailEl, phoneEl].forEach(el => el && el.classList.remove('field-error'));
+
+            if (!nameEl || !nameEl.value.trim()) {
+                errors.push('Full Name is required.');
+                if (nameEl) nameEl.classList.add('field-error');
+            }
+            if (!emailEl || !emailEl.value.trim()) {
+                errors.push('Email Address is required.');
+                if (emailEl) emailEl.classList.add('field-error');
+            } else if (!/^[^@]+@[^@]+\.[^@]+$/.test(emailEl.value.trim())) {
+                errors.push('Please enter a valid email address.');
+                if (emailEl) emailEl.classList.add('field-error');
+            }
+            if (!phoneEl || !phoneEl.value.trim()) {
+                errors.push('Phone Number is required.');
+                if (phoneEl) phoneEl.classList.add('field-error');
+            }
+
+            // Remove required from experience fields if unchecked (avoids browser native blocking)
+            const hasExperience = document.getElementById('hasExperience');
+            if (hasExperience && !hasExperience.checked) {
+                document.getElementsByName('exp_company[]').forEach(f => f.removeAttribute('required'));
+                document.getElementsByName('exp_role[]').forEach(f => f.removeAttribute('required'));
+            }
+
+            const errBox  = document.getElementById('validationErrors');
+            const errList = document.getElementById('validationList');
+            if (errors.length) {
+                errList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+                errBox.classList.add('show');
+                errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false; // Prevent submission
+            }
+
+            // All good — hide error box and submit
+            errBox.classList.remove('show');
+            return true;
+        }
+
+        /* ============================================================
+           PDF QUICK DOWNLOAD — triggers browser print dialog
+           Only the #print-area is visible when printing (see CSS)
+           ============================================================ */
+        function submitDownload() {
+            const name = (document.getElementById('name') || {}).value || '';
+            if (!name.trim()) {
+                alert('Please fill in at least your name before downloading.');
+                document.getElementById('name').focus();
+                return;
+            }
+            
+            // Create a form that submits to /download instead of /preview
+            const form = document.getElementById('resumeForm');
+            const originalAction = form.action;
+            const originalTarget = form.target;
+            
+            form.action = '/download';
+            form.target = '_blank';
+            form.submit();
+            
+            // Restore original values
+            form.action = originalAction;
+            form.target = originalTarget;
+        }
+
+        function downloadResumeAsPDF() {
+            const name = (document.getElementById('name') || {}).value || '';
+            if (!name.trim()) {
+                alert('Please fill in at least your name before downloading.');
+                document.getElementById('name').focus();
+                return;
+            }
+            window.print();
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
         }
 
         // --- Toggle functions for "Other" fields ---
@@ -1373,7 +1962,15 @@
                     </style>
                     <form id="degreeSelectionForm">
                         <div class="degree-category">Undergraduate</div>
+<<<<<<< HEAD
                         {% for deg in ['B.Tech / B.E.', 'B.Sc', 'BCA', 'BBA / BBM / BBS', 'B.Com', 'B.Arch', 'B.Pharm', 'MBBS', 'BDS', 'B.Sc Nursing', 'B.Sc (Dairy Science / Dairy Technology)'] %}
+=======
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_btech" value="B.Tech" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_btech">B.Tech</label>
+                        <input type="radio" class="degree-radio" name="temp_degree" id="deg_be" value="B.E" onchange="selectDegree(this.value)">
+                        <label class="degree-label" for="deg_be">B.E</label>
+                        {% for deg in ['B.Sc', 'BCA', 'BBA / BBM / BBS', 'B.Com', 'B.Arch', 'B.Pharm', 'MBBS', 'BDS', 'B.Sc Nursing', 'B.Sc (Dairy Science / Dairy Technology)'] %}
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                         <input type="radio" class="degree-radio" name="temp_degree" id="deg_{{ loop.index }}" value="{{ deg }}" onchange="selectDegree(this.value)">
                         <label class="degree-label" for="deg_{{ loop.index }}">{{ deg }}</label>
                         {% endfor %}
@@ -1420,6 +2017,7 @@
             modal.show();
         }
 
+<<<<<<< HEAD
         function selectDegree(val) {
             if (activeDegreeTarget) {
                 let displayVal = val;
@@ -1433,11 +2031,235 @@
                 activeDegreeTarget.value = displayVal;
                 activeDegreeTarget.nextElementSibling.value = displayVal;
                 
+=======
+        const btechCollegeOptions = [
+            'IIT Madras', 'IIT Bombay', 'IIT Delhi', 'NIT Trichy', 'NIT Surathkal', 'NIT Warangal',
+            'College of Engineering Trivandrum (CET)', 'Cochin University of Science and Technology (CUSAT)',
+            'Government Engineering College Thrissur', 'Model Engineering College, Kochi', 'TKM College of Engineering, Kollam',
+            'Other'
+        ];
+
+        const beCollegeOptions = [
+            'BMS College of Engineering', 'RV College of Engineering', 'SSN College of Engineering',
+            'Vellore Institute of Technology (VIT)', 'PES University', 'D.J. Sanghvi College', 'Other'
+        ];
+
+        const defaultCollegeOptions = [
+            'College of Engineering Trivandrum (CET)', 'National Institute of Technology Calicut (NITC)',
+            'Cochin University of Science and Technology (CUSAT)', 'IIT Madras', 'IIT Bombay', 'IIT Delhi',
+            'Government Engineering College Thrissur', 'Model Engineering College, Kochi',
+            'TKM College of Engineering, Kollam', 'Mar Athanasius College of Engineering', 'Other'
+        ];
+
+        const defaultUnivOptions = [
+            'APJ Abdul Kalam Technological University (KTU)', 'University of Kerala', 'Mahatma Gandhi University',
+            'Calicut University', 'Kannur University', 'University of Mumbai', 'Delhi University',
+            'Anna University', 'Osmania University', 'Bangalore University', 'Other'
+        ];
+
+        function setCollegeUniversityOptionsByDegree(row, degreeVal) {
+            const collegeSelect = row.querySelector('[name="higher_college[]"]');
+            const univSelect = row.querySelector('[name="higher_univ[]"]');
+
+            const colleges = degreeVal === 'B.Tech' ? btechCollegeOptions
+                : degreeVal === 'B.E' ? beCollegeOptions : defaultCollegeOptions;
+
+            const univs = defaultUnivOptions;
+
+            if (collegeSelect) {
+                collegeSelect.innerHTML = '<option value="" disabled selected>-Select College-</option>' +
+                    colleges.map(c => `<option>${c}</option>`).join('');
+            }
+            if (univSelect) {
+                univSelect.innerHTML = '<option value="" disabled selected>-Select University-</option>' +
+                    univs.map(u => `<option>${u}</option>`).join('');
+            }
+        }
+
+        function selectDegree(val) {
+            if (activeDegreeTarget) {
+                let displayVal = val;
+
+                if (val === 'Others' || val === 'Other') {
+                    const manual = prompt('Enter your degree:');
+                    if (manual) {
+                        displayVal = manual;
+                    } else {
+                        return;
+                    }
+                }
+
+                activeDegreeTarget.value = displayVal;
+                activeDegreeTarget.nextElementSibling.value = displayVal;
+
+                const row = activeDegreeTarget.closest('.higher-edu-row');
+                if (row) {
+                    setCollegeUniversityOptionsByDegree(row, displayVal);
+                }
+
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
                 updatePreview();
             }
             const modal = bootstrap.Modal.getInstance(document.getElementById('degreeModal'));
             if (modal) modal.hide();
         }
+<<<<<<< HEAD
+=======
+
+        function getDegreeFromCourseText(courseText) {
+            const normalized = (courseText || '').toLowerCase();
+            if (normalized.includes('b.tech')) return 'B.Tech';
+            if (normalized.includes('b.e') || normalized.includes('be ')) return 'B.E';
+            return '';
+        }
+
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('[name="higher_course[]"]')) {
+                const row = e.target.closest('.higher-edu-row');
+                const degreeSuggestion = getDegreeFromCourseText(e.target.value);
+                if (degreeSuggestion && row) {
+                    const degreeDisplay = row.querySelector('.degree-display');
+                    const hiddenDegree = row.querySelector('[name="higher_degree[]"]');
+                    if (degreeDisplay && degreeDisplay.value !== degreeSuggestion) {
+                        degreeDisplay.value = degreeSuggestion;
+                        if (hiddenDegree) hiddenDegree.value = degreeSuggestion;
+                        setCollegeUniversityOptionsByDegree(row, degreeSuggestion);
+                        updatePreview();
+                    }
+                }
+            }
+        });
+
+        // Resume editing: fill form if edit data exists
+        const resumeData = {{ resume_data|tojson|default('{}') }};
+        const editResumeId = "{{ edit_resume_id|default('') }}";
+        function fillResumeForm(data) {
+            if (!data || Object.keys(data).length === 0) return;
+            document.getElementById('name').value = data.name || '';
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('linkedin').value = data.linkedin || '';
+            document.getElementById('github').value = data.github || '';
+            document.getElementById('languages').value = data.languages || '';
+
+            // Skills tags
+            if (Array.isArray(data.skills)) {
+                data.skills.forEach(skill => addSkill(skill));
+            } else if (typeof data.skills === 'string' && data.skills.trim()) {
+                data.skills.split(',').map(s => s.trim()).filter(Boolean).forEach(addSkill);
+            }
+
+            // Experience entries
+            if (Array.isArray(data.experience)) {
+                const container = document.getElementById('experience-container');
+                container.querySelectorAll('.experience-row').forEach((r, idx) => {
+                    if (idx > 0) r.remove();
+                });
+                data.experience.forEach((exp, idx) => {
+                    if (idx > 0) addExperience();
+                    const row = container.querySelectorAll('.experience-row')[idx];
+                    if (!row) return;
+                    row.querySelector('[name="exp_company[]"]').value = exp.company || '';
+                    row.querySelector('[name="exp_role[]"]').value = exp.role || '';
+                    row.querySelector('[name="exp_duration[]"]').value = exp.duration || '';
+                    row.querySelector('[name="exp_desc[]"]').value = exp.description || '';
+                });
+            }
+
+            // Projects entries
+            if (Array.isArray(data.projects)) {
+                const container = document.getElementById('projects-container');
+                container.querySelectorAll('.project-row').forEach((r, idx) => {
+                    if (idx > 0) r.remove();
+                });
+                data.projects.forEach((proj, idx) => {
+                    if (idx > 0) addProject();
+                    const row = container.querySelectorAll('.project-row')[idx];
+                    if (!row) return;
+                    row.querySelector('[name="project_title[]"]').value = proj.title || '';
+                    row.querySelector('[name="project_role[]"]').value = proj.role || '';
+                    row.querySelector('[name="project_org[]"]').value = proj.org || '';
+                    row.querySelector('[name="project_duration[]"]').value = proj.duration || '';
+                    row.querySelector('[name="project_desc[]"]').value = proj.description || '';
+                    row.querySelector('[name="project_tech[]"]').value = proj.technologies || '';
+                });
+            }
+
+            // Certifications entries
+            if (Array.isArray(data.certifications)) {
+                const container = document.getElementById('indexCertsContainer');
+                container.querySelectorAll('.cert-row').forEach((r, idx) => {
+                    if (idx > 0) r.remove();
+                });
+                data.certifications.forEach((cert, idx) => {
+                    if (idx > 0) addCertification();
+                    const row = container.querySelectorAll('.cert-row')[idx];
+                    if (!row) return;
+                    row.querySelector('[name="cert_name[]"]').value = cert.name || '';
+                    row.querySelector('[name="cert_year[]"]').value = cert.year || '';
+                    row.querySelector('[name="cert_org[]"]').value = cert.org || '';
+                    row.querySelector('[name="cert_link[]"]').value = cert.link || '';
+                });
+            }
+
+            // Education entries
+            if (data.education && (data.education.school || data.education.higher)) {
+                // Skip school/higher building for now, easier on manual so we keep default first entries
+                // this module appends existing values without complex row duplication
+                const schoolData = Array.isArray(data.education.school) ? data.education.school : [];
+                const higherData = Array.isArray(data.education.higher) ? data.education.higher : [];
+
+                // fill school rows
+                const schoolRows = document.querySelectorAll('.school-edu-row');
+                schoolRows.forEach((row, idx) => {
+                    const item = schoolData[idx] || {};
+                    row.querySelector('[name="school_qualification[]"]').value = item.qualification || '';
+                    row.querySelector('[name="school_syllabus[]"]').value = item.syllabus || '';
+                    row.querySelector('[name="school_year[]"]').value = item.year || '';
+                    row.querySelector('[name="school_percentage[]"]').value = item.percentage || '';
+                    if (item.syllabus === 'Other') row.querySelector('.school-syllabus-other-wrap').style.display = 'block';
+                });
+
+                // fill higher rows
+                const higherRows = document.querySelectorAll('.higher-edu-row');
+                higherRows.forEach((row, idx) => {
+                    const item = higherData[idx] || {};
+                    if (!item) return;
+                    const degreeDisplay = row.querySelector('.degree-display');
+                    const hiddenDegree = row.querySelector('[name="higher_degree[]"]');
+                    if (degreeDisplay) degreeDisplay.value = item.degree || '-Select-';
+                    if (hiddenDegree) hiddenDegree.value = item.degree || '';
+                    row.querySelector('[name="higher_course[]"]').value = item.courseName || '';
+                    row.querySelector('[name="higher_specialization[]"]').value = item.specialization || '';
+                    if (item.specialization === 'Other') row.querySelector('.higher-spec-other-wrap').style.display = 'block';
+                    row.querySelector('[name="higher_inst_type[]"]').value = item.institutionType || '';
+                    row.querySelector('[name="higher_duration[]"]').value = item.duration || '';
+                    row.querySelector('[name="higher_college[]"]').value = item.college || '';
+                    if (item.college === 'Other') row.querySelector('.higher-college-other-wrap').style.display = 'block';
+                    row.querySelector('[name="higher_univ[]"]').value = item.university || '';
+                    if (item.university === 'Other') row.querySelector('.higher-univ-other-wrap').style.display = 'block';
+                    row.querySelector('[name="higher_state[]"]').value = item.state || '';
+                    row.querySelector('[name="higher_district[]"]').value = item.district || '';
+                    row.querySelector('[name="higher_grad_year[]"]').value = item.graduationYear || '';
+                    row.querySelector('[name="higher_cgpa[]"]').value = item.cgpa || '';
+                });
+            }
+
+            updatePreview();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (resumeData && Object.keys(resumeData).length) {
+                fillResumeForm(resumeData);
+            }
+            if (editResumeId) {
+                const editingIdInput = document.getElementById('editing_resume_id');
+                if (editingIdInput) {
+                    editingIdInput.value = editResumeId;
+                }
+            }
+        });
+>>>>>>> e68d8668670d25dd91fd1abb36f5fc1903572a6a
     </script>
     {% include 'chatbot.html' %}
 </body>
